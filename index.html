@@ -754,6 +754,10 @@
           <div class="faq-body" data-i18n="faq_1_a">Yes. Arvik is fully free right now — no limits on invoices, clients, or PDF downloads. A paid plan with team features may come later, but current use stays free forever.</div>
         </details>
         <details class="faq-item">
+          <summary data-i18n="faq_why_q">Why does invoicing even need this kind of security?</summary>
+          <div class="faq-body" data-i18n="faq_why_a">Invoices contain more than just amounts. They reveal your <strong>client list, addresses, VAT numbers, IBANs, payment terms and revenue patterns</strong> — aggregated, that's a competitive intelligence goldmine and a GDPR liability. Standard cloud invoicing tools have suffered breaches; ransomware crews specifically target accounting and billing software. Even without a breach, employees at those companies can read your business data. With zero-knowledge encryption, nobody at Arvik can — even if we wanted to. The cost of encryption is zero; the cost of a leak — broken client trust, regulatory fines — is high. So we made it the default.</div>
+        </details>
+        <details class="faq-item">
           <summary data-i18n="faq_2_q">Where is my data stored?</summary>
           <div class="faq-body" data-i18n="faq_2_a">By default, in your browser's local storage — it never leaves your device. If you turn on sync, data is encrypted in your browser <strong>before</strong> being sent to the cloud — the server only sees ciphertext that can't be opened without your code. Encryption uses AES-256-GCM and the key is derived from your code via PBKDF2 (120,000 iterations).</div>
         </details>
@@ -901,6 +905,8 @@ const i18n = {
     faq_h2: 'Tüüpilised küsimused',
     faq_1_q: 'Kas see on tõesti tasuta?',
     faq_1_a: 'Jah. Arvik on praegu täiesti tasuta — ilma piiranguteta arvete arvule, klientide arvule või PDF-ide allalaadimisele. Tulevikus võib lisanduda tasuline versioon meeskonnafunktsioonidega, aga praegune kasutus jääb alati tasuta.',
+    faq_why_q: 'Miks arveldus üldse vajab sellist turvalisust?',
+    faq_why_a: 'Arvetel on rohkem kui pelgalt summad. Need näevad sinu <strong>klientide nimekirja, aadresse, KMKR-numbreid, IBAN-eid, maksetingimusi ja tulumustreid</strong> — koondatuna on need kuldne konkurentsiteave ja GDPR-i kohustuste allikas. Tavalised pilvepõhised arveldustarkvarad on kannatanud andmelekkeid; lunavarakuritarvitajad sihivad just raamatupidamis- ja arveldustarkvara. Isegi ilma lekketa saavad nende ettevõtete töötajad sinu äriinfot lugeda. Null-teadmusega krüpteerimisega ei saa keegi Arvikus seda teha — isegi mitte meie ise. Krüpteerimine ei maksa midagi; lekke hind — kadunud klientide usaldus ja võimalikud trahvid — on suur. Seetõttu tegime sellest vaikesätte.',
     faq_2_q: 'Kuhu mu andmed salvestuvad?',
     faq_2_a: 'Vaikimisi sinu brauseri kohalikku salvestusse (localStorage) — need ei lahku sinu seadmest. Kui aktiveerid sünkroniseerimise, krüpteeritakse andmed enne pilve saatmist sinu seadmes — server näeb ainult krüpteeritud andmeid, mida ei saa ilma sinu koodita lahti võtta. Krüpteerimine kasutab AES-256-GCM ja võti tuletatakse sinu koodist PBKDF2-ga (120 000 iteratsiooni).',
     faq_3_q: 'Kas saan kasutada mitmes seadmes?',
