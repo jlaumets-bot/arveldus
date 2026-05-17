@@ -904,46 +904,35 @@ function renderSettings(){
           <div class="sync-paired-body">
             <div class="qr-side">
               <canvas id="sync-qr"></canvas>
-              <p class="qr-hint">Skanneeri telefoni kaameraga<br>— avaneb otse paaristamise aken</p>
+              <p class="qr-hint">📱 Skanneeri telefoni kaameraga</p>
             </div>
             <div class="code-side">
               <div class="paired-steps">
-                <strong>Kõige lihtsam — telefoniga:</strong>
+                <strong>Kuidas teine seade kaasata:</strong>
                 <ol>
-                  <li>Ava telefoni <strong>kaamera</strong></li>
-                  <li>Suuna see vasakul oleva QR koodi peale</li>
-                  <li>Vajuta avanevat linki — kohe küsitakse paaristamise kinnitust</li>
+                  <li><strong>Telefonil:</strong> ava kaamera ja suuna QR-koodile → vajuta avanevat linki</li>
+                  <li><strong>Arvutil:</strong> kopeeri jagamislink siit ja ava see teises brauseris</li>
                 </ol>
               </div>
-              <label class="field-label" style="margin:14px 0 6px">Käsitsi sisestamiseks:</label>
-              <div class="code-row">
-                <input id="sync-code-display" type="password" readonly value="${esc(getSyncCode())}" class="input mono">
-                <button onclick="document.getElementById('sync-code-display').type=document.getElementById('sync-code-display').type==='password'?'text':'password'" class="btn btn-secondary" style="padding:8px 12px" title="Näita/peida">👁</button>
-                <button onclick="navigator.clipboard.writeText(getSyncCode()).then(()=>toast('Kood kopeeritud'))" class="btn btn-secondary" style="padding:8px 12px">Kopeeri</button>
-              </div>
-              <p style="font-size:11.5px;color:#94a3b8;margin:6px 0 0;line-height:1.5">Teises seadmes ava sama leht → Seaded → kleebi kood lahtrisse "Liitu".</p>
+              <button onclick="navigator.clipboard.writeText(buildPairURL(getSyncCode())).then(()=>toast('Jagamislink kopeeritud'))" class="btn btn-primary" style="width:100%;margin-top:14px">📋 Kopeeri jagamislink</button>
+              <details style="margin-top:10px">
+                <summary style="font-size:12px;color:#64748b;cursor:pointer">Näita paaristuskoodi</summary>
+                <div class="code-row" style="margin-top:8px">
+                  <input id="sync-code-display" type="text" readonly value="${esc(getSyncCode())}" class="input mono">
+                  <button onclick="navigator.clipboard.writeText(getSyncCode()).then(()=>toast('Kood kopeeritud'))" class="btn btn-secondary" style="padding:8px 12px">Kopeeri</button>
+                </div>
+              </details>
               <div id="sync-status-line" class="sync-status-line"></div>
             </div>
           </div>
           <div class="paired-footer">
-            <div class="hint">⚠️ Hoia kood kindlas kohas — kaotsiminek tähendab pilves andmetele ligipääsu kadu.</div>
+            <div class="hint">⚠️ Kaotsiminud link/kood = pilves andmetele ei pääse enam ligi. Salvesta kindlasse kohta.</div>
             <button onclick="disableSync()" class="btn-danger-link" style="font-size:12px">Eemalda see seade</button>
           </div>
         `:`
-          <div class="sync-paths">
-            <div class="sync-path primary">
-              <div class="sp-ico">⚡</div>
-              <h4>Esimene seade</h4>
-              <p>Aktiveeri sünkroniseerimine sellele seadmele. Saad unikaalse koodi + QR-koodi, mida saad kasutada teistes seadmetes.</p>
-              <button onclick="activateSync()" class="btn btn-primary">Aktiveeri see seade →</button>
-            </div>
-            <div class="sync-path">
-              <div class="sp-ico">📲</div>
-              <h4>Liitu olemasoleva koodiga</h4>
-              <p>Aktiveerisid juba teises seadmes? Sisesta sealne kood, et liituda samade andmetega.</p>
-              <input id="sync-code-join" placeholder="arvik-xxxx-xxxx-xxxx-xxxx" class="input mono" style="margin-bottom:8px">
-              <button onclick="joinSync(document.getElementById('sync-code-join').value)" class="btn btn-secondary">Liitu →</button>
-            </div>
+          <div style="text-align:center;padding:8px 0 4px">
+            <button onclick="activateSync()" class="btn btn-primary" style="font-size:15px;padding:14px 32px">⚡ Aktiveeri see seade</button>
+            <p style="font-size:12.5px;color:#94a3b8;margin:14px auto 0;max-width:420px;line-height:1.55">Juba aktiveerisid teises seadmes? <strong style="color:#475569">Skanneeri sealne QR-kood telefoni kaameraga</strong> või <strong style="color:#475569">ava sealne jagamislink selles brauseris</strong>. Need teevad paaristuse automaatselt.</p>
           </div>
         `}
       </div>
