@@ -229,23 +229,98 @@
   /* FOOTER */
   .ftr{border-top:1px solid var(--line);padding:30px 0;color:var(--mute);font-size:13px;text-align:center}
 
+  /* ====== MOBILE BREAKPOINTS ====== */
   @media (max-width: 880px){
-    .hero{padding:48px 0 40px}
-    .hero-inner{grid-template-columns:1fr;gap:32px}
-    .hero-art{min-height:300px}
-    .mascot{width:200px}
-    .blob{width:280px;height:280px}
-    .feat-grid{grid-template-columns:1fr}
-    .step-grid{grid-template-columns:1fr}
-    .faq-grid{grid-template-columns:1fr}
-    .faq-aside{position:static}
-    .sec{padding:56px 0}
-    .cta-card{padding:44px 24px}
-    .security-stage{grid-template-columns:1fr;gap:18px}
-    .security-arrow{transform:rotate(90deg);margin:6px auto}
-    .security-cards{grid-template-columns:1fr}
+    .wrap{padding:0 20px}
+    .hdr-inner{height:56px}
+    .brand-logo{width:32px;height:32px;font-size:16px}
+    .brand-name{font-size:16px}
+    .brand-tag{display:none}
     .nav-link{display:none}
-    .nav-link.always-show{display:inline-flex}
+    .nav-link.always-show{display:inline-flex;padding:9px 14px;font-size:13px;border-radius:10px}
+    .lang-switcher{margin-right:4px}
+    .lang-btn{padding:4px 8px;font-size:10px}
+
+    .hero{padding:36px 0 40px}
+    .hero-inner{grid-template-columns:1fr;gap:24px}
+    .hero h1{font-size:38px;line-height:1.08}
+    .hero-sub{font-size:16px;margin-bottom:24px}
+    .hero-cta .btn-lg{padding:13px 22px;font-size:15px}
+    .hero-art{min-height:240px;order:-1;max-height:240px}
+    .mascot{width:160px}
+    .blob{width:220px;height:220px}
+    .float-card{display:none}
+    .hero-privacy{padding:10px 14px}
+    .hero-privacy-text strong{font-size:12.5px}
+    .hero-privacy-text span{font-size:11px}
+    .hero-trust{font-size:12px;gap:10px}
+
+    .sec{padding:48px 0}
+    .sec-head{margin-bottom:36px}
+    .sec h2{font-size:26px}
+    .sec-sub{font-size:15px}
+
+    .feat-grid{grid-template-columns:1fr;gap:14px}
+    .feat{padding:22px}
+
+    .step-grid{grid-template-columns:1fr;gap:32px}
+    .step-num{width:54px;height:54px;font-size:20px;border-radius:16px}
+
+    .security-sec{padding:60px 0}
+    .security-stage{grid-template-columns:1fr;gap:14px;margin-bottom:32px}
+    .security-arrow{transform:rotate(90deg);margin:4px auto}
+    .security-cards{grid-template-columns:1fr;gap:12px}
+    .sc{padding:20px}
+    .trust-strip{padding:22px 18px;margin-bottom:20px}
+    .ts-row{grid-template-columns:1fr 1fr;gap:8px}
+    .ts-divider{display:none}
+    .ts-card{padding:14px 10px}
+    .ts-card-us{grid-column:span 2;margin-top:4px}
+    .ts-brand{font-size:14px}
+    .ts-protect{font-size:11.5px}
+    .ts-line{font-size:13px;margin-top:18px;padding-top:18px}
+    .security-tech{padding:14px 16px;font-size:11.5px;line-height:1.6}
+
+    .sync-sec{padding:56px 0}
+    .sync-stage{grid-template-columns:1fr;gap:8px;padding:16px 8px;margin-bottom:36px}
+    .sync-flow{transform:none;min-height:90px;margin:8px 0}
+    .sync-flow svg.flow-anim{display:none}
+    .qr-mini{position:static;transform:none;animation:pulse-lock-static 3s ease-in-out infinite;margin:0 auto}
+    @keyframes pulse-lock-static{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+    .scan-chip.top, .scan-chip.bot{display:none}
+    .device.phone svg{width:96px}
+    .device.laptop svg{width:160px}
+    .sync-steps-row{grid-template-columns:1fr;gap:10px}
+    .ss-step{padding:14px}
+
+    .faq-grid{grid-template-columns:1fr;gap:28px}
+    .faq-aside{position:static;padding:22px}
+    .faq-item summary{padding:16px 18px;font-size:14.5px}
+    .faq-body{padding:0 18px 18px;font-size:14px}
+
+    .cta-wrap{padding:32px 0 60px}
+    .cta-card{padding:40px 24px;border-radius:22px}
+    .cta-card h2{font-size:24px}
+    .cta-card p{font-size:15px}
+  }
+
+  @media (max-width: 480px){
+    .wrap{padding:0 16px}
+    .hero{padding:24px 0 32px}
+    .hero h1{font-size:32px}
+    .hero-sub{font-size:15px}
+    .hero-cta{flex-direction:column;align-items:stretch}
+    .hero-cta .btn{width:100%}
+    .hero-privacy{flex-direction:row}
+    .nav-link.always-show{padding:8px 12px;font-size:12px}
+    .sec h2{font-size:22px;line-height:1.2}
+    .sec-eyebrow{font-size:11px}
+    .feat{padding:18px}
+    .feat h3{font-size:16px}
+    .ts-row{grid-template-columns:1fr;gap:8px}
+    .ts-card-us{grid-column:auto;margin-top:0}
+    .cta-card h2{font-size:22px}
+    .ftr{font-size:12px;padding:24px 0}
   }
 </style>
 </head>

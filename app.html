@@ -200,6 +200,65 @@
     .code-side{width:100%}
   }
 
+  /* Mobile menu */
+  .menu-toggle{display:none}
+  .sidebar-backdrop{display:none}
+  .mob-bar{display:none}
+
+  @media (max-width:720px){
+    .app{display:block;height:auto;overflow:visible}
+    .sidebar{position:fixed;top:0;left:0;height:100vh;width:270px;transform:translateX(-100%);transition:transform .25s ease;z-index:100}
+    .sidebar.open{transform:translateX(0);box-shadow:0 0 60px rgba(15,23,42,.3)}
+    .sidebar-backdrop{display:block;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:99;opacity:0;pointer-events:none;transition:opacity .25s ease}
+    .sidebar-backdrop.open{opacity:1;pointer-events:auto}
+    .main{padding:0;overflow-y:visible}
+    .mob-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#fff;border-bottom:1px solid #e2e8f0;position:sticky;top:0;z-index:50}
+    .mob-bar .brand-mini{display:flex;align-items:center;gap:8px}
+    .mob-bar .brand-mini .bm-logo{width:28px;height:28px;border-radius:7px;background:#2563eb;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+    .mob-bar .brand-mini .bm-name{font-weight:800;font-size:15px}
+    .menu-toggle{display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:10px;background:#f1f5f9;color:#0f172a;font-size:18px}
+    .menu-toggle:hover{background:#e2e8f0}
+    .view{padding:20px 16px}
+    .page-head{flex-wrap:wrap;gap:12px;margin-bottom:20px}
+    .page-head > div:first-child{flex:1}
+    .page-title{font-size:22px}
+    .page-sub{font-size:12.5px}
+    .stat-grid{grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+    .stat{padding:14px}
+    .stat-value{font-size:20px}
+    .card-head{padding:14px 16px}
+    .tbl{font-size:13px}
+    .tbl th{padding:8px 10px;font-size:10.5px}
+    .tbl td{padding:10px}
+    .tbl .actions button{margin-left:4px;font-size:11px}
+    .tbl thead th:nth-child(3),
+    .tbl thead th:nth-child(4),
+    .tbl tbody td:nth-child(3),
+    .tbl tbody td:nth-child(4){display:none}
+    .modal{border-radius:14px 14px 0 0;max-height:96vh;align-self:flex-end}
+    .modal-bg{padding:0;align-items:flex-end}
+    .modal-body{padding:18px}
+    .modal-head{padding:14px 18px}
+    .grid-2,.grid-3{grid-template-columns:1fr}
+    .totals{grid-template-columns:1fr;gap:14px}
+    .editor-foot{flex-direction:column;align-items:stretch;gap:10px}
+    .editor-foot .right{flex-wrap:wrap}
+    .editor-foot .btn{flex:1;min-width:120px}
+    .sync-paths{grid-template-columns:1fr}
+    .sync-paired-body{grid-template-columns:1fr;justify-items:center;gap:18px}
+    .code-side{width:100%}
+    .stat-grid + .card .tbl thead{display:none}
+    .onboard-bar{flex-direction:column;align-items:flex-start;padding:14px 16px}
+    .onboard-bar-actions{width:100%}
+    .onboard-bar-actions button{flex:1}
+    .welcome-head{padding:28px 22px 6px}
+    .welcome-steps{padding:18px 22px}
+    .welcome-tip{margin:14px 22px}
+    .welcome-foot{padding:12px 22px 22px}
+    .welcome-card h2{font-size:22px}
+    .sidebar-foot{padding:14px}
+  }
+
   /* Sidebar sync indicator */
   .sync-indicator{display:flex;align-items:center;gap:6px;padding:4px 8px;margin:6px 12px 0;border-radius:6px;font-size:11px;color:#64748b}
   .sync-indicator.on{color:#047857;background:#d1fae5}
@@ -270,7 +329,16 @@
     </div>
   </aside>
 
+  <div class="sidebar-backdrop" onclick="closeMobileMenu()"></div>
+
   <main class="main">
+    <div class="mob-bar">
+      <div class="brand-mini">
+        <div class="bm-logo">€</div>
+        <div class="bm-name">Arvik</div>
+      </div>
+      <button class="menu-toggle" onclick="openMobileMenu()" aria-label="Menu">☰</button>
+    </div>
     <div id="view-dashboard" class="view"></div>
     <div id="view-invoices" class="view hidden"></div>
     <div id="view-clients" class="view hidden"></div>
@@ -574,13 +642,22 @@ function totals(inv){
   return {subtotal:sub,discountAmt:dAmt,taxAmt:tAmt,total:taxable+tAmt};
 }
 
-document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.view)));
+document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>{switchView(b.dataset.view);closeMobileMenu()}));
 function switchView(v){
   currentView=v;
   document.querySelectorAll('.view').forEach(e=>e.classList.add('hidden'));
   document.getElementById('view-'+v).classList.remove('hidden');
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===v));
   ({dashboard:renderDashboard,invoices:renderInvoices,clients:renderClients,settings:renderSettings})[v]();
+  window.scrollTo({top:0,behavior:'instant'});
+}
+function openMobileMenu(){
+  document.querySelector('.sidebar').classList.add('open');
+  document.querySelector('.sidebar-backdrop').classList.add('open');
+}
+function closeMobileMenu(){
+  document.querySelector('.sidebar').classList.remove('open');
+  document.querySelector('.sidebar-backdrop').classList.remove('open');
 }
 
 function renderDashboard(){
