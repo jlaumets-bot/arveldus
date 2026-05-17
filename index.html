@@ -414,7 +414,7 @@
     <div>
       <div class="hero-eyebrow"><span class="lock">🔒</span> <span class="first-pill" data-i18n="hero_first">Max Privacy</span> <span data-i18n="hero_eyebrow">zero-knowledge invoicing · no account exists</span></div>
       <h1 data-i18n="hero_h1">The <span class="accent">most private</span> invoicing on the web.</h1>
-      <p class="hero-sub" data-i18n="hero_sub">No signup. No email. No account. <strong>Because the most private system is the one that doesn't know you exist.</strong> Encrypted invoicing in 30 seconds — your data never leaves your device readable.</p>
+      <p class="hero-sub" data-i18n="hero_sub"><strong>AES-256 encrypted</strong>, your invoices live on your device — like a notes app, not a SaaS. Bookmark the page and they're always there. No signup, no email, no account. <strong>Because the most private system is the one that doesn't know you exist.</strong></p>
       <div class="hero-cta">
         <a href="/app.html" class="btn btn-primary btn-lg" data-i18n="hero_cta1">Open Arvik free →</a>
         <a href="#how" class="btn btn-ghost btn-lg" data-i18n="hero_cta2">See how →</a>
@@ -766,6 +766,10 @@
           <div class="faq-body" data-i18n="faq_2_a">By default, in your browser's local storage — it never leaves your device. If you turn on sync, data is encrypted in your browser <strong>before</strong> being sent to the cloud — the server only sees ciphertext that can't be opened without your code. Encryption uses AES-256-GCM and the key is derived from your code via PBKDF2 (120,000 iterations).</div>
         </details>
         <details class="faq-item">
+          <summary data-i18n="faq_access_q">If there's no login, how do I get back to my invoices later?</summary>
+          <div class="faq-body" data-i18n="faq_access_a">Just like reopening a notes app — the data is already there. Your invoices live in your browser's local storage, so opening arvik.ee again on the same device shows everything where you left it. <strong>Browser restart, computer reboot — data persists.</strong> Think of it less like "logging into a website" and more like "opening a file." The browser is your account. No password to forget, no email to verify. If you switch devices or want a backup, activate sync — you get a QR code / share link that brings the same data to another device. That's the only "account-like" step, and it's optional.</div>
+        </details>
+        <details class="faq-item">
           <summary data-i18n="faq_3_q">Can I use it on multiple devices?</summary>
           <div class="faq-body" data-i18n="faq_3_a">Yes. Activate sync on one device — you get a QR code and a share link. Scan the QR with your phone camera and tap the link, or paste the share link into another browser. <strong>Nothing to type.</strong> Data is encrypted on your device before being sent — we never see it. Keep the link safe — losing it means losing access to the synced data.</div>
         </details>
@@ -822,7 +826,7 @@ const i18n = {
     hero_first: 'Max privaatsus',
     hero_eyebrow: 'null-teadmusega arveldus · kontot ei eksisteeri',
     hero_h1: 'Veebis <span class="accent">kõige privaatsem</span> arveldus.',
-    hero_sub: 'Pole registreerumist. Pole e-posti. Pole kontot. <strong>Sest kõige privaatsem süsteem on see, mis sind üldse ei tunne.</strong> Krüpteeritud arveldamine 30 sekundiga — sinu andmed ei lahku kunagi seadmest loetaval kujul.',
+    hero_sub: '<strong>AES-256 krüpteeritud</strong>, sinu arved elavad sinu seadmes — nagu märkmete rakendus, mitte pilveteenus. Lisa lehe järjehoidja ja need on alati seal. Pole registreerumist, pole e-posti, pole kontot. <strong>Sest kõige privaatsem süsteem on see, mis sind üldse ei tunne.</strong>',
     hero_cta1: 'Ava Arvik tasuta →',
     hero_cta2: 'Vaata kuidas →',
     hero_privacy_t: 'Sinu andmed jäävad sinu seadmesse · krüpteeritud',
@@ -915,6 +919,8 @@ const i18n = {
     faq_trust_a: 'Õiglane küsimus — ärge meid usaldage, vaid <strong>kontrollige meid</strong>. (1) Krüpteerimine toimub sinu brauseris. Ava arendaja tööriistad → võrgu vaheleht → näed, et serverisse läheb ainult krüptogramm, mitte kunagi avatekst. (2) Kontot pole, e-posti pole, makset pole. Me ei tea, kes sa oled. Andmeid pole müüa, sest me neid ei kogu. (3) Vaikimisi töötab Arvik <strong>täielikult sinu seadmes</strong> — pilv on valikuline. (4) EU-põhine, GDPR-i alluvuses. Privaatsus on sisse ehitatud, mitte lubatud.',
     faq_2_q: 'Kuhu mu andmed salvestuvad?',
     faq_2_a: 'Vaikimisi sinu brauseri kohalikku salvestusse (localStorage) — need ei lahku sinu seadmest. Kui aktiveerid sünkroniseerimise, krüpteeritakse andmed enne pilve saatmist sinu seadmes — server näeb ainult krüpteeritud andmeid, mida ei saa ilma sinu koodita lahti võtta. Krüpteerimine kasutab AES-256-GCM ja võti tuletatakse sinu koodist PBKDF2-ga (120 000 iteratsiooni).',
+    faq_access_q: 'Kui pole sisselogimist, kuidas ma oma arvete juurde tagasi pääsen?',
+    faq_access_a: 'Täpselt nagu märkmete rakenduse uuesti avamine — andmed on juba seal. Sinu arved elavad brauseri kohalikus salvestuses, nii et arvik.ee uuesti avamine samas seadmes näitab kõike sealt, kus pooleli jätsid. <strong>Brauseri taaskäivitus, arvuti restart — andmed püsivad.</strong> Mõtle sellele vähem kui "veebilehele sisselogimisele" ja rohkem kui "faili avamisele". Brauser ongi sinu konto. Pole parooli, mida unustada, pole e-posti, mida kinnitada. Kui vahetad seadet või soovid varundust, aktiveeri sünkroniseerimine — saad QR-koodi / jagamislingi, mis toob samad andmed teise seadmesse. See on ainus "konto-laadne" samm ja see on valikuline.',
     faq_3_q: 'Kas saan kasutada mitmes seadmes?',
     faq_3_a: 'Jah. Aktiveeri ühel seadmel sünkroniseerimine — saad QR-koodi ja jagamislingi. Telefoniga skanneerid QR-koodi kaameraga ja vajutad avanevat linki. Teises arvutis avad jagamislingi brauseris. <strong>Mitte midagi tippida pole vaja.</strong> Andmed krüpteeritakse sinu seadmes enne saatmist — meie ei näe neid kunagi. Hoia link kindlas kohas — kui kaotad selle, kaotad pilves olnud andmetele ligipääsu.',
     faq_4_q: 'Kas on käibemaksu tugi?',
