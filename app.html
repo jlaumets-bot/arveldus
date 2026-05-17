@@ -7,6 +7,7 @@
 <meta name="description" content="Arvik on lihtsaim viis arveid koostada ja saata. Eesti ettevõtjale tehtud." />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js'"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js'"></script>
 <style>
   *,*::before,*::after{box-sizing:border-box}
   html,body{margin:0;padding:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,sans-serif;color:#1e293b;background:#f8fafc;font-size:14px;line-height:1.4}
@@ -1173,6 +1174,126 @@ function importBackup(file){
 function dismissSyncNudge(){localStorage.setItem('arvik_sync_nudge_dismissed','1');renderDashboard()}
 
 function printInvoice(id){
+  // Try jsPDF first (works on all platforms incl. in-app browsers). Fallback to window.print().
+  if(window.jspdf && window.jspdf.jsPDF){
+    return generatePDF(id);
+  }
+  return legacyPrintInvoice(id);
+}
+
+function generatePDF(id){
+  const inv=state.invoices.find(i=>i.id===id);if(!inv)return;
+  const c=state.clients.find(x=>x.id===inv.clientId);
+  const b=state.business,t=totals(inv);
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({unit:'pt',format:'a4'});
+  const W = doc.internal.pageSize.getWidth();
+  const H = doc.internal.pageSize.getHeight();
+  let y = 50;
+  const eur = (n) => (Number(n)||0).toFixed(2).replace('.',',') + ' ' + (b.currencySymbol||'€');
+
+  // Logo
+  if(b.logo){try{doc.addImage(b.logo,'PNG',50,y,60,60)}catch(e){}}
+  // Business info
+  doc.setFont('helvetica','bold').setFontSize(14).text(b.name||'Arvik', b.logo?125:50, y+18);
+  doc.setFont('helvetica','normal').setFontSize(9).setTextColor(90);
+  const bizLines=[b.address,b.email,b.phone].filter(Boolean);
+  if(b.regNumber)bizLines.push('Registrikood: '+b.regNumber);
+  if(b.vatNumber)bizLines.push('KMKR nr: '+b.vatNumber);
+  bizLines.forEach((ln,i)=>doc.text(String(ln), b.logo?125:50, y+34+i*12));
+  doc.setTextColor(0);
+  // INVOICE title
+  doc.setFont('helvetica','bold').setFontSize(28).setTextColor(40,40,40).text('ARVE', W-50, y+24, {align:'right'});
+  doc.setFont('helvetica','normal').setFontSize(10).setTextColor(80).text(String(inv.number||''), W-50, y+42, {align:'right'});
+  doc.setTextColor(0);
+
+  y += 110;
+  // Bill to
+  doc.setFont('helvetica','bold').setFontSize(10).text('Maksja', 50, y);
+  doc.setFont('helvetica','normal').setFontSize(10);
+  if(c){
+    let yy = y+15;
+    doc.text(String(c.name||''), 50, yy); yy+=13;
+    if(c.regNumber){doc.text('Registrikood: '+c.regNumber, 50, yy);yy+=13}
+    if(c.vatNumber){doc.text('KMKR nr: '+c.vatNumber, 50, yy);yy+=13}
+    (c.address||'').split('\n').forEach(ln=>{if(ln){doc.text(String(ln), 50, yy);yy+=13}});
+    if(c.email)doc.text(String(c.email), 50, yy);
+  }
+  // Dates (right)
+  doc.setFont('helvetica','bold').setFontSize(10);
+  doc.text('Kuupäev', W-180, y);
+  doc.text('Maksetähtaeg', W-180, y+18);
+  doc.setFont('helvetica','normal');
+  doc.text(String(inv.date||''), W-50, y, {align:'right'});
+  doc.text(String(inv.dueDate||''), W-50, y+18, {align:'right'});
+
+  y += 110;
+  // Items header
+  doc.setFillColor(245,247,250).rect(50, y, W-100, 22, 'F');
+  doc.setFont('helvetica','bold').setFontSize(10).setTextColor(80);
+  doc.text('Kirjeldus', 60, y+15);
+  doc.text('Kogus', W-260, y+15, {align:'right'});
+  doc.text('Hind', W-170, y+15, {align:'right'});
+  doc.text('Kokku', W-60, y+15, {align:'right'});
+  doc.setTextColor(0);
+  y += 30;
+  doc.setFont('helvetica','normal').setFontSize(10);
+  (inv.items||[]).forEach(it=>{
+    if(y>720){doc.addPage();y=50}
+    const descLines = doc.splitTextToSize(String(it.desc||''), W-340);
+    doc.text(descLines, 60, y);
+    doc.text(String(parseNum(it.qty)), W-260, y, {align:'right'});
+    doc.text(eur(parseNum(it.price)), W-170, y, {align:'right'});
+    doc.text(eur(parseNum(it.qty)*parseNum(it.price)), W-60, y, {align:'right'});
+    y += Math.max(descLines.length*14, 18);
+  });
+
+  // Totals box
+  y += 10;
+  doc.setDrawColor(220).line(W-260, y, W-50, y); y += 14;
+  const row = (label, val, bold) => {
+    doc.setFont('helvetica', bold?'bold':'normal').setFontSize(bold?12:10);
+    doc.text(label, W-260, y);
+    doc.text(val, W-50, y, {align:'right'});
+    y += bold ? 20 : 16;
+  };
+  row('Vahesumma', eur(t.subtotal));
+  if(t.discountAmt)row('Allahindlus', '-'+eur(t.discountAmt));
+  if(t.taxAmt)row(`Käibemaks (${inv.taxRate}%)`, eur(t.taxAmt));
+  doc.setDrawColor(220).line(W-260, y-6, W-50, y-6);
+  row('TASUDA KOKKU', eur(t.total), true);
+
+  // Bank / IBAN
+  if(b.bank||b.iban){
+    y += 14;
+    doc.setFont('helvetica','bold').setFontSize(10).text('Maksja info', 50, y);
+    y += 14;
+    doc.setFont('helvetica','normal').setFontSize(9).setTextColor(80);
+    if(b.bank){doc.text('Pank: '+b.bank, 50, y);y+=12}
+    if(b.iban){doc.text('IBAN: '+b.iban, 50, y);y+=12}
+    doc.text('Viitenumber / Selgitus: '+inv.number, 50, y);y+=12;
+    doc.setTextColor(0);
+  }
+
+  // Notes
+  if(inv.notes){
+    y += 14;
+    doc.setFont('helvetica','bold').setFontSize(10).text('Märkused', 50, y);
+    doc.setFont('helvetica','normal').setFontSize(9).setTextColor(80);
+    const nLines = doc.splitTextToSize(String(inv.notes), W-100);
+    doc.text(nLines, 50, y+14);
+    doc.setTextColor(0);
+  }
+
+  // Arvik footer (free advertising / removable later)
+  doc.setFont('helvetica','normal').setFontSize(8).setTextColor(160);
+  doc.text('Loodud Arvikuga · arvik.ee', W/2, H-30, {align:'center'});
+
+  doc.save(`${inv.number||'arve'}.pdf`);
+  toast('PDF alla laaditud');
+}
+
+function legacyPrintInvoice(id){
   const inv=state.invoices.find(i=>i.id===id);if(!inv)return;
   const c=state.clients.find(x=>x.id===inv.clientId);
   const b=state.business,t=totals(inv);
