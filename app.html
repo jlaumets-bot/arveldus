@@ -461,11 +461,23 @@ function renderSidebarSyncIndicator(){
   el.className=code?'sync-indicator on':'sync-indicator';
   el.innerHTML='<span class="dot"></span>'+(code?'Paaritud':'Ainult selles seadmes');
 }
+function buildPairURL(code){return `${location.origin}${location.pathname}#pair=${code}`}
 function renderSyncQR(){
   const canvas=document.getElementById('sync-qr');
   if(!canvas||!window.QRCode)return;
   const code=getSyncCode();if(!code)return;
-  QRCode.toCanvas(canvas,code,{width:180,margin:0,color:{dark:'#0f172a',light:'#ffffff'}}).catch(()=>{});
+  QRCode.toCanvas(canvas,buildPairURL(code),{width:180,margin:0,color:{dark:'#0f172a',light:'#ffffff'}}).catch(()=>{});
+}
+function checkPairURL(){
+  const m=(location.hash||'').match(/^#pair=(arvik-[a-z0-9-]{16,30})$/);
+  if(!m)return false;
+  const code=m[1];
+  history.replaceState(null,'',location.pathname);
+  const current=getSyncCode();
+  if(current===code){toast('See seade on juba selle koodiga paaritud');return true}
+  // Open settings & pre-fill, then prompt join
+  setTimeout(()=>{switchView('settings');setTimeout(()=>joinSync(code),200)},100);
+  return true;
 }
 async function activateSync(){
   const code=generateSyncCode();
@@ -480,14 +492,15 @@ async function joinSync(code){
   try{
     const remote=await syncPull(code);
     if(!remote){toast('Sellise koodiga andmeid pole');return}
-    if(!confirm('Asendada käesoleva seadme andmed pilves olevatega? See ei ole tagasipööratav.'))return;
+    const hasLocal=(state.invoices||[]).length>0||(state.clients||[]).length>0||(state.business.name&&state.business.name!=='Sinu ettevõte');
+    if(hasLocal&&!confirm('Selles seadmes on juba andmeid. Asendada need pilves olevatega? Senised andmed lähevad kaotsi.'))return;
     state=remote.state;
     setSyncCode(code);
     setSyncLast(remote.updatedAt);
     localStorage.setItem(DB_KEY,JSON.stringify(state));
     renderSettings();switchView('dashboard');
-    toast('Andmed sünkroniseeritud');
-  }catch(e){console.error(e);toast('Sünkroniseerimine ebaõnnestus')}
+    toast('Seadmed paaritud!');
+  }catch(e){console.error(e);toast('Paaristamine ebaõnnestus')}
 }
 function disableSync(){
   if(!confirm('Eemaldada see seade sünkroniseerimisest? Andmed jäävad seadmesse alles.'))return;
@@ -891,23 +904,24 @@ function renderSettings(){
           <div class="sync-paired-body">
             <div class="qr-side">
               <canvas id="sync-qr"></canvas>
-              <p class="qr-hint">Skanneeri telefoni kaameraga<br>või ava arvik.ee ja sisesta kood</p>
+              <p class="qr-hint">Skanneeri telefoni kaameraga<br>— avaneb otse paaristamise aken</p>
             </div>
             <div class="code-side">
-              <label class="field-label" style="margin-bottom:6px">Paaristuskood</label>
+              <div class="paired-steps">
+                <strong>Kõige lihtsam — telefoniga:</strong>
+                <ol>
+                  <li>Ava telefoni <strong>kaamera</strong></li>
+                  <li>Suuna see vasakul oleva QR koodi peale</li>
+                  <li>Vajuta avanevat linki — kohe küsitakse paaristamise kinnitust</li>
+                </ol>
+              </div>
+              <label class="field-label" style="margin:14px 0 6px">Käsitsi sisestamiseks:</label>
               <div class="code-row">
                 <input id="sync-code-display" type="password" readonly value="${esc(getSyncCode())}" class="input mono">
                 <button onclick="document.getElementById('sync-code-display').type=document.getElementById('sync-code-display').type==='password'?'text':'password'" class="btn btn-secondary" style="padding:8px 12px" title="Näita/peida">👁</button>
                 <button onclick="navigator.clipboard.writeText(getSyncCode()).then(()=>toast('Kood kopeeritud'))" class="btn btn-secondary" style="padding:8px 12px">Kopeeri</button>
               </div>
-              <div class="paired-steps">
-                <strong>Kuidas teises seadmes:</strong>
-                <ol>
-                  <li>Ava <strong>arvik.ee</strong> brauseris</li>
-                  <li>Seaded → otsi "Seadmete paaristamine"</li>
-                  <li>Sisesta ülemine kood lahtrisse "Liitu"</li>
-                </ol>
-              </div>
+              <p style="font-size:11.5px;color:#94a3b8;margin:6px 0 0;line-height:1.5">Teises seadmes ava sama leht → Seaded → kleebi kood lahtrisse "Liitu".</p>
               <div id="sync-status-line" class="sync-status-line"></div>
             </div>
           </div>
@@ -1059,7 +1073,11 @@ function processRecurring(){
 processRecurring();
 renderSidebarSyncIndicator();
 switchView('dashboard');
-if(!localStorage.getItem(TUTORIAL_KEY))showWelcome();
+if(checkPairURL()){
+  // auto-pair handles its own UI
+}else if(!localStorage.getItem(TUTORIAL_KEY)){
+  showWelcome();
+}
 initSync().then(()=>{switchView(currentView)});
 </script>
 </body>
