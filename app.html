@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Arvik — Lihtsaim viis arveid saata</title>
 <meta name="description" content="Arvik on lihtsaim viis arveid koostada ja saata. Eesti ettevõtjale tehtud." />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js'"></script>
 <style>
   *,*::before,*::after{box-sizing:border-box}
@@ -19,7 +20,16 @@
   .app{display:flex;height:100vh;overflow:hidden}
   .sidebar{width:230px;background:#fff;border-right:1px solid #e2e8f0;display:flex;flex-direction:column;flex-shrink:0}
   .brand{padding:18px 20px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;gap:10px}
-  .brand-logo{width:32px;height:32px;border-radius:8px;background:#2563eb;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+  .brand-logo{width:34px;height:34px;background:transparent;display:flex;align-items:center;justify-content:center;overflow:visible;flex-shrink:0}
+  .brand-logo svg{width:100%;height:100%;overflow:visible;display:block}
+  .bl-body{transform-origin:20px 26px;animation:bl-body-in .5s cubic-bezier(.4,0,.2,1) both}
+  @keyframes bl-body-in{0%{transform:scale(.7);opacity:0}100%{transform:scale(1);opacity:1}}
+  .bl-shackle{transform-origin:20px 17px;animation:bl-drop 1s cubic-bezier(.34,1.56,.64,1) .25s both;transition:transform .25s ease}
+  @keyframes bl-drop{0%{transform:translateY(-14px);opacity:0}55%{transform:translateY(3px);opacity:1}80%{transform:translateY(-1px)}100%{transform:translateY(0)}}
+  .bl-euro{animation:bl-fade .4s ease .85s both}
+  @keyframes bl-fade{from{opacity:0}to{opacity:1}}
+  .brand:hover .bl-shackle,.brand-mini:hover .bl-shackle{animation:bl-rattle .4s ease}
+  @keyframes bl-rattle{0%,100%{transform:translateY(0) rotate(0)}30%{transform:translateY(-2px) rotate(-8deg)}70%{transform:translateY(-2px) rotate(8deg)}}
   .brand-text{display:flex;flex-direction:column;line-height:1.1}
   .brand-name{font-weight:700;color:#0f172a;font-size:16px;letter-spacing:-0.01em}
   .brand-tag{font-size:10px;color:#94a3b8;font-weight:500;margin-top:2px}
@@ -214,7 +224,8 @@
     .main{padding:0;overflow-y:visible}
     .mob-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#fff;border-bottom:1px solid #e2e8f0;position:sticky;top:0;z-index:50}
     .mob-bar .brand-mini{display:flex;align-items:center;gap:8px}
-    .mob-bar .brand-mini .bm-logo{width:28px;height:28px;border-radius:7px;background:#2563eb;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+    .mob-bar .brand-mini .bm-logo{width:30px;height:30px;background:transparent;display:flex;align-items:center;justify-content:center;overflow:visible;flex-shrink:0}
+    .mob-bar .brand-mini .bm-logo svg{width:100%;height:100%;overflow:visible;display:block}
     .mob-bar .brand-mini .bm-name{font-weight:800;font-size:15px}
     .menu-toggle{display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:10px;background:#f1f5f9;color:#0f172a;font-size:18px}
     .menu-toggle:hover{background:#e2e8f0}
@@ -311,7 +322,19 @@
 <div class="app">
   <aside class="sidebar">
     <a href="/" class="brand" style="text-decoration:none;color:inherit">
-      <div class="brand-logo">€</div>
+      <div class="brand-logo">
+        <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="bl-grad-s" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#3b82f6"/>
+              <stop offset="100%" stop-color="#1d4ed8"/>
+            </linearGradient>
+          </defs>
+          <rect class="bl-body" x="3" y="13" width="34" height="25" rx="7" fill="url(#bl-grad-s)"/>
+          <path class="bl-shackle" d="M 12 17 L 12 11 Q 12 4 20 4 Q 28 4 28 11 L 28 17" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <text class="bl-euro" x="20" y="32" text-anchor="middle" font-size="14" font-weight="900" fill="#fff" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif">€</text>
+        </svg>
+      </div>
       <div class="brand-text">
         <div class="brand-name">Arvik</div>
         <div class="brand-tag">Lihtne arveldus</div>
@@ -334,7 +357,19 @@
   <main class="main">
     <div class="mob-bar">
       <div class="brand-mini">
-        <div class="bm-logo">€</div>
+        <div class="bm-logo">
+          <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="bl-grad-m" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#3b82f6"/>
+                <stop offset="100%" stop-color="#1d4ed8"/>
+              </linearGradient>
+            </defs>
+            <rect class="bl-body" x="3" y="13" width="34" height="25" rx="7" fill="url(#bl-grad-m)"/>
+            <path class="bl-shackle" d="M 12 17 L 12 11 Q 12 4 20 4 Q 28 4 28 11 L 28 17" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <text class="bl-euro" x="20" y="32" text-anchor="middle" font-size="14" font-weight="900" fill="#fff" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif">€</text>
+          </svg>
+        </div>
         <div class="bm-name">Arvik</div>
       </div>
       <button class="menu-toggle" onclick="openMobileMenu()" aria-label="Menu">☰</button>

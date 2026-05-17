@@ -7,6 +7,7 @@
 <meta name="description" content="Arvik is the world's first zero-knowledge invoicing tool. Create an invoice in 30 seconds — your data stays only with you. Free, no account." />
 <meta property="og:title" content="Arvik — The world's most secure and easiest invoicing" />
 <meta property="og:description" content="The first zero-knowledge invoicing tool. 30 seconds to your first invoice. Free." />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <style>
   :root{
     --blue:#2563eb; --blue-dark:#1d4ed8; --blue-soft:#eff6ff; --blue-100:#dbeafe;
@@ -28,7 +29,16 @@
   .hdr{position:sticky;top:0;background:rgba(255,255,255,.85);backdrop-filter:saturate(180%) blur(10px);-webkit-backdrop-filter:saturate(180%) blur(10px);border-bottom:1px solid var(--line);z-index:50}
   .hdr-inner{display:flex;align-items:center;justify-content:space-between;height:64px}
   .brand{display:flex;align-items:center;gap:10px}
-  .brand-logo{width:36px;height:36px;border-radius:10px;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px}
+  .brand-logo{width:36px;height:36px;background:transparent;display:flex;align-items:center;justify-content:center;overflow:visible}
+  .brand-logo svg{width:100%;height:100%;overflow:visible;display:block}
+  .bl-body{transform-origin:20px 26px;animation:bl-body-in .5s cubic-bezier(.4,0,.2,1) both}
+  @keyframes bl-body-in{0%{transform:scale(.7);opacity:0}100%{transform:scale(1);opacity:1}}
+  .bl-shackle{transform-origin:20px 17px;animation:bl-drop 1s cubic-bezier(.34,1.56,.64,1) .25s both;transition:transform .25s ease}
+  @keyframes bl-drop{0%{transform:translateY(-14px);opacity:0}55%{transform:translateY(3px);opacity:1}80%{transform:translateY(-1px)}100%{transform:translateY(0)}}
+  .bl-euro{animation:bl-fade .4s ease .85s both}
+  @keyframes bl-fade{from{opacity:0}to{opacity:1}}
+  .brand:hover .bl-shackle{animation:bl-rattle .4s ease}
+  @keyframes bl-rattle{0%,100%{transform:translateY(0) rotate(0)}30%{transform:translateY(-2px) rotate(-8deg)}70%{transform:translateY(-2px) rotate(8deg)}}
   .brand-name{font-weight:800;font-size:18px;letter-spacing:-.02em}
   .brand-tag{font-size:11px;color:var(--mute);font-weight:500;margin-top:-2px}
   .nav-links{display:flex;align-items:center;gap:8px}
@@ -364,7 +374,19 @@
 <header class="hdr">
   <div class="wrap hdr-inner">
     <a href="/" class="brand">
-      <div class="brand-logo">€</div>
+      <div class="brand-logo">
+        <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="bl-grad-1" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#3b82f6"/>
+              <stop offset="100%" stop-color="#1d4ed8"/>
+            </linearGradient>
+          </defs>
+          <rect class="bl-body" x="3" y="13" width="34" height="25" rx="7" fill="url(#bl-grad-1)"/>
+          <path class="bl-shackle" d="M 12 17 L 12 11 Q 12 4 20 4 Q 28 4 28 11 L 28 17" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <text class="bl-euro" x="20" y="32" text-anchor="middle" font-size="14" font-weight="900" fill="#fff" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif">€</text>
+        </svg>
+      </div>
       <div>
         <div class="brand-name">Arvik</div>
         <div class="brand-tag" data-i18n="brand_tag">Simple invoicing</div>
