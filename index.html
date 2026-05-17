@@ -286,8 +286,8 @@
       </div>
       <div class="feat">
         <div class="feat-ico">🔒</div>
-        <h3>Andmed sinu seadmes</h3>
-        <p>Kõik salvestub sinu brauserisse. Mingit kontot, mingit pilve, mingit jälgimist.</p>
+        <h3>Krüpteeritud sünkroniseerimine</h3>
+        <p>Andmed elavad sinu seadmes. Soovi korral sünkroniseeri telefoni ja arvuti vahel — kõik krüpteeritud, kontot pole vaja.</p>
       </div>
     </div>
   </div>
@@ -336,11 +336,11 @@
         </details>
         <details class="faq-item">
           <summary>Kuhu mu andmed salvestuvad?</summary>
-          <div class="faq-body">Kõik andmed — kliendid, arved, sätted, logo — salvestuvad sinu brauseri kohalikku salvestusse (localStorage). Need ei lahku sinu arvutist ja meil pole nendele ligipääsu. See tähendab ka, et brauseri vahetamisel sa neid kohe ei näe.</div>
+          <div class="faq-body">Vaikimisi sinu brauseri kohalikku salvestusse (localStorage) — need ei lahku sinu arvutist. Kui aktiveerid sünkroniseerimise, krüpteeritakse andmed enne pilve saatmist sinu seadmes — server näeb ainult krüpteeritud andmeid, mida ei saa ilma sinu koodita lahti võtta. Krüpteerimine kasutab AES-256-GCM ja võti tuletatakse sinu koodist PBKDF2-ga (120 000 iteratsiooni).</div>
         </details>
         <details class="faq-item">
           <summary>Kas saan kasutada mitmes seadmes?</summary>
-          <div class="faq-body">Praegu mitte automaatselt — andmed on seadmepõhised. Kui tahad sama arveid teises brauseris või arvutis, saab kasutada brauseri eksport/import või lihtsalt PDF-id alla laadida ja jagada. Pilvesüncroniseerimine on tulekul.</div>
+          <div class="faq-body">Jah. Seadetes saad aktiveerida sünkroniseerimise — Arvik annab sulle ühe koodi, mille sisestad ka teises seadmes (telefon, sülearvuti) ning andmed kanduvad üle. Andmed krüpteeritakse sinu seadmes <strong>enne</strong> serverisse saatmist, nii et me ei näe neid kunagi. Kood toimib paroolina, hoia see kindlas kohas — kui kaotad selle, kaotad pilves olnud andmetele ligipääsu.</div>
         </details>
         <details class="faq-item">
           <summary>Kas on Eesti KMKR-i tugi?</summary>

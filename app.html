@@ -216,12 +216,144 @@
 
 <script>
 const DB_KEY='lihtne_arveldus_v1';
+const SYNC_URL='https://swyaqhstdrkqrsekabmc.supabase.co';
+const SYNC_KEY='sb_publishable_ZRMoPGEcUQyvyNeAKc_t0w_o-YY0yay';
+const SYNC_CODE_KEY='arvik_sync_code';
+const SYNC_LAST_KEY='arvik_sync_last';
 const defaultState={
   business:{name:'Sinu ettevõte',email:'',address:'',phone:'',logo:'',currencySymbol:'€',defaultTaxRate:22,invoicePrefix:'ARVE-',nextNumber:1001,notes:'Täname koostöö eest!'},
   clients:[],invoices:[]
 };
 let state=load();
 let editingInvoiceId=null,editingClientId=null;
+let currentView='dashboard';
+let pushTimer=null;
+
+// ---------- SYNC (opt-in, E2E encrypted) ----------
+function getSyncCode(){return localStorage.getItem(SYNC_CODE_KEY)||''}
+function setSyncCode(c){if(c)localStorage.setItem(SYNC_CODE_KEY,c);else localStorage.removeItem(SYNC_CODE_KEY)}
+function getSyncLast(){return localStorage.getItem(SYNC_LAST_KEY)||''}
+function setSyncLast(t){localStorage.setItem(SYNC_LAST_KEY,t)}
+
+function generateSyncCode(){
+  const chars='abcdefghjkmnpqrstuvwxyz23456789';
+  const bytes=crypto.getRandomValues(new Uint8Array(16));
+  let s='';
+  for(let i=0;i<16;i++){s+=chars[bytes[i]%chars.length];if(i===3||i===7||i===11)s+='-';}
+  return 'arvik-'+s;
+}
+
+async function deriveKey(code){
+  const enc=new TextEncoder();
+  const material=await crypto.subtle.importKey('raw',enc.encode(code),'PBKDF2',false,['deriveKey']);
+  return crypto.subtle.deriveKey(
+    {name:'PBKDF2',salt:enc.encode('arvik-v1'),iterations:120000,hash:'SHA-256'},
+    material,{name:'AES-GCM',length:256},false,['encrypt','decrypt']
+  );
+}
+function b64encode(bytes){let s='';for(let i=0;i<bytes.length;i++)s+=String.fromCharCode(bytes[i]);return btoa(s)}
+function b64decode(b64){return Uint8Array.from(atob(b64),c=>c.charCodeAt(0))}
+async function encryptState(obj,code){
+  const key=await deriveKey(code);
+  const iv=crypto.getRandomValues(new Uint8Array(12));
+  const data=new TextEncoder().encode(JSON.stringify(obj));
+  const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,data);
+  const combined=new Uint8Array(iv.length+ct.byteLength);
+  combined.set(iv);combined.set(new Uint8Array(ct),iv.length);
+  return b64encode(combined);
+}
+async function decryptState(blob,code){
+  const key=await deriveKey(code);
+  const combined=b64decode(blob);
+  const iv=combined.slice(0,12),ct=combined.slice(12);
+  const data=await crypto.subtle.decrypt({name:'AES-GCM',iv},key,ct);
+  return JSON.parse(new TextDecoder().decode(data));
+}
+
+async function syncPush(){
+  const code=getSyncCode();if(!code)return;
+  try{
+    const blob=await encryptState(state,code);
+    const r=await fetch(`${SYNC_URL}/rest/v1/sync_blobs`,{
+      method:'POST',
+      headers:{'apikey':SYNC_KEY,'Authorization':`Bearer ${SYNC_KEY}`,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates,return=minimal'},
+      body:JSON.stringify({code,blob,updated_at:new Date().toISOString()})
+    });
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    setSyncLast(new Date().toISOString());
+    updateSyncStatus();
+  }catch(e){console.error('sync push',e);updateSyncStatus('Sünkroniseerimine ebaõnnestus')}
+}
+async function syncPull(codeOverride){
+  const code=codeOverride||getSyncCode();if(!code)return null;
+  const r=await fetch(`${SYNC_URL}/rest/v1/sync_blobs?code=eq.${encodeURIComponent(code)}&select=blob,updated_at`,{
+    headers:{'apikey':SYNC_KEY,'Authorization':`Bearer ${SYNC_KEY}`}
+  });
+  if(!r.ok)throw new Error('HTTP '+r.status);
+  const data=await r.json();
+  if(!data.length)return null;
+  const remoteState=await decryptState(data[0].blob,code);
+  return {state:remoteState,updatedAt:data[0].updated_at};
+}
+function schedulePush(){
+  if(!getSyncCode())return;
+  clearTimeout(pushTimer);
+  pushTimer=setTimeout(syncPush,1500);
+}
+function updateSyncStatus(text){
+  const el=document.getElementById('sync-status-line');if(!el)return;
+  if(text){el.textContent=text;return}
+  const last=getSyncLast();
+  el.textContent=last?'Viimati sünkroniseeritud: '+new Date(last).toLocaleTimeString('et-EE'):'Sünkroniseerimine aktiivne';
+}
+async function activateSync(){
+  const code=generateSyncCode();
+  setSyncCode(code);
+  await syncPush();
+  renderSettings();
+  toast('Sünkroniseerimine aktiveeritud');
+}
+async function joinSync(code){
+  code=(code||'').trim().toLowerCase();
+  if(!/^arvik-[a-z0-9-]{16,30}$/.test(code)){toast('Vigane kood');return}
+  try{
+    const remote=await syncPull(code);
+    if(!remote){toast('Sellise koodiga andmeid pole');return}
+    if(!confirm('Asendada käesoleva seadme andmed pilves olevatega? See ei ole tagasipööratav.'))return;
+    state=remote.state;
+    setSyncCode(code);
+    setSyncLast(remote.updatedAt);
+    localStorage.setItem(DB_KEY,JSON.stringify(state));
+    renderSettings();switchView('dashboard');
+    toast('Andmed sünkroniseeritud');
+  }catch(e){console.error(e);toast('Sünkroniseerimine ebaõnnestus')}
+}
+function disableSync(){
+  if(!confirm('Eemaldada see seade sünkroniseerimisest? Andmed jäävad seadmesse alles.'))return;
+  setSyncCode('');localStorage.removeItem(SYNC_LAST_KEY);
+  renderSettings();toast('Sünkroniseerimine välja lülitatud');
+}
+async function initSync(){
+  if(!getSyncCode())return;
+  try{
+    const remote=await syncPull();
+    if(remote){
+      const localTime=getSyncLast();
+      // Last write wins. Server has updated_at; trust it if newer than local last sync.
+      if(!localTime||remote.updatedAt>localTime){
+        state=remote.state;
+        localStorage.setItem(DB_KEY,JSON.stringify(state));
+        setSyncLast(remote.updatedAt);
+      }else{
+        // Local is newer, push it
+        await syncPush();
+      }
+    }else{
+      // Code exists but no blob on server — push current state
+      await syncPush();
+    }
+  }catch(e){console.error('init sync',e)}
+}
 
 const STATUS_LABEL={paid:'TASUTUD',unpaid:'TASUMATA',overdue:'TÄHTAEG ÜLETATUD',draft:'MUSTAND'};
 const STATUS_OPTIONS=[['draft','Mustand'],['sent','Saadetud'],['paid','Tasutud']];
@@ -232,7 +364,7 @@ function load(){
     const s=JSON.parse(r);return {...defaultState,...s,business:{...defaultState.business,...s.business}};
   }catch{return JSON.parse(JSON.stringify(defaultState));}
 }
-function save(){localStorage.setItem(DB_KEY,JSON.stringify(state))}
+function save(){localStorage.setItem(DB_KEY,JSON.stringify(state));schedulePush()}
 function uid(){return Math.random().toString(36).slice(2,10)}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function fmt(n){return (Number(n)||0).toFixed(2).replace('.',',')+' '+state.business.currencySymbol}
@@ -257,6 +389,7 @@ function totals(inv){
 
 document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.view)));
 function switchView(v){
+  currentView=v;
   document.querySelectorAll('.view').forEach(e=>e.classList.add('hidden'));
   document.getElementById('view-'+v).classList.remove('hidden');
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===v));
@@ -574,6 +707,34 @@ function renderSettings(){
         <div class="field"><label class="field-label">Vaike käibemaks %</label><input id="s-tax" type="number" step="0.01" class="input" value="${b.defaultTaxRate||0}"></div>
       </div>
       <div class="field"><label class="field-label">Vaikemärkused arvel</label><textarea id="s-notes" class="input" rows="2">${esc(b.notes)}</textarea></div>
+
+      <div style="padding:18px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;margin-top:8px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <strong style="font-size:14px">Sünkroniseerimine seadmete vahel</strong>
+          ${getSyncCode()?'<span style="background:#d1fae5;color:#047857;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;letter-spacing:.04em">AKTIIVNE</span>':''}
+        </div>
+        <p style="font-size:12.5px;color:#64748b;margin:0 0 14px;line-height:1.55">Sünkroniseeri arved telefoni ja arvuti vahel. Andmed krüpteeritakse sinu seadmes — me ei näe neid kunagi. Kood toimib paroolina, hoia see kindlas kohas.</p>
+        ${getSyncCode()?`
+          <div style="margin-bottom:10px">
+            <label class="field-label" style="margin-bottom:6px">Sinu sünkroniseerimiskood</label>
+            <div style="display:flex;gap:8px">
+              <input id="sync-code-display" type="password" readonly value="${esc(getSyncCode())}" class="input" style="font-family:ui-monospace,Menlo,monospace;font-size:13px">
+              <button onclick="document.getElementById('sync-code-display').type=document.getElementById('sync-code-display').type==='password'?'text':'password'" class="btn btn-secondary" style="padding:8px 12px" title="Näita/peida">👁</button>
+              <button onclick="navigator.clipboard.writeText(getSyncCode()).then(()=>toast('Kood kopeeritud'))" class="btn btn-secondary" style="padding:8px 12px">Kopeeri</button>
+            </div>
+            <div id="sync-status-line" style="font-size:11px;color:#94a3b8;margin-top:6px"></div>
+          </div>
+          <button onclick="disableSync()" class="btn-danger-link" style="font-size:12px">Eemalda see seade sünkroniseerimisest</button>
+        `:`
+          <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+            <button onclick="activateSync()" class="btn btn-primary">Aktiveeri sünkroniseerimine</button>
+            <span style="font-size:12px;color:#94a3b8">või</span>
+            <input id="sync-code-join" placeholder="arvik-xxxx-xxxx-xxxx-xxxx" class="input" style="flex:1;min-width:240px;font-family:ui-monospace,Menlo,monospace;font-size:13px">
+            <button onclick="joinSync(document.getElementById('sync-code-join').value)" class="btn btn-secondary">Liitu olemasoleva koodiga</button>
+          </div>
+        `}
+      </div>
+
       <div style="display:flex;justify-content:space-between;padding-top:14px;border-top:1px solid #e2e8f0;margin-top:8px">
         <button onclick="resetAll()" class="btn-danger-link" style="font-size:13px">Lähtesta kõik andmed</button>
         <button onclick="saveSettings()" class="btn btn-primary">Salvesta seaded</button>
@@ -584,6 +745,7 @@ function renderSettings(){
     const r=new FileReader();r.onload=ev=>{state.business.logo=ev.target.result;save();renderSettings();toast('Logo salvestatud')};
     r.readAsDataURL(f);
   });
+  updateSyncStatus();
 }
 function removeLogo(){state.business.logo='';save();renderSettings()}
 function saveSettings(){
@@ -693,6 +855,7 @@ function processRecurring(){
 
 processRecurring();
 switchView('dashboard');
+initSync().then(()=>{switchView(currentView)});
 </script>
 </body>
 </html>
