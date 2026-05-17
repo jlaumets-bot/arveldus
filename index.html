@@ -56,8 +56,13 @@
   .hero h1 .accent{color:var(--blue)}
   .hero-sub{font-size:19px;color:var(--slate);max-width:520px;margin-bottom:32px}
   .hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:24px}
-  .hero-trust{display:flex;align-items:center;gap:12px;color:var(--mute);font-size:13px}
+  .hero-trust{display:flex;align-items:center;gap:12px;color:var(--mute);font-size:13px;flex-wrap:wrap}
   .hero-trust .check{color:#10b981;font-weight:700}
+  .hero-privacy{display:inline-flex;align-items:center;gap:12px;background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1px solid #bfdbfe;padding:10px 16px 10px 12px;border-radius:14px;margin-bottom:14px;text-decoration:none;color:inherit;transition:transform .15s ease, box-shadow .15s ease}
+  .hero-privacy:hover{transform:translateY(-2px);box-shadow:0 10px 24px -10px rgba(37,99,235,.4);text-decoration:none}
+  .hero-privacy-ico{width:36px;height:36px;border-radius:10px;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+  .hero-privacy-text strong{display:block;font-size:13px;font-weight:700;color:var(--ink);letter-spacing:-.01em}
+  .hero-privacy-text span{font-size:12px;color:#1e40af}
 
   /* Hero right - mascot card */
   .hero-art{position:relative;display:flex;justify-content:center;align-items:center;min-height:380px}
@@ -100,6 +105,56 @@
   .step-num{width:64px;height:64px;margin:0 auto 18px;border-radius:20px;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;box-shadow:0 12px 24px -8px rgba(37,99,235,.5)}
   .step h3{font-size:18px;font-weight:700;margin:0 0 6px}
   .step p{margin:0;color:var(--mute);font-size:14.5px;max-width:280px;margin-inline:auto}
+
+  /* SECURITY */
+  .security-sec{background:#0f172a;color:#fff;padding:100px 0;position:relative;overflow:hidden}
+  .security-sec::before{content:"";position:absolute;width:600px;height:600px;border-radius:50%;background:rgba(37,99,235,.15);filter:blur(80px);top:-200px;left:-100px;pointer-events:none}
+  .security-sec::after{content:"";position:absolute;width:500px;height:500px;border-radius:50%;background:rgba(96,165,250,.1);filter:blur(80px);bottom:-200px;right:-100px;pointer-events:none}
+  .security-sec .wrap{position:relative;z-index:1}
+  .sec-head.light h2{color:#fff}
+  .sec-head.light .sec-sub{color:#cbd5e1}
+  .sec-head.light .sec-eyebrow{color:#60a5fa}
+  .security-stage{display:grid;grid-template-columns:1fr 80px 1fr;align-items:center;gap:24px;max-width:920px;margin:0 auto 50px}
+  .security-panel{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:22px}
+  .sp-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .sp-label::before{content:"";width:8px;height:8px;border-radius:50%}
+  .sp-clear .sp-label{color:#34d399}
+  .sp-clear .sp-label::before{background:#34d399;box-shadow:0 0 8px rgba(52,211,153,.6)}
+  .sp-cipher .sp-label{color:#fb923c}
+  .sp-cipher .sp-label::before{background:#fb923c;box-shadow:0 0 8px rgba(251,146,60,.6)}
+  .receipt{background:#fff;color:#0f172a;border-radius:12px;padding:16px}
+  .receipt-head{font-weight:800;font-size:13px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center}
+  .receipt-head .b{background:#d1fae5;color:#047857;font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:999px;letter-spacing:.04em}
+  .receipt-row{display:flex;justify-content:space-between;font-size:13px;padding:5px 0}
+  .receipt-row .l{color:#64748b}
+  .receipt-row .r{font-weight:600}
+  .cipher{background:#020617;color:#34d399;border-radius:12px;padding:16px;font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:1.7;border:1px solid rgba(52,211,153,.2);position:relative;overflow:hidden}
+  .cipher::before{content:"// krüptogramm";position:absolute;top:6px;right:10px;font-size:9px;color:#475569;letter-spacing:.05em}
+  .cipher-row{margin-bottom:1px;animation:cipher-flicker 5s infinite;word-break:break-all;opacity:.85}
+  .cipher-row:nth-child(2){animation-delay:.4s;opacity:.9}
+  .cipher-row:nth-child(3){animation-delay:.8s;opacity:.95}
+  .cipher-row:nth-child(4){animation-delay:1.2s;opacity:.85}
+  .cipher-row:nth-child(5){animation-delay:1.6s;opacity:.9}
+  @keyframes cipher-flicker{0%,100%{opacity:.65}25%{opacity:1}50%{opacity:.85}}
+  .security-arrow{display:flex;flex-direction:column;align-items:center;gap:6px}
+  .security-arrow svg{width:60px;height:60px}
+  .security-arrow .arrow-label{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#60a5fa;text-align:center;line-height:1.3}
+  .security-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;max-width:920px;margin:0 auto 32px}
+  .sc{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:24px;transition:background .2s, transform .2s}
+  .sc:hover{background:rgba(255,255,255,.07);transform:translateY(-3px)}
+  .sc-ico{font-size:30px;margin-bottom:14px;display:inline-flex;width:52px;height:52px;align-items:center;justify-content:center;background:rgba(37,99,235,.2);border-radius:14px}
+  .sc h4{font-size:16px;font-weight:700;margin:0 0 6px;color:#fff;letter-spacing:-.01em}
+  .sc p{font-size:13.5px;color:#cbd5e1;line-height:1.55;margin:0}
+  .security-tech{max-width:880px;margin:0 auto;padding:18px 22px;background:rgba(2,6,23,.5);border:1px solid rgba(255,255,255,.06);border-radius:14px;font-size:12.5px;color:#94a3b8;text-align:center;line-height:1.7}
+  .security-tech strong{color:#cbd5e1}
+  .security-tech code{background:rgba(255,255,255,.06);padding:1px 6px;border-radius:4px;color:#e0e7ff;font-size:11.5px}
+  .security-tech a{color:#60a5fa;text-decoration:underline}
+
+  @media (max-width:880px){
+    .security-stage{grid-template-columns:1fr;gap:18px}
+    .security-arrow{transform:rotate(90deg);margin:6px auto}
+    .security-cards{grid-template-columns:1fr}
+  }
 
   /* SYNC EXPLAINER */
   .sync-sec{background:linear-gradient(180deg,var(--bg) 0%, #fff 100%);padding:90px 0}
@@ -230,6 +285,7 @@
     <nav class="nav-links">
       <a href="#omadused" class="nav-link">Omadused</a>
       <a href="#kuidas" class="nav-link">Kuidas töötab</a>
+      <a href="#turvalisus" class="nav-link">Turvalisus</a>
       <a href="#sync" class="nav-link">Sünk</a>
       <a href="#faq" class="nav-link">KKK</a>
       <a href="/app.html" class="btn btn-primary">Ava Arvik →</a>
@@ -249,6 +305,13 @@
         <a href="/app.html" class="btn btn-primary btn-lg">Ava Arvik tasuta →</a>
         <a href="#kuidas" class="btn btn-ghost btn-lg">Vaata kuidas →</a>
       </div>
+      <a href="#turvalisus" class="hero-privacy">
+        <div class="hero-privacy-ico">🔒</div>
+        <div class="hero-privacy-text">
+          <strong>End-to-end krüpteeritud</strong>
+          <span>Server ei näe sinu andmeid · loe lähemalt →</span>
+        </div>
+      </a>
       <div class="hero-trust">
         <span class="check">✓</span> KMKR-i tugi
         <span class="check">✓</span> Eesti pangad
@@ -343,6 +406,76 @@
         <h3>Saada PDF</h3>
         <p>Lae alla PDF, saada e-postiga. Märgi tasutuks, kui raha laekub.</p>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECURITY -->
+<section class="security-sec" id="turvalisus">
+  <div class="wrap">
+    <div class="sec-head light">
+      <div class="sec-eyebrow">Turvalisus</div>
+      <h2>Server ei näe sinu arveid. Mitte iial.</h2>
+      <p class="sec-sub">Arvik on null-teadmusega — kõik andmed krüpteeritakse sinu seadmes <strong>enne</strong> pilve saatmist. Isegi meie ise ei saa sinu arveid avada.</p>
+    </div>
+
+    <div class="security-stage">
+      <div class="security-panel sp-clear">
+        <div class="sp-label">Sinu seadmes</div>
+        <div class="receipt">
+          <div class="receipt-head"><span>ARVE-1042</span><span class="b">TASUTUD</span></div>
+          <div class="receipt-row"><span class="l">Klient</span><span class="r">OÜ Kliendinimi</span></div>
+          <div class="receipt-row"><span class="l">Summa</span><span class="r">1 480,00 €</span></div>
+          <div class="receipt-row"><span class="l">Tähtaeg</span><span class="r">15.06.2026</span></div>
+          <div class="receipt-row"><span class="l">KMKR nr</span><span class="r">EE100123456</span></div>
+        </div>
+      </div>
+
+      <div class="security-arrow">
+        <svg viewBox="0 0 60 60">
+          <defs>
+            <linearGradient id="ag" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#34d399"/>
+              <stop offset="100%" stop-color="#fb923c"/>
+            </linearGradient>
+          </defs>
+          <path d="M5 30 L48 30 M40 18 L52 30 L40 42" stroke="url(#ag)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="arrow-label">AES-256<br>krüpteerimine</div>
+      </div>
+
+      <div class="security-panel sp-cipher">
+        <div class="sp-label">Meie serveris</div>
+        <div class="cipher">
+          <div class="cipher-row">a8B3f9k2Lm4qNs7tpZc...</div>
+          <div class="cipher-row">x9LbVH3a4dKpQ8wY2eRm...</div>
+          <div class="cipher-row">pZ4f8Hw3aF2nQ7mX9CbT...</div>
+          <div class="cipher-row">b2gT9rJk7vX1nQ4PuMzL...</div>
+          <div class="cipher-row">m4FpRL6sBnQ3xC8tYhWk...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="security-cards">
+      <div class="sc">
+        <div class="sc-ico">🔒</div>
+        <h4>Krüpteeritud sinu seadmes</h4>
+        <p>Iga muudatus krüpteeritakse sinu brauseris AES-256-GCM-ga enne saatmist. Võti ei lahku kunagi sinu seadmest.</p>
+      </div>
+      <div class="sc">
+        <div class="sc-ico">🔑</div>
+        <h4>Sinu kood = sinu võti</h4>
+        <p>Sünkroniseerimiskood toimib ka dekrüpteerimise võtmena. Ilma koodita ei saa keegi — sealhulgas meie — andmeid lugeda.</p>
+      </div>
+      <div class="sc">
+        <div class="sc-ico">🛡️</div>
+        <h4>Null-teadmusega salvestus</h4>
+        <p>Server hoiab ainult krüptogrammi. Andmeleke meie poolt = mõttetud baidid. Sinu äri jääb puutumatuks.</p>
+      </div>
+    </div>
+
+    <div class="security-tech">
+      <strong>Tehnilised detailid:</strong> <code>AES-256-GCM</code> krüpteerimine, võti tuletatud <code>PBKDF2-st</code> sinu sünkroniseerimiskoodi pealt (120 000 iteratsiooni, SHA-256). Kogu krüpteerimine toimub brauseris <code>Web Crypto API</code> kaudu. Kood on avalik — <a href="https://github.com/jlaumets-bot/arveldus" target="_blank" rel="noopener">kontrolli ise GitHubis</a>.
     </div>
   </div>
 </section>
