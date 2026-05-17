@@ -473,7 +473,7 @@ function onboardNextStep(){
   return null;
 }
 const defaultState={
-  business:{name:'Sinu ettevõte',email:'',address:'',phone:'',logo:'',currencySymbol:'€',defaultTaxRate:22,invoicePrefix:'ARVE-',nextNumber:1001,notes:'Täname koostöö eest!'},
+  business:{name:'Sinu ettevõte',email:'',address:'',phone:'',logo:'',currencySymbol:'€',defaultTaxRate:24,invoicePrefix:'ARVE-',nextNumber:1001,notes:'Täname koostöö eest!'},
   clients:[],invoices:[]
 };
 let state=load();
@@ -657,6 +657,7 @@ function load(){
 function save(){localStorage.setItem(DB_KEY,JSON.stringify(state));schedulePush()}
 function uid(){return Math.random().toString(36).slice(2,10)}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function parseNum(v){if(v==null||v==='')return 0;const n=parseFloat(String(v).replace(',','.').replace(/\s/g,''));return isNaN(n)?0:n}
 function fmt(n){return (Number(n)||0).toFixed(2).replace('.',',')+' '+state.business.currencySymbol}
 function today(){return new Date().toISOString().slice(0,10)}
 function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x.toISOString().slice(0,10)}
@@ -848,14 +849,14 @@ function renderInvoiceForm(){
         <div class="t-row"><span class="lbl">Vahesumma</span><span id="t-subtotal" style="font-weight:500">${fmt(t.subtotal)}</span></div>
         <div class="t-row"><span class="lbl">Allahindlus</span>
           <div style="display:flex;gap:4px;align-items:center">
-            <input id="f-discount" type="number" step="0.01" value="${inv.discount||0}">
+            <input id="f-discount" type="text" inputmode="decimal" value="${inv.discount||''}" placeholder="0">
             <select id="f-discount-type">
               <option value="amount" ${inv.discountType==='amount'?'selected':''}>${state.business.currencySymbol}</option>
               <option value="percent" ${inv.discountType==='percent'?'selected':''}>%</option>
             </select>
           </div>
         </div>
-        <div class="t-row"><span class="lbl">Käibemaks (%)</span><input id="f-tax" type="number" step="0.01" value="${inv.taxRate||0}"></div>
+        <div class="t-row"><span class="lbl">Käibemaks (%)</span><input id="f-tax" type="text" inputmode="decimal" value="${inv.taxRate||0}"></div>
         <div class="t-row t-total"><span>Kokku</span><span id="t-total">${fmt(t.total)}</span></div>
       </div>
     </div>
@@ -876,11 +877,11 @@ function renderInvoiceForm(){
   document.querySelectorAll('#f-items input').forEach(el=>el.addEventListener('input',recalc));
 }
 function itemRow(it,i){
-  const lt=(Number(it.qty)||0)*(Number(it.price)||0);
+  const lt=(parseNum(it.qty))*(parseNum(it.price));
   return `<tr data-idx="${i}">
     <td><input data-field="desc" data-idx="${i}" value="${esc(it.desc)}" placeholder="Toote või teenuse kirjeldus"></td>
-    <td class="item-num"><input type="number" step="0.01" data-field="qty" data-idx="${i}" value="${it.qty||0}" style="text-align:right"></td>
-    <td class="item-num"><input type="number" step="0.01" data-field="price" data-idx="${i}" value="${it.price||0}" style="text-align:right"></td>
+    <td class="item-num"><input type="text" inputmode="decimal" data-field="qty" data-idx="${i}" value="${it.qty||1}" style="text-align:right"></td>
+    <td class="item-num"><input type="text" inputmode="decimal" data-field="price" data-idx="${i}" value="${it.price||''}" placeholder="0" style="text-align:right"></td>
     <td class="line-total">${fmt(lt)}</td>
     <td><button onclick="removeItem(${i})" class="rm">×</button></td>
   </tr>`;
@@ -891,15 +892,15 @@ function syncForm(){
   const inv=window._editingInv;
   document.querySelectorAll('#f-items input').forEach(el=>{
     const i=Number(el.dataset.idx),f=el.dataset.field;
-    inv.items[i][f]=f==='desc'?el.value:Number(el.value);
+    inv.items[i][f]=f==='desc'?el.value:parseNum(el.value);
   });
   inv.number=document.getElementById('f-number').value;
   inv.clientId=document.getElementById('f-client').value;
   inv.date=document.getElementById('f-date').value;
   inv.dueDate=document.getElementById('f-due').value;
   inv.notes=document.getElementById('f-notes').value;
-  inv.taxRate=Number(document.getElementById('f-tax').value);
-  inv.discount=Number(document.getElementById('f-discount').value);
+  inv.taxRate=parseNum(document.getElementById('f-tax').value);
+  inv.discount=parseNum(document.getElementById('f-discount').value);
   inv.discountType=document.getElementById('f-discount-type').value;
   inv.status=document.getElementById('f-status').value;
   inv.recurring=document.getElementById('f-recurring').checked;
@@ -1014,7 +1015,7 @@ function renderSettings(){
       <div class="grid-3">
         <div class="field"><label class="field-label">Arve eesliide</label><input id="s-prefix" class="input" value="${esc(b.invoicePrefix)}"></div>
         <div class="field"><label class="field-label">Järgmine number</label><input id="s-next" type="number" class="input" value="${b.nextNumber||1001}"></div>
-        <div class="field"><label class="field-label">Vaike käibemaks %</label><input id="s-tax" type="number" step="0.01" class="input" value="${b.defaultTaxRate||0}"></div>
+        <div class="field"><label class="field-label">Vaike käibemaks %</label><input id="s-tax" type="text" inputmode="decimal" class="input" value="${b.defaultTaxRate||0}"></div>
       </div>
       <div class="field"><label class="field-label">Vaikemärkused arvel</label><textarea id="s-notes" class="input" rows="2">${esc(b.notes)}</textarea></div>
 
@@ -1092,7 +1093,7 @@ function saveSettings(){
     iban:document.getElementById('s-iban').value,
     invoicePrefix:document.getElementById('s-prefix').value,
     nextNumber:Number(document.getElementById('s-next').value)||1001,
-    defaultTaxRate:Number(document.getElementById('s-tax').value)||0,
+    defaultTaxRate:parseNum(document.getElementById('s-tax').value),
     notes:document.getElementById('s-notes').value
   });
   save();toast('Seaded salvestatud');
