@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="et">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Arvik — Maailma turvaliseim ja lihtsaim arveldus</title>
-<meta name="description" content="Arvik on maailma esimene null-teadmusega arveldustarkvara. Loo arve 30 sekundiga, sinu andmed jäävad ainult sulle. Tasuta, ilma kontota." />
-<meta property="og:title" content="Arvik — Maailma turvaliseim ja lihtsaim arveldus" />
-<meta property="og:description" content="Esimene null-teadmusega arveldustarkvara. 30 sekundit esimese arveni. Tasuta." />
+<title>Arvik — The world's most secure and easiest invoicing</title>
+<meta name="description" content="Arvik is the world's first zero-knowledge invoicing tool. Create an invoice in 30 seconds — your data stays only with you. Free, no account." />
+<meta property="og:title" content="Arvik — The world's most secure and easiest invoicing" />
+<meta property="og:description" content="The first zero-knowledge invoicing tool. 30 seconds to your first invoice. Free." />
 <style>
   :root{
     --blue:#2563eb; --blue-dark:#1d4ed8; --blue-soft:#eff6ff; --blue-100:#dbeafe;
@@ -34,6 +34,11 @@
   .nav-links{display:flex;align-items:center;gap:8px}
   .nav-link{font-weight:500;font-size:14px;color:var(--slate);padding:8px 12px;border-radius:8px}
   .nav-link:hover{background:var(--bg)}
+
+  .lang-switcher{display:inline-flex;background:#f1f5f9;border-radius:8px;padding:2px;gap:2px;margin-right:6px}
+  .lang-btn{padding:5px 9px;font-size:11px;font-weight:700;color:#64748b;border-radius:6px;letter-spacing:.04em}
+  .lang-btn.active{background:#fff;color:#0f172a;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+  .lang-btn:hover:not(.active){color:#334155}
 
   /* BUTTONS */
   .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:600;font-size:15px;padding:12px 22px;border-radius:12px;transition:transform .08s ease, box-shadow .15s ease, background .15s ease}
@@ -75,7 +80,6 @@
   .mascot .arm-l{transform-origin:64px 130px;animation:wave 3s ease-in-out infinite}
   @keyframes wave{0%,60%,100%{transform:rotate(0deg)}70%{transform:rotate(-25deg)}80%{transform:rotate(-10deg)}90%{transform:rotate(-25deg)}}
 
-  /* floating stat cards near mascot */
   .float-card{position:absolute;background:#fff;border-radius:14px;padding:12px 16px;box-shadow:var(--shadow);font-size:13px;display:flex;align-items:center;gap:10px;z-index:2}
   .float-card .ico{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px}
   .float-card-1{top:30px;left:0;animation:floatY 5s ease-in-out infinite}
@@ -130,7 +134,7 @@
   .receipt-row .l{color:#64748b}
   .receipt-row .r{font-weight:600}
   .cipher{background:#020617;color:#34d399;border-radius:12px;padding:16px;font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:1.7;border:1px solid rgba(52,211,153,.2);position:relative;overflow:hidden}
-  .cipher::before{content:"// krüptogramm";position:absolute;top:6px;right:10px;font-size:9px;color:#475569;letter-spacing:.05em}
+  .cipher::before{content:"// ciphertext";position:absolute;top:6px;right:10px;font-size:9px;color:#475569;letter-spacing:.05em}
   .cipher-row{margin-bottom:1px;animation:cipher-flicker 5s infinite;word-break:break-all;opacity:.85}
   .cipher-row:nth-child(2){animation-delay:.4s;opacity:.9}
   .cipher-row:nth-child(3){animation-delay:.8s;opacity:.95}
@@ -168,12 +172,6 @@
     .ts-row{grid-template-columns:1fr 1fr;gap:10px}
     .ts-divider{display:none}
     .ts-card-us{grid-column:span 2}
-  }
-
-  @media (max-width:880px){
-    .security-stage{grid-template-columns:1fr;gap:18px}
-    .security-arrow{transform:rotate(90deg);margin:6px auto}
-    .security-cards{grid-template-columns:1fr}
   }
 
   /* SYNC EXPLAINER */
@@ -231,7 +229,6 @@
   /* FOOTER */
   .ftr{border-top:1px solid var(--line);padding:30px 0;color:var(--mute);font-size:13px;text-align:center}
 
-  /* responsive */
   @media (max-width: 880px){
     .hero{padding:48px 0 40px}
     .hero-inner{grid-template-columns:1fr;gap:32px}
@@ -244,27 +241,26 @@
     .faq-aside{position:static}
     .sec{padding:56px 0}
     .cta-card{padding:44px 24px}
+    .security-stage{grid-template-columns:1fr;gap:18px}
+    .security-arrow{transform:rotate(90deg);margin:6px auto}
+    .security-cards{grid-template-columns:1fr}
+    .nav-link{display:none}
+    .nav-link.always-show{display:inline-flex}
   }
 </style>
 </head>
 <body>
 
-<!-- Reusable mascot SVG (defined once, used via <use>) -->
+<!-- Reusable mascot SVG -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
     <symbol id="mascot" viewBox="0 0 220 260">
-      <!-- shadow -->
       <ellipse cx="110" cy="245" rx="70" ry="6" fill="#0f172a" opacity=".12"/>
-      <!-- body (invoice paper) -->
       <g>
-        <!-- folded corner backdrop -->
         <path d="M165 20 L195 50 L195 50 L165 50 Z" fill="#bfdbfe"/>
-        <!-- main paper -->
         <path d="M30 30 Q30 18 42 18 L165 18 L195 48 L195 220 Q195 232 183 232 L42 232 Q30 232 30 220 Z" fill="#ffffff" stroke="#dbeafe" stroke-width="2.5"/>
-        <!-- header line -->
         <rect x="48" y="58" width="80" height="7" rx="3.5" fill="#2563eb"/>
         <rect x="48" y="74" width="50" height="5" rx="2.5" fill="#bfdbfe"/>
-        <!-- arms -->
         <g class="arm-l">
           <path d="M30 130 Q15 135 18 155 Q20 168 32 165" fill="none" stroke="#2563eb" stroke-width="6" stroke-linecap="round"/>
           <circle cx="18" cy="160" r="9" fill="#fff" stroke="#2563eb" stroke-width="3"/>
@@ -273,20 +269,15 @@
           <path d="M195 140 Q210 145 207 165 Q205 178 193 175" fill="none" stroke="#2563eb" stroke-width="6" stroke-linecap="round"/>
           <circle cx="208" cy="170" r="9" fill="#fff" stroke="#2563eb" stroke-width="3"/>
         </g>
-        <!-- face -->
         <g class="eyes">
           <ellipse cx="85" cy="125" rx="7" ry="9" fill="#0f172a"/>
           <ellipse cx="135" cy="125" rx="7" ry="9" fill="#0f172a"/>
-          <!-- eye sparkles -->
           <circle cx="87" cy="121" r="2" fill="#fff"/>
           <circle cx="137" cy="121" r="2" fill="#fff"/>
         </g>
-        <!-- cheeks -->
         <ellipse cx="68" cy="148" rx="8" ry="5" fill="#fda4af" opacity=".6"/>
         <ellipse cx="152" cy="148" rx="8" ry="5" fill="#fda4af" opacity=".6"/>
-        <!-- smile -->
         <path d="M90 155 Q110 175 130 155" stroke="#0f172a" stroke-width="5" fill="none" stroke-linecap="round"/>
-        <!-- euro badge bottom -->
         <circle cx="110" cy="200" r="18" fill="#2563eb"/>
         <text x="110" y="208" text-anchor="middle" font-size="22" font-weight="900" fill="#fff" font-family="-apple-system,sans-serif">€</text>
       </g>
@@ -301,16 +292,20 @@
       <div class="brand-logo">€</div>
       <div>
         <div class="brand-name">Arvik</div>
-        <div class="brand-tag">Lihtne arveldus</div>
+        <div class="brand-tag" data-i18n="brand_tag">Simple invoicing</div>
       </div>
     </a>
     <nav class="nav-links">
-      <a href="#omadused" class="nav-link">Omadused</a>
-      <a href="#kuidas" class="nav-link">Kuidas töötab</a>
-      <a href="#turvalisus" class="nav-link">Turvalisus</a>
-      <a href="#sync" class="nav-link">Sünk</a>
-      <a href="#faq" class="nav-link">KKK</a>
-      <a href="/app.html" class="btn btn-primary">Ava Arvik →</a>
+      <a href="#features" class="nav-link" data-i18n="nav_features">Features</a>
+      <a href="#how" class="nav-link" data-i18n="nav_how">How it works</a>
+      <a href="#security" class="nav-link" data-i18n="nav_security">Security</a>
+      <a href="#sync" class="nav-link" data-i18n="nav_sync">Sync</a>
+      <a href="#faq" class="nav-link" data-i18n="nav_faq">FAQ</a>
+      <div class="lang-switcher" role="group" aria-label="Language">
+        <button data-lang-btn="en" class="lang-btn">EN</button>
+        <button data-lang-btn="et" class="lang-btn">ET</button>
+      </div>
+      <a href="/app.html" class="btn btn-primary nav-link always-show" data-i18n="nav_cta">Open Arvik →</a>
     </nav>
   </div>
 </header>
@@ -320,24 +315,24 @@
   <div class="hero-bg"></div>
   <div class="wrap hero-inner">
     <div>
-      <div class="hero-eyebrow"><span class="lock">🔒</span> <span class="first-pill">Esimene</span> null-teadmusega arveldus maailmas</div>
-      <h1>Maailma <span class="accent">turvaliseim</span><br>ja lihtsaim arveldus.</h1>
-      <p class="hero-sub">Loo arve, saada PDF, saa tasutud — 30 sekundiga. Sinu andmed jäävad sinu seadmesse, krüpteeritud. <strong>Tasuta. Ilma kontota. Ilma kompromisseta.</strong></p>
+      <div class="hero-eyebrow"><span class="lock">🔒</span> <span class="first-pill" data-i18n="hero_first">First</span> <span data-i18n="hero_eyebrow">zero-knowledge invoicing in the world</span></div>
+      <h1 data-i18n="hero_h1">The world's <span class="accent">most secure</span><br>and easiest invoicing.</h1>
+      <p class="hero-sub" data-i18n="hero_sub">Create an invoice, send a PDF, get paid — in 30 seconds. Your data stays on your device, encrypted. <strong>Free. No account. No compromise.</strong></p>
       <div class="hero-cta">
-        <a href="/app.html" class="btn btn-primary btn-lg">Ava Arvik tasuta →</a>
-        <a href="#kuidas" class="btn btn-ghost btn-lg">Vaata kuidas →</a>
+        <a href="/app.html" class="btn btn-primary btn-lg" data-i18n="hero_cta1">Open Arvik free →</a>
+        <a href="#how" class="btn btn-ghost btn-lg" data-i18n="hero_cta2">See how →</a>
       </div>
-      <a href="#turvalisus" class="hero-privacy">
+      <a href="#security" class="hero-privacy">
         <div class="hero-privacy-ico">🔒</div>
         <div class="hero-privacy-text">
-          <strong>Esimene arveldus, kus server ei näe sinu andmeid</strong>
-          <span>Sama tehnoloogia mis Bitwarden, Proton, Signal · loe lähemalt →</span>
+          <strong data-i18n="hero_privacy_t">First invoicing where the server can't see your data</strong>
+          <span data-i18n="hero_privacy_s">Same tech as Bitwarden, Proton, Signal · learn more →</span>
         </div>
       </a>
       <div class="hero-trust">
-        <span class="check">✓</span> KMKR-i tugi
-        <span class="check">✓</span> Eesti pangad
-        <span class="check">✓</span> PDF kohe
+        <span class="check">✓</span> <span data-i18n="trust_vat">VAT support</span>
+        <span class="check">✓</span> <span data-i18n="trust_iban">IBAN ready</span>
+        <span class="check">✓</span> <span data-i18n="trust_pdf">Instant PDF</span>
       </div>
     </div>
     <div class="hero-art">
@@ -346,15 +341,15 @@
       <div class="float-card float-card-1">
         <div class="ico" style="background:#d1fae5">✓</div>
         <div>
-          <div class="fc-label">Arve nr ARVE-1042</div>
-          <div class="fc-value">Tasutud · 1 480,00 €</div>
+          <div class="fc-label" data-i18n="float1_l">Invoice INV-1042</div>
+          <div class="fc-value" data-i18n="float1_v">Paid · €1,480.00</div>
         </div>
       </div>
       <div class="float-card float-card-2">
         <div class="ico" style="background:var(--blue-soft);color:var(--blue)">📄</div>
         <div>
-          <div class="fc-label">Saadetud</div>
-          <div class="fc-value">PDF kliendile</div>
+          <div class="fc-label" data-i18n="float2_l">Sent</div>
+          <div class="fc-value" data-i18n="float2_v">PDF to client</div>
         </div>
       </div>
     </div>
@@ -362,94 +357,94 @@
 </section>
 
 <!-- FEATURES -->
-<section class="sec" id="omadused">
+<section class="sec" id="features">
   <div class="wrap">
     <div class="sec-head">
-      <div class="sec-eyebrow">Omadused</div>
-      <h2>Kõik, mida arveldamiseks vaja</h2>
-      <p class="sec-sub">Ei mingit ülearust. Lihtsalt töötab.</p>
+      <div class="sec-eyebrow" data-i18n="feat_eyebrow">Features</div>
+      <h2 data-i18n="feat_h2">Everything you need to invoice</h2>
+      <p class="sec-sub" data-i18n="feat_sub">Nothing extra. Just works.</p>
     </div>
     <div class="feat-grid">
       <div class="feat">
         <div class="feat-ico">⚡</div>
-        <h3>Arve 30 sekundiga</h3>
-        <p>Lihtne vorm, taaskasutatavad kliendid, automaatne numeratsioon. Hakka tööle kohe.</p>
+        <h3 data-i18n="feat_1_t">Invoice in 30 seconds</h3>
+        <p data-i18n="feat_1_d">Simple form, saved clients, automatic numbering. Up and running instantly.</p>
       </div>
       <div class="feat">
         <div class="feat-ico">📄</div>
-        <h3>PDF kohe saadetav</h3>
-        <p>Lae arve PDF-ina alla ja saada kliendile e-postiga. Korrektne Eesti vorming, IBAN, viitenumber.</p>
+        <h3 data-i18n="feat_2_t">PDF ready to send</h3>
+        <p data-i18n="feat_2_d">Download a clean PDF and email it. IBAN, reference number and VAT included.</p>
       </div>
       <div class="feat">
         <div class="feat-ico">📊</div>
-        <h3>Jälgi tasumist</h3>
-        <p>Töölaud näitab kohe — tasumata, üle tähtaja, tasutud sel kuul. Ei pea Exceli järgi mõtlema.</p>
+        <h3 data-i18n="feat_3_t">Track payments</h3>
+        <p data-i18n="feat_3_d">Dashboard shows unpaid, overdue and paid this month — no spreadsheets needed.</p>
       </div>
       <div class="feat">
         <div class="feat-ico">🔄</div>
-        <h3>Korduvarved</h3>
-        <p>Igakuised või kvartali­põhised arved tekivad automaatselt mustanditena. Vajuta nupp, saada.</p>
+        <h3 data-i18n="feat_4_t">Recurring invoices</h3>
+        <p data-i18n="feat_4_d">Monthly or quarterly invoices generate as drafts automatically. One click, one send.</p>
       </div>
       <div class="feat">
         <div class="feat-ico">🏷️</div>
-        <h3>Sinu logo ja brändimine</h3>
-        <p>Lae üles logo, lisa ettevõtte andmed, KMKR ja IBAN — kõik kuvatakse arvel professionaalselt.</p>
+        <h3 data-i18n="feat_5_t">Your logo and branding</h3>
+        <p data-i18n="feat_5_d">Upload your logo, add company details, VAT number and IBAN — everything shows on every invoice.</p>
       </div>
       <div class="feat">
         <div class="feat-ico">🔒</div>
-        <h3>Krüpteeritud sünkroniseerimine</h3>
-        <p>Andmed elavad sinu seadmes. Soovi korral sünkroniseeri telefoni ja arvuti vahel — kõik krüpteeritud, kontot pole vaja.</p>
+        <h3 data-i18n="feat_6_t">Encrypted sync</h3>
+        <p data-i18n="feat_6_d">Data lives on your device. Optionally sync between phone and computer — all encrypted, no account needed.</p>
       </div>
     </div>
   </div>
 </section>
 
 <!-- HOW IT WORKS -->
-<section class="sec steps-bg" id="kuidas">
+<section class="sec steps-bg" id="how">
   <div class="wrap">
     <div class="sec-head">
-      <div class="sec-eyebrow">Kuidas töötab</div>
-      <h2>Kolm sammu esimese arveni</h2>
-      <p class="sec-sub">Tõsiselt. Vähem juhiseid kui tavalise rakenduse seadistamine.</p>
+      <div class="sec-eyebrow" data-i18n="steps_eyebrow">How it works</div>
+      <h2 data-i18n="steps_h2">Three steps to your first invoice</h2>
+      <p class="sec-sub" data-i18n="steps_sub">Seriously. Fewer steps than setting up most apps.</p>
     </div>
     <div class="step-grid">
       <div class="step">
         <div class="step-num">1</div>
-        <h3>Lisa klient</h3>
-        <p>Nimi, e-post, KMKR. Ühe korra — pärast valid rippmenüüst.</p>
+        <h3 data-i18n="step_1_t">Add a client</h3>
+        <p data-i18n="step_1_d">Name, email, VAT number. Once — then pick from a dropdown later.</p>
       </div>
       <div class="step">
         <div class="step-num">2</div>
-        <h3>Loo arve</h3>
-        <p>Vali klient, lisa read, summa arvutatakse automaatselt koos käibemaksuga.</p>
+        <h3 data-i18n="step_2_t">Create the invoice</h3>
+        <p data-i18n="step_2_d">Pick the client, add line items. Totals calculate automatically with VAT.</p>
       </div>
       <div class="step">
         <div class="step-num">3</div>
-        <h3>Saada PDF</h3>
-        <p>Lae alla PDF, saada e-postiga. Märgi tasutuks, kui raha laekub.</p>
+        <h3 data-i18n="step_3_t">Send the PDF</h3>
+        <p data-i18n="step_3_d">Download the PDF, send by email. Mark as paid when the money lands.</p>
       </div>
     </div>
   </div>
 </section>
 
 <!-- SECURITY -->
-<section class="security-sec" id="turvalisus">
+<section class="security-sec" id="security">
   <div class="wrap">
     <div class="sec-head light">
-      <div class="sec-eyebrow">Turvalisus</div>
-      <h2>Server ei näe sinu arveid. Mitte iial.</h2>
-      <p class="sec-sub">Arvik on null-teadmusega — kõik andmed krüpteeritakse sinu seadmes <strong>enne</strong> pilve saatmist. Isegi meie ise ei saa sinu arveid avada.</p>
+      <div class="sec-eyebrow" data-i18n="sec_eyebrow">Security</div>
+      <h2 data-i18n="sec_h2">The server can't read your invoices. Ever.</h2>
+      <p class="sec-sub" data-i18n="sec_sub">Arvik is zero-knowledge — every byte is encrypted on your device <strong>before</strong> it reaches the cloud. Even we cannot open your invoices.</p>
     </div>
 
     <div class="security-stage">
       <div class="security-panel sp-clear">
-        <div class="sp-label">Sinu seadmes</div>
+        <div class="sp-label" data-i18n="sec_panel_l">On your device</div>
         <div class="receipt">
-          <div class="receipt-head"><span>ARVE-1042</span><span class="b">TASUTUD</span></div>
-          <div class="receipt-row"><span class="l">Klient</span><span class="r">OÜ Kliendinimi</span></div>
-          <div class="receipt-row"><span class="l">Summa</span><span class="r">1 480,00 €</span></div>
-          <div class="receipt-row"><span class="l">Tähtaeg</span><span class="r">15.06.2026</span></div>
-          <div class="receipt-row"><span class="l">KMKR nr</span><span class="r">EE100123456</span></div>
+          <div class="receipt-head"><span>INV-1042</span><span class="b" data-i18n="sec_receipt_paid">PAID</span></div>
+          <div class="receipt-row"><span class="l" data-i18n="sec_receipt_client">Client</span><span class="r">Acme Holdings</span></div>
+          <div class="receipt-row"><span class="l" data-i18n="sec_receipt_amount">Amount</span><span class="r">€1,480.00</span></div>
+          <div class="receipt-row"><span class="l" data-i18n="sec_receipt_due">Due date</span><span class="r">15.06.2026</span></div>
+          <div class="receipt-row"><span class="l" data-i18n="sec_receipt_vat">VAT no.</span><span class="r">DE100123456</span></div>
         </div>
       </div>
 
@@ -463,11 +458,11 @@
           </defs>
           <path d="M5 30 L48 30 M40 18 L52 30 L40 42" stroke="url(#ag)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        <div class="arrow-label">AES-256<br>krüpteerimine</div>
+        <div class="arrow-label" data-i18n="sec_arrow">AES-256<br>encryption</div>
       </div>
 
       <div class="security-panel sp-cipher">
-        <div class="sp-label">Meie serveris</div>
+        <div class="sp-label" data-i18n="sec_panel_r">On our server</div>
         <div class="cipher">
           <div class="cipher-row">a8B3f9k2Lm4qNs7tpZc...</div>
           <div class="cipher-row">x9LbVH3a4dKpQ8wY2eRm...</div>
@@ -481,49 +476,49 @@
     <div class="security-cards">
       <div class="sc">
         <div class="sc-ico">🔒</div>
-        <h4>Krüpteeritud sinu seadmes</h4>
-        <p>Iga muudatus krüpteeritakse sinu brauseris AES-256-GCM-ga enne saatmist. Võti ei lahku kunagi sinu seadmest.</p>
+        <h4 data-i18n="sec_card_1_t">Encrypted on your device</h4>
+        <p data-i18n="sec_card_1_d">Every change is encrypted in your browser with AES-256-GCM before being sent. The key never leaves your device.</p>
       </div>
       <div class="sc">
         <div class="sc-ico">🔑</div>
-        <h4>Sinu kood = sinu võti</h4>
-        <p>Sünkroniseerimiskood toimib ka dekrüpteerimise võtmena. Ilma koodita ei saa keegi — sealhulgas meie — andmeid lugeda.</p>
+        <h4 data-i18n="sec_card_2_t">Your code is your key</h4>
+        <p data-i18n="sec_card_2_d">The sync code doubles as the decryption key. Without the code, nobody — including us — can read your data.</p>
       </div>
       <div class="sc">
         <div class="sc-ico">🛡️</div>
-        <h4>Null-teadmusega salvestus</h4>
-        <p>Server hoiab ainult krüptogrammi. Andmeleke meie poolt = mõttetud baidid. Sinu äri jääb puutumatuks.</p>
+        <h4 data-i18n="sec_card_3_t">Zero-knowledge storage</h4>
+        <p data-i18n="sec_card_3_d">The server only stores ciphertext. A breach on our end = meaningless bytes. Your business stays untouched.</p>
       </div>
     </div>
 
     <div class="trust-strip">
-      <div class="ts-label">Sama null-teadmusega tehnoloogiat kasutavad ka</div>
+      <div class="ts-label" data-i18n="ts_label">The same zero-knowledge tech also protects</div>
       <div class="ts-row">
         <div class="ts-card">
           <div class="ts-brand">Bitwarden</div>
-          <div class="ts-protect">Kaitseb sinu paroole</div>
+          <div class="ts-protect" data-i18n="ts_bw">Your passwords</div>
         </div>
         <div class="ts-card">
           <div class="ts-brand">Proton</div>
-          <div class="ts-protect">Kaitseb sinu e-kirju</div>
+          <div class="ts-protect" data-i18n="ts_pt">Your email</div>
         </div>
         <div class="ts-card">
           <div class="ts-brand">Signal</div>
-          <div class="ts-protect">Kaitseb sinu sõnumeid</div>
+          <div class="ts-protect" data-i18n="ts_sg">Your messages</div>
         </div>
         <div class="ts-divider">+</div>
         <div class="ts-card ts-card-us">
-          <div class="ts-brand">Arvik <span class="ts-badge">UUS</span></div>
-          <div class="ts-protect">Kaitseb sinu arveid</div>
+          <div class="ts-brand">Arvik <span class="ts-badge" data-i18n="ts_new">NEW</span></div>
+          <div class="ts-protect" data-i18n="ts_us">Your invoices</div>
         </div>
       </div>
-      <div class="ts-line">
-        Tavalised arveldustarkvarad — <strong>QuickBooks, Xero, Merit Aktiva, Envoice ja kõik teised</strong> — hoiavad sinu andmeid loetavas vormis oma serverites. Töötajad ja seal kuriteoga tegelevad häkkerid saavad need lahti võtta. Arvik on <strong>esimene ja ainus</strong>, kus seda teha ei saa.
+      <div class="ts-line" data-i18n="ts_line">
+        Standard invoicing tools — <strong>QuickBooks, Xero, FreshBooks, Wave and the rest</strong> — keep your data in readable form on their servers. Employees and anyone who breaches them can open it. Arvik is the <strong>first and only one</strong> where they can't.
       </div>
     </div>
 
-    <div class="security-tech">
-      Krüpteerimine: <code>AES-256-GCM</code>, võti tuletatud sinu sünkroniseerimiskoodi pealt <code>PBKDF2-ga</code> (120 000 iteratsiooni, SHA-256). Kogu krüpteerimine toimub sinu brauseris <code>Web Crypto API</code> kaudu.
+    <div class="security-tech" data-i18n="sec_tech">
+      Encryption: <code>AES-256-GCM</code>, key derived from your sync code via <code>PBKDF2</code> (120,000 iterations, SHA-256). All encryption happens in your browser through the <code>Web Crypto API</code>.
     </div>
   </div>
 </section>
@@ -532,19 +527,17 @@
 <section class="sync-sec" id="sync">
   <div class="wrap">
     <div class="sec-head">
-      <div class="sec-eyebrow">Sünkroniseerimine</div>
-      <h2>Telefon ja arvuti — sama Arvik</h2>
-      <p class="sec-sub"><strong>Skanneeri QR-kood</strong> telefoniga või <strong>kopeeri jagamislink</strong> teise arvutisse. Ühe puudutusega paaritud. Andmed krüpteeritakse sinu seadmes <strong>enne</strong> serverisse jõudmist.</p>
+      <div class="sec-eyebrow" data-i18n="sync_eyebrow">Sync</div>
+      <h2 data-i18n="sync_h2">Phone and computer — same Arvik</h2>
+      <p class="sec-sub" data-i18n="sync_sub"><strong>Scan the QR code</strong> with your phone, or <strong>copy the share link</strong> to another browser. Paired in one tap. Data is encrypted on your device <strong>before</strong> it reaches the server.</p>
     </div>
 
     <div class="sync-stage">
-      <!-- Phone -->
       <div class="device phone">
         <svg viewBox="0 0 100 180" xmlns="http://www.w3.org/2000/svg">
           <rect x="6" y="6" width="88" height="168" rx="14" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>
           <rect x="14" y="22" width="72" height="136" rx="6" fill="#eff6ff"/>
           <circle cx="50" cy="14" r="2" fill="#94a3b8"/>
-          <!-- screen content -->
           <rect x="20" y="32" width="24" height="6" rx="2" fill="#2563eb"/>
           <rect x="20" y="44" width="60" height="20" rx="4" fill="#fff" stroke="#dbeafe"/>
           <rect x="24" y="50" width="20" height="3" rx="1.5" fill="#cbd5e1"/>
@@ -557,12 +550,11 @@
           <rect x="24" y="108" width="30" height="3" rx="1.5" fill="#94a3b8"/>
           <circle cx="50" cy="166" r="2" fill="#cbd5e1"/>
         </svg>
-        <div class="device-label">📱 Skanneerib QR</div>
+        <div class="device-label" data-i18n="sync_phone">📱 Scans QR</div>
       </div>
 
-      <!-- Flow with QR in the middle -->
       <div class="sync-flow">
-        <div class="scan-chip top">🔗 jagamislink</div>
+        <div class="scan-chip top" data-i18n="sync_chip_top">🔗 share link</div>
         <svg class="flow-anim" viewBox="0 0 400 120" preserveAspectRatio="none">
           <defs>
             <path id="flow-path" d="M 10 60 Q 200 -10 390 60"/>
@@ -577,21 +569,16 @@
           <circle r="5" fill="#60a5fa"><animateMotion dur="3s" repeatCount="indefinite" begin="1.5s"><mpath href="#flow-path-rev"/></animateMotion></circle>
           <circle r="5" fill="#60a5fa"><animateMotion dur="3s" repeatCount="indefinite" begin="2.5s"><mpath href="#flow-path-rev"/></animateMotion></circle>
         </svg>
-        <div class="qr-mini" aria-label="QR-kood">
+        <div class="qr-mini" aria-label="QR">
           <svg viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
             <rect width="21" height="21" fill="#fff"/>
-            <!-- 21x21 stylized QR -->
             <g fill="#0f172a">
-              <!-- top-left finder -->
               <rect x="0" y="0" width="7" height="1"/><rect x="0" y="0" width="1" height="7"/><rect x="6" y="0" width="1" height="7"/><rect x="0" y="6" width="7" height="1"/>
               <rect x="2" y="2" width="3" height="3"/>
-              <!-- top-right finder -->
               <rect x="14" y="0" width="7" height="1"/><rect x="14" y="0" width="1" height="7"/><rect x="20" y="0" width="1" height="7"/><rect x="14" y="6" width="7" height="1"/>
               <rect x="16" y="2" width="3" height="3"/>
-              <!-- bottom-left finder -->
               <rect x="0" y="14" width="7" height="1"/><rect x="0" y="14" width="1" height="7"/><rect x="6" y="14" width="1" height="7"/><rect x="0" y="20" width="7" height="1"/>
               <rect x="2" y="16" width="3" height="3"/>
-              <!-- random data modules -->
               <rect x="8" y="2" width="1" height="1"/><rect x="10" y="0" width="1" height="1"/><rect x="11" y="2" width="1" height="1"/><rect x="9" y="4" width="1" height="1"/><rect x="12" y="4" width="1" height="1"/>
               <rect x="8" y="8" width="1" height="1"/><rect x="10" y="8" width="2" height="1"/><rect x="13" y="8" width="1" height="1"/><rect x="15" y="8" width="2" height="1"/><rect x="18" y="8" width="1" height="1"/>
               <rect x="2" y="9" width="1" height="2"/><rect x="4" y="10" width="2" height="1"/><rect x="9" y="10" width="1" height="2"/><rect x="11" y="11" width="1" height="1"/><rect x="13" y="10" width="2" height="1"/><rect x="16" y="10" width="1" height="2"/><rect x="19" y="11" width="1" height="1"/>
@@ -601,22 +588,18 @@
             </g>
           </svg>
         </div>
-        <div class="scan-chip bot">🔒 krüpteeritud</div>
+        <div class="scan-chip bot" data-i18n="sync_chip_bot">🔒 encrypted</div>
       </div>
 
-      <!-- Laptop -->
       <div class="device laptop">
         <svg viewBox="0 0 220 150" xmlns="http://www.w3.org/2000/svg">
-          <!-- screen -->
           <rect x="20" y="6" width="180" height="118" rx="8" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>
           <rect x="28" y="14" width="164" height="100" rx="4" fill="#eff6ff"/>
-          <!-- sidebar -->
           <rect x="32" y="18" width="34" height="92" rx="3" fill="#fff"/>
           <rect x="36" y="24" width="18" height="3" rx="1.5" fill="#2563eb"/>
           <rect x="36" y="36" width="22" height="3" rx="1.5" fill="#94a3b8"/>
           <rect x="36" y="44" width="22" height="3" rx="1.5" fill="#94a3b8"/>
           <rect x="36" y="52" width="22" height="3" rx="1.5" fill="#94a3b8"/>
-          <!-- content -->
           <rect x="72" y="22" width="40" height="4" rx="2" fill="#2563eb"/>
           <rect x="72" y="32" width="56" height="3" rx="1.5" fill="#94a3b8"/>
           <rect x="72" y="42" width="118" height="22" rx="3" fill="#fff" stroke="#dbeafe"/>
@@ -627,11 +610,10 @@
           <rect x="76" y="84" width="48" height="3" rx="1.5" fill="#94a3b8"/>
           <rect x="72" y="98" width="118" height="14" rx="3" fill="#fff" stroke="#dbeafe"/>
           <rect x="76" y="103" width="40" height="3" rx="1.5" fill="#cbd5e1"/>
-          <!-- base -->
           <path d="M10 124 L210 124 L218 138 L2 138 Z" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="2" stroke-linejoin="round"/>
           <rect x="90" y="124" width="40" height="3" rx="1.5" fill="#cbd5e1"/>
         </svg>
-        <div class="device-label">Arvuti</div>
+        <div class="device-label" data-i18n="sync_laptop">💻 Pastes link</div>
       </div>
     </div>
 
@@ -639,22 +621,22 @@
       <div class="ss-step">
         <div class="ss-num">1</div>
         <div>
-          <h4>Aktiveeri esimeses seadmes</h4>
-          <p>Seaded → "Aktiveeri see seade". Ekraanile ilmub QR-kood ja jagamislink.</p>
+          <h4 data-i18n="sync_step_1_t">Activate the first device</h4>
+          <p data-i18n="sync_step_1_d">Settings → "Activate this device". A QR code and share link appear on screen.</p>
         </div>
       </div>
       <div class="ss-step">
         <div class="ss-num">2</div>
         <div>
-          <h4>Paarista teine seade</h4>
-          <p><strong>Telefoniga:</strong> ava kaamera, suuna QR-koodile, vajuta avanevat linki. <strong>Arvutiga:</strong> kopeeri jagamislink ja ava see teises brauseris. Mitte midagi tippida pole vaja.</p>
+          <h4 data-i18n="sync_step_2_t">Pair the second device</h4>
+          <p data-i18n="sync_step_2_d"><strong>Phone:</strong> open the camera, point at the QR, tap the link that appears. <strong>Computer:</strong> copy the share link and open it in another browser. Nothing to type.</p>
         </div>
       </div>
       <div class="ss-step">
         <div class="ss-num">3</div>
         <div>
-          <h4>Valmis</h4>
-          <p>Iga muudatus liigub seadmete vahel automaatselt — krüpteerituna sinu seadmes enne saatmist.</p>
+          <h4 data-i18n="sync_step_3_t">Done</h4>
+          <p data-i18n="sync_step_3_d">Every change flows between devices automatically — encrypted on your device before it ever leaves.</p>
         </div>
       </div>
     </div>
@@ -665,41 +647,41 @@
 <section class="sec faq-wrap" id="faq">
   <div class="wrap">
     <div class="sec-head">
-      <div class="sec-eyebrow">Korduma kippuvad küsimused</div>
-      <h2>Tüüpilised küsimused</h2>
+      <div class="sec-eyebrow" data-i18n="faq_eyebrow">Frequently asked</div>
+      <h2 data-i18n="faq_h2">Common questions</h2>
     </div>
     <div class="faq-grid">
       <div class="faq-list">
         <details class="faq-item" open>
-          <summary>Kas see on tõesti tasuta?</summary>
-          <div class="faq-body">Jah. Arvik on praegu täiesti tasuta — ilma piiranguteta arvete arvule, klientide arvule või PDF-ide allalaadimisele. Tulevikus võib lisanduda tasuline versioon meeskonnafunktsioonidega, aga praegune kasutus jääb tasuta.</div>
+          <summary data-i18n="faq_1_q">Is it really free?</summary>
+          <div class="faq-body" data-i18n="faq_1_a">Yes. Arvik is fully free right now — no limits on invoices, clients, or PDF downloads. A paid plan with team features may come later, but current use stays free forever.</div>
         </details>
         <details class="faq-item">
-          <summary>Kuhu mu andmed salvestuvad?</summary>
-          <div class="faq-body">Vaikimisi sinu brauseri kohalikku salvestusse (localStorage) — need ei lahku sinu arvutist. Kui aktiveerid sünkroniseerimise, krüpteeritakse andmed enne pilve saatmist sinu seadmes — server näeb ainult krüpteeritud andmeid, mida ei saa ilma sinu koodita lahti võtta. Krüpteerimine kasutab AES-256-GCM ja võti tuletatakse sinu koodist PBKDF2-ga (120 000 iteratsiooni).</div>
+          <summary data-i18n="faq_2_q">Where is my data stored?</summary>
+          <div class="faq-body" data-i18n="faq_2_a">By default, in your browser's local storage — it never leaves your device. If you turn on sync, data is encrypted in your browser <strong>before</strong> being sent to the cloud — the server only sees ciphertext that can't be opened without your code. Encryption uses AES-256-GCM and the key is derived from your code via PBKDF2 (120,000 iterations).</div>
         </details>
         <details class="faq-item">
-          <summary>Kas saan kasutada mitmes seadmes?</summary>
-          <div class="faq-body">Jah. Aktiveeri ühel seadmel sünkroniseerimine — saad QR-koodi ja jagamislingi. Telefoniga skanneerid QR-koodi kaameraga ja vajutad avanevat linki. Teises arvutis avad jagamislingi brauseris. <strong>Mitte midagi tippida pole vaja.</strong> Andmed krüpteeritakse sinu seadmes <strong>enne</strong> serverisse saatmist — meie ei näe neid kunagi. Hoia link kindlas kohas — kui kaotad selle, kaotad pilves olnud andmetele ligipääsu.</div>
+          <summary data-i18n="faq_3_q">Can I use it on multiple devices?</summary>
+          <div class="faq-body" data-i18n="faq_3_a">Yes. Activate sync on one device — you get a QR code and a share link. Scan the QR with your phone camera and tap the link, or paste the share link into another browser. <strong>Nothing to type.</strong> Data is encrypted on your device before being sent — we never see it. Keep the link safe — losing it means losing access to the synced data.</div>
         </details>
         <details class="faq-item">
-          <summary>Kas on Eesti KMKR-i tugi?</summary>
-          <div class="faq-body">Jah. Saad lisada nii oma ettevõtte KMKR numbri kui ka kliendi KMKR numbri. Käibemaksu määr on muudetav igal arvel (vaikimisi 22%). KMKR ja registrikood kuvatakse arve PDF-il vastavalt Eesti tavadele.</div>
+          <summary data-i18n="faq_4_q">Is there VAT support?</summary>
+          <div class="faq-body" data-i18n="faq_4_a">Yes. Add your company's VAT number and your client's VAT number. The VAT rate is editable on every invoice (default 22%, change to whatever your country uses). VAT and registration number show on the PDF following standard invoice format.</div>
         </details>
         <details class="faq-item">
-          <summary>Kuidas ma arve kliendile saadan?</summary>
-          <div class="faq-body">Vajuta "Salvesta &amp; lae PDF" — saad PDF-faili kohe alla. Edasi saadad selle e-postiga oma tavalisest e-postiprogrammist (Gmail, Outlook). Hoiame teadlikult lihtsana: sinu e-post jääb sinu kontrolli alla.</div>
+          <summary data-i18n="faq_5_q">How do I send the invoice to my client?</summary>
+          <div class="faq-body" data-i18n="faq_5_a">Click "Save &amp; Download PDF" — the file downloads instantly. Then attach it to an email from your normal email client (Gmail, Outlook). We keep it intentionally simple: your email stays under your control.</div>
         </details>
         <details class="faq-item">
-          <summary>Kas saan lisada oma logo ja IBAN-i?</summary>
-          <div class="faq-body">Muidugi. Seaded → laadid logo üles (PNG või JPG), täidad ettevõtte info, panga ja IBAN-i. Kõik need kuvatakse iga arve PDF-il automaatselt. Saad ka panna oma viitenumbri formaadi.</div>
+          <summary data-i18n="faq_6_q">Can I add my logo and IBAN?</summary>
+          <div class="faq-body" data-i18n="faq_6_a">Of course. Settings → upload a logo (PNG or JPG), fill in your company info, bank and IBAN. Everything shows on every invoice PDF automatically.</div>
         </details>
       </div>
       <aside class="faq-aside">
         <svg class="mascot mascot-sm"><use href="#mascot"/></svg>
-        <h4>Veel küsimusi?</h4>
-        <p>Kirjuta — vastame samal päeval.</p>
-        <a href="mailto:tere@arvik.ee" class="btn btn-primary">Saada e-kiri</a>
+        <h4 data-i18n="faq_aside_t">More questions?</h4>
+        <p data-i18n="faq_aside_p">Write — we reply the same day.</p>
+        <a href="mailto:hello@arvik.ee" class="btn btn-primary" data-i18n="faq_aside_btn">Send email</a>
       </aside>
     </div>
   </div>
@@ -709,16 +691,185 @@
 <section class="cta-wrap">
   <div class="wrap">
     <div class="cta-card">
-      <h2>Maailma turvaliseim arveldus<br>on ka kõige lihtsam.</h2>
-      <p>Ei kontot. Ei registreerumist. 30 sekundit esimese arveni.</p>
-      <a href="/app.html" class="btn btn-white btn-lg">Ava Arvik tasuta →</a>
+      <h2 data-i18n="cta_h2">The world's most secure invoicing<br>is also the easiest.</h2>
+      <p data-i18n="cta_p">No account. No signup. 30 seconds to your first invoice.</p>
+      <a href="/app.html" class="btn btn-white btn-lg" data-i18n="cta_btn">Open Arvik free →</a>
     </div>
   </div>
 </section>
 
 <footer class="ftr">
-  <div class="wrap">© 2026 Arvik · Tehtud Eestis · <a href="/app.html" style="color:var(--blue)">Ava rakendus</a></div>
+  <div class="wrap" data-i18n="footer">© 2026 Arvik · Built for the world · <a href="/app.html" style="color:var(--blue)">Open app</a></div>
 </footer>
 
+<script>
+const i18n = {
+  en: {}, // English values live in the HTML; empty dict means no replacement needed
+  et: {
+    brand_tag: 'Lihtne arveldus',
+    nav_features: 'Omadused',
+    nav_how: 'Kuidas töötab',
+    nav_security: 'Turvalisus',
+    nav_sync: 'Sünk',
+    nav_faq: 'KKK',
+    nav_cta: 'Ava Arvik →',
+
+    hero_first: 'Esimene',
+    hero_eyebrow: 'null-teadmusega arveldus maailmas',
+    hero_h1: 'Maailma <span class="accent">turvaliseim</span><br>ja lihtsaim arveldus.',
+    hero_sub: 'Loo arve, saada PDF, saa tasutud — 30 sekundiga. Sinu andmed jäävad sinu seadmesse, krüpteeritud. <strong>Tasuta. Ilma kontota. Ilma kompromisseta.</strong>',
+    hero_cta1: 'Ava Arvik tasuta →',
+    hero_cta2: 'Vaata kuidas →',
+    hero_privacy_t: 'Esimene arveldus, kus server ei näe sinu andmeid',
+    hero_privacy_s: 'Sama tehnoloogia mis Bitwarden, Proton, Signal · loe lähemalt →',
+
+    trust_vat: 'Käibemaksu tugi',
+    trust_iban: 'IBAN-iga',
+    trust_pdf: 'PDF kohe',
+
+    float1_l: 'Arve nr ARVE-1042',
+    float1_v: 'Tasutud · 1 480,00 €',
+    float2_l: 'Saadetud',
+    float2_v: 'PDF kliendile',
+
+    feat_eyebrow: 'Omadused',
+    feat_h2: 'Kõik, mida arveldamiseks vaja',
+    feat_sub: 'Ei mingit ülearust. Lihtsalt töötab.',
+    feat_1_t: 'Arve 30 sekundiga',
+    feat_1_d: 'Lihtne vorm, taaskasutatavad kliendid, automaatne numeratsioon. Hakka tööle kohe.',
+    feat_2_t: 'PDF kohe saadetav',
+    feat_2_d: 'Lae arve PDF-ina alla ja saada kliendile e-postiga. Korrektne vorming, IBAN, viitenumber ja käibemaks.',
+    feat_3_t: 'Jälgi tasumist',
+    feat_3_d: 'Töölaud näitab kohe — tasumata, üle tähtaja, tasutud sel kuul. Ei pea Exceli järgi mõtlema.',
+    feat_4_t: 'Korduvarved',
+    feat_4_d: 'Igakuised või kvartali­põhised arved tekivad automaatselt mustanditena. Vajuta nupp, saada.',
+    feat_5_t: 'Sinu logo ja brändimine',
+    feat_5_d: 'Lae üles logo, lisa ettevõtte andmed, KMKR ja IBAN — kõik kuvatakse arvel professionaalselt.',
+    feat_6_t: 'Krüpteeritud sünkroniseerimine',
+    feat_6_d: 'Andmed elavad sinu seadmes. Soovi korral sünkroniseeri telefoni ja arvuti vahel — kõik krüpteeritud, kontot pole vaja.',
+
+    steps_eyebrow: 'Kuidas töötab',
+    steps_h2: 'Kolm sammu esimese arveni',
+    steps_sub: 'Tõsiselt. Vähem juhiseid kui tavalise rakenduse seadistamine.',
+    step_1_t: 'Lisa klient',
+    step_1_d: 'Nimi, e-post, KMKR. Ühe korra — pärast valid rippmenüüst.',
+    step_2_t: 'Loo arve',
+    step_2_d: 'Vali klient, lisa read, summa arvutatakse automaatselt koos käibemaksuga.',
+    step_3_t: 'Saada PDF',
+    step_3_d: 'Lae alla PDF, saada e-postiga. Märgi tasutuks, kui raha laekub.',
+
+    sec_eyebrow: 'Turvalisus',
+    sec_h2: 'Server ei näe sinu arveid. Mitte iial.',
+    sec_sub: 'Arvik on null-teadmusega — kõik andmed krüpteeritakse sinu seadmes <strong>enne</strong> pilve saatmist. Isegi meie ise ei saa sinu arveid avada.',
+    sec_panel_l: 'Sinu seadmes',
+    sec_panel_r: 'Meie serveris',
+    sec_receipt_paid: 'TASUTUD',
+    sec_receipt_client: 'Klient',
+    sec_receipt_amount: 'Summa',
+    sec_receipt_due: 'Tähtaeg',
+    sec_receipt_vat: 'KMKR nr',
+    sec_arrow: 'AES-256<br>krüpteerimine',
+    sec_card_1_t: 'Krüpteeritud sinu seadmes',
+    sec_card_1_d: 'Iga muudatus krüpteeritakse sinu brauseris AES-256-GCM-ga enne saatmist. Võti ei lahku kunagi sinu seadmest.',
+    sec_card_2_t: 'Sinu kood = sinu võti',
+    sec_card_2_d: 'Sünkroniseerimiskood toimib ka dekrüpteerimise võtmena. Ilma koodita ei saa keegi — sealhulgas meie — andmeid lugeda.',
+    sec_card_3_t: 'Null-teadmusega salvestus',
+    sec_card_3_d: 'Server hoiab ainult krüptogrammi. Andmeleke meie poolt = mõttetud baidid. Sinu äri jääb puutumatuks.',
+
+    ts_label: 'Sama null-teadmusega tehnoloogiat kasutavad ka',
+    ts_bw: 'Kaitseb sinu paroole',
+    ts_pt: 'Kaitseb sinu e-kirju',
+    ts_sg: 'Kaitseb sinu sõnumeid',
+    ts_us: 'Kaitseb sinu arveid',
+    ts_new: 'UUS',
+    ts_line: 'Tavalised arveldustarkvarad — <strong>QuickBooks, Xero, FreshBooks, Wave ja kõik teised</strong> — hoiavad sinu andmeid loetavas vormis oma serverites. Töötajad ja seal kuriteoga tegelevad häkkerid saavad need lahti võtta. Arvik on <strong>esimene ja ainus</strong>, kus seda teha ei saa.',
+
+    sec_tech: 'Krüpteerimine: <code>AES-256-GCM</code>, võti tuletatud sinu sünkroniseerimiskoodi pealt <code>PBKDF2-ga</code> (120 000 iteratsiooni, SHA-256). Kogu krüpteerimine toimub sinu brauseris <code>Web Crypto API</code> kaudu.',
+
+    sync_eyebrow: 'Sünkroniseerimine',
+    sync_h2: 'Telefon ja arvuti — sama Arvik',
+    sync_sub: '<strong>Skanneeri QR-kood</strong> telefoniga või <strong>kopeeri jagamislink</strong> teise arvutisse. Ühe puudutusega paaritud. Andmed krüpteeritakse sinu seadmes <strong>enne</strong> serverisse jõudmist.',
+    sync_phone: '📱 Skanneerib QR',
+    sync_laptop: '💻 Kleebib lingi',
+    sync_chip_top: '🔗 jagamislink',
+    sync_chip_bot: '🔒 krüpteeritud',
+    sync_step_1_t: 'Aktiveeri esimeses seadmes',
+    sync_step_1_d: 'Seaded → "Aktiveeri see seade". Ekraanile ilmub QR-kood ja jagamislink.',
+    sync_step_2_t: 'Paarista teine seade',
+    sync_step_2_d: '<strong>Telefoniga:</strong> ava kaamera, suuna QR-koodile, vajuta avanevat linki. <strong>Arvutiga:</strong> kopeeri jagamislink ja ava see teises brauseris. Mitte midagi tippida pole vaja.',
+    sync_step_3_t: 'Valmis',
+    sync_step_3_d: 'Iga muudatus liigub seadmete vahel automaatselt — krüpteerituna sinu seadmes enne saatmist.',
+
+    faq_eyebrow: 'Korduma kippuvad küsimused',
+    faq_h2: 'Tüüpilised küsimused',
+    faq_1_q: 'Kas see on tõesti tasuta?',
+    faq_1_a: 'Jah. Arvik on praegu täiesti tasuta — ilma piiranguteta arvete arvule, klientide arvule või PDF-ide allalaadimisele. Tulevikus võib lisanduda tasuline versioon meeskonnafunktsioonidega, aga praegune kasutus jääb alati tasuta.',
+    faq_2_q: 'Kuhu mu andmed salvestuvad?',
+    faq_2_a: 'Vaikimisi sinu brauseri kohalikku salvestusse (localStorage) — need ei lahku sinu seadmest. Kui aktiveerid sünkroniseerimise, krüpteeritakse andmed enne pilve saatmist sinu seadmes — server näeb ainult krüpteeritud andmeid, mida ei saa ilma sinu koodita lahti võtta. Krüpteerimine kasutab AES-256-GCM ja võti tuletatakse sinu koodist PBKDF2-ga (120 000 iteratsiooni).',
+    faq_3_q: 'Kas saan kasutada mitmes seadmes?',
+    faq_3_a: 'Jah. Aktiveeri ühel seadmel sünkroniseerimine — saad QR-koodi ja jagamislingi. Telefoniga skanneerid QR-koodi kaameraga ja vajutad avanevat linki. Teises arvutis avad jagamislingi brauseris. <strong>Mitte midagi tippida pole vaja.</strong> Andmed krüpteeritakse sinu seadmes enne saatmist — meie ei näe neid kunagi. Hoia link kindlas kohas — kui kaotad selle, kaotad pilves olnud andmetele ligipääsu.',
+    faq_4_q: 'Kas on käibemaksu tugi?',
+    faq_4_a: 'Jah. Saad lisada nii oma ettevõtte KMKR numbri kui ka kliendi KMKR numbri. Käibemaksu määr on muudetav igal arvel (vaikimisi 22%). KMKR ja registrikood kuvatakse arve PDF-il vastavalt tavadele.',
+    faq_5_q: 'Kuidas ma arve kliendile saadan?',
+    faq_5_a: 'Vajuta "Salvesta &amp; lae PDF" — saad PDF-faili kohe alla. Edasi saadad selle e-postiga oma tavalisest e-postiprogrammist (Gmail, Outlook). Hoiame teadlikult lihtsana: sinu e-post jääb sinu kontrolli alla.',
+    faq_6_q: 'Kas saan lisada oma logo ja IBAN-i?',
+    faq_6_a: 'Muidugi. Seaded → laadid logo üles (PNG või JPG), täidad ettevõtte info, panga ja IBAN-i. Kõik need kuvatakse iga arve PDF-il automaatselt.',
+    faq_aside_t: 'Veel küsimusi?',
+    faq_aside_p: 'Kirjuta — vastame samal päeval.',
+    faq_aside_btn: 'Saada e-kiri',
+
+    cta_h2: 'Maailma turvaliseim arveldus<br>on ka kõige lihtsam.',
+    cta_p: 'Ei kontot. Ei registreerumist. 30 sekundit esimese arveni.',
+    cta_btn: 'Ava Arvik tasuta →',
+
+    footer: '© 2026 Arvik · Tehtud maailmale · <a href="/app.html" style="color:var(--blue)">Ava rakendus</a>',
+  }
+};
+
+// Mirror EN dictionary from the HTML (so toggling EN re-applies originals after ET swap)
+(function(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    i18n.en[el.dataset.i18n] = el.innerHTML;
+  });
+})();
+
+const titles = {
+  en: { title: "Arvik — The world's most secure and easiest invoicing", desc: "Arvik is the world's first zero-knowledge invoicing tool. Create an invoice in 30 seconds — your data stays only with you. Free, no account." },
+  et: { title: "Arvik — Maailma turvaliseim ja lihtsaim arveldus", desc: "Arvik on maailma esimene null-teadmusega arveldustarkvara. Loo arve 30 sekundiga, sinu andmed jäävad ainult sulle. Tasuta, ilma kontota." }
+};
+
+function detectLang(){
+  const stored = localStorage.getItem('arvik_lang');
+  if(stored && i18n[stored]) return stored;
+  const browser = (navigator.language || 'en').toLowerCase();
+  if(browser.startsWith('et')) return 'et';
+  return 'en';
+}
+
+function applyLang(lang){
+  if(!i18n[lang]) lang = 'en';
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    const v = i18n[lang][key];
+    if(v != null) el.innerHTML = v;
+  });
+  if(titles[lang]){
+    document.title = titles[lang].title;
+    const desc = document.querySelector('meta[name="description"]');
+    if(desc) desc.setAttribute('content', titles[lang].desc);
+  }
+  document.querySelectorAll('[data-lang-btn]').forEach(b => {
+    b.classList.toggle('active', b.dataset.langBtn === lang);
+  });
+  localStorage.setItem('arvik_lang', lang);
+}
+
+document.querySelectorAll('[data-lang-btn]').forEach(b => {
+  b.addEventListener('click', () => applyLang(b.dataset.langBtn));
+});
+
+applyLang(detectLang());
+</script>
 </body>
 </html>
