@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Arvik — Lihtsaim viis arveid saata</title>
 <meta name="description" content="Arvik on lihtsaim viis arveid koostada ja saata. Eesti ettevõtjale tehtud." />
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <style>
   *,*::before,*::after{box-sizing:border-box}
   html,body{margin:0;padding:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,sans-serif;color:#1e293b;background:#f8fafc;font-size:14px;line-height:1.4}
@@ -157,6 +158,54 @@
   .welcome-foot .btn{padding:12px 32px;font-size:15px;font-weight:600;border-radius:12px;background:#2563eb;color:#fff;box-shadow:0 6px 14px -6px rgba(37,99,235,.5)}
   .welcome-foot .btn:hover{background:#1d4ed8}
 
+  /* Sync panel (Settings) */
+  .sync-panel{margin-top:8px;padding:24px;background:#fff;border:1px solid #e2e8f0;border-radius:14px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+  .sync-panel.paired{background:linear-gradient(180deg,#eff6ff 0%,#fff 70%);border-color:#bfdbfe}
+  .sync-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+  .sync-head strong{font-size:15.5px;font-weight:700;color:#0f172a}
+  .sync-status{font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:999px;letter-spacing:.06em;text-transform:uppercase}
+  .sync-status.off{background:#f1f5f9;color:#64748b}
+  .sync-status.on{background:#d1fae5;color:#047857}
+  .sync-lede{font-size:13px;color:#475569;margin:0 0 18px;line-height:1.55}
+  .sync-lede strong{color:#0f172a}
+
+  .sync-paths{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .sync-path{padding:18px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;display:flex;flex-direction:column;gap:8px}
+  .sync-path.primary{background:linear-gradient(135deg,#eff6ff,#dbeafe);border-color:#bfdbfe}
+  .sp-ico{width:40px;height:40px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  .sync-path.primary .sp-ico{background:#2563eb;color:#fff}
+  .sync-path h4{font-size:15px;font-weight:700;margin:2px 0 2px;color:#0f172a}
+  .sync-path > p{font-size:12.5px;color:#475569;margin:0 0 10px;line-height:1.5;flex:1}
+  .sync-path .btn{align-self:flex-start}
+  .mono{font-family:ui-monospace,Menlo,monospace;font-size:13px}
+
+  .sync-paired-body{display:grid;grid-template-columns:200px 1fr;gap:24px;align-items:flex-start;margin-top:6px}
+  .qr-side{text-align:center}
+  .qr-side canvas{width:180px;height:180px;border-radius:12px;background:#fff;padding:10px;border:1px solid #e2e8f0}
+  .qr-hint{font-size:11.5px;color:#64748b;margin:8px 0 0;line-height:1.4}
+  .code-side .code-row{display:flex;gap:6px;margin-bottom:14px}
+  .paired-steps{padding:12px 14px;background:#f8fafc;border-radius:10px;font-size:12.5px;color:#334155;line-height:1.6}
+  .paired-steps strong{display:block;margin-bottom:6px;color:#0f172a;font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+  .paired-steps ol{margin:0;padding-left:20px}
+  .paired-steps li{margin-bottom:2px}
+  .paired-steps li strong{display:inline;text-transform:none;letter-spacing:0;font-size:inherit}
+  .sync-status-line{font-size:11px;color:#94a3b8;margin-top:10px}
+  .paired-footer{padding-top:14px;margin-top:14px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+  .paired-footer .hint{font-size:11.5px;color:#94a3b8}
+
+  @media (max-width:720px){
+    .sync-paths{grid-template-columns:1fr}
+    .sync-paired-body{grid-template-columns:1fr;justify-items:center}
+    .code-side{width:100%}
+  }
+
+  /* Sidebar sync indicator */
+  .sync-indicator{display:flex;align-items:center;gap:6px;padding:4px 8px;margin:6px 12px 0;border-radius:6px;font-size:11px;color:#64748b}
+  .sync-indicator.on{color:#047857;background:#d1fae5}
+  .sync-indicator .dot{width:7px;height:7px;border-radius:50%;background:#cbd5e1}
+  .sync-indicator.on .dot{background:#10b981;animation:pulse-dot 2s ease-in-out infinite}
+  @keyframes pulse-dot{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.5)}50%{box-shadow:0 0 0 4px rgba(16,185,129,0)}}
+
   /* Onboard bar on dashboard */
   .onboard-bar{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;padding:16px 22px;border-radius:14px;margin-bottom:22px;display:flex;align-items:center;justify-content:space-between;gap:14px;box-shadow:0 10px 30px -10px rgba(37,99,235,.4)}
   .onboard-bar-text{font-size:14px;line-height:1.4}
@@ -208,6 +257,7 @@
         <div class="brand-tag">Lihtne arveldus</div>
       </div>
     </a>
+    <div id="sidebar-sync-indicator" class="sync-indicator"></div>
     <nav class="nav">
       <button data-view="dashboard" class="nav-btn"><span class="ico">📊</span>Töölaud</button>
       <button data-view="invoices" class="nav-btn"><span class="ico">📄</span>Arved</button>
@@ -399,10 +449,23 @@ function schedulePush(){
   pushTimer=setTimeout(syncPush,1500);
 }
 function updateSyncStatus(text){
+  renderSidebarSyncIndicator();
   const el=document.getElementById('sync-status-line');if(!el)return;
   if(text){el.textContent=text;return}
   const last=getSyncLast();
-  el.textContent=last?'Viimati sünkroniseeritud: '+new Date(last).toLocaleTimeString('et-EE'):'Sünkroniseerimine aktiivne';
+  el.textContent=last?'✓ Viimati sünkroniseeritud: '+new Date(last).toLocaleTimeString('et-EE'):'Sünkroniseerimine aktiivne';
+}
+function renderSidebarSyncIndicator(){
+  const el=document.getElementById('sidebar-sync-indicator');if(!el)return;
+  const code=getSyncCode();
+  el.className=code?'sync-indicator on':'sync-indicator';
+  el.innerHTML='<span class="dot"></span>'+(code?'Paaritud':'Ainult selles seadmes');
+}
+function renderSyncQR(){
+  const canvas=document.getElementById('sync-qr');
+  if(!canvas||!window.QRCode)return;
+  const code=getSyncCode();if(!code)return;
+  QRCode.toCanvas(canvas,code,{width:180,margin:0,color:{dark:'#0f172a',light:'#ffffff'}}).catch(()=>{});
 }
 async function activateSync(){
   const code=generateSyncCode();
@@ -817,29 +880,56 @@ function renderSettings(){
       </div>
       <div class="field"><label class="field-label">Vaikemärkused arvel</label><textarea id="s-notes" class="input" rows="2">${esc(b.notes)}</textarea></div>
 
-      <div style="padding:18px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;margin-top:8px">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-          <strong style="font-size:14px">Sünkroniseerimine seadmete vahel</strong>
-          ${getSyncCode()?'<span style="background:#d1fae5;color:#047857;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;letter-spacing:.04em">AKTIIVNE</span>':''}
+      <div class="sync-panel ${getSyncCode()?'paired':''}">
+        <div class="sync-head">
+          <strong>📲 Seadmete paaristamine</strong>
+          ${getSyncCode()?'<span class="sync-status on">Paaritud</span>':'<span class="sync-status off">Pole aktiveeritud</span>'}
         </div>
-        <p style="font-size:12.5px;color:#64748b;margin:0 0 14px;line-height:1.55">Sünkroniseeri arved telefoni ja arvuti vahel. Andmed krüpteeritakse sinu seadmes — me ei näe neid kunagi. Kood toimib paroolina, hoia see kindlas kohas.</p>
+        <p class="sync-lede">${getSyncCode()?'See seade sünkroniseerib andmeid teiste paaristuses olevate seadmetega. Andmed on krüpteeritud — server ei näe neid.':'Kasuta Arvikut samaaegselt arvutis ja telefonis. <strong>Mõtle nagu Bluetoothi paaristamisest</strong> — anna ühele seadmele kood, sisesta sama kood teises ja seadmed räägivad omavahel. Andmed krüpteeritakse sinu seadmes <strong>enne</strong> serverisse saatmist.'}</p>
+
         ${getSyncCode()?`
-          <div style="margin-bottom:10px">
-            <label class="field-label" style="margin-bottom:6px">Sinu sünkroniseerimiskood</label>
-            <div style="display:flex;gap:8px">
-              <input id="sync-code-display" type="password" readonly value="${esc(getSyncCode())}" class="input" style="font-family:ui-monospace,Menlo,monospace;font-size:13px">
-              <button onclick="document.getElementById('sync-code-display').type=document.getElementById('sync-code-display').type==='password'?'text':'password'" class="btn btn-secondary" style="padding:8px 12px" title="Näita/peida">👁</button>
-              <button onclick="navigator.clipboard.writeText(getSyncCode()).then(()=>toast('Kood kopeeritud'))" class="btn btn-secondary" style="padding:8px 12px">Kopeeri</button>
+          <div class="sync-paired-body">
+            <div class="qr-side">
+              <canvas id="sync-qr"></canvas>
+              <p class="qr-hint">Skanneeri telefoni kaameraga<br>või ava arvik.ee ja sisesta kood</p>
             </div>
-            <div id="sync-status-line" style="font-size:11px;color:#94a3b8;margin-top:6px"></div>
+            <div class="code-side">
+              <label class="field-label" style="margin-bottom:6px">Paaristuskood</label>
+              <div class="code-row">
+                <input id="sync-code-display" type="password" readonly value="${esc(getSyncCode())}" class="input mono">
+                <button onclick="document.getElementById('sync-code-display').type=document.getElementById('sync-code-display').type==='password'?'text':'password'" class="btn btn-secondary" style="padding:8px 12px" title="Näita/peida">👁</button>
+                <button onclick="navigator.clipboard.writeText(getSyncCode()).then(()=>toast('Kood kopeeritud'))" class="btn btn-secondary" style="padding:8px 12px">Kopeeri</button>
+              </div>
+              <div class="paired-steps">
+                <strong>Kuidas teises seadmes:</strong>
+                <ol>
+                  <li>Ava <strong>arvik.ee</strong> brauseris</li>
+                  <li>Seaded → otsi "Seadmete paaristamine"</li>
+                  <li>Sisesta ülemine kood lahtrisse "Liitu"</li>
+                </ol>
+              </div>
+              <div id="sync-status-line" class="sync-status-line"></div>
+            </div>
           </div>
-          <button onclick="disableSync()" class="btn-danger-link" style="font-size:12px">Eemalda see seade sünkroniseerimisest</button>
+          <div class="paired-footer">
+            <div class="hint">⚠️ Hoia kood kindlas kohas — kaotsiminek tähendab pilves andmetele ligipääsu kadu.</div>
+            <button onclick="disableSync()" class="btn-danger-link" style="font-size:12px">Eemalda see seade</button>
+          </div>
         `:`
-          <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
-            <button onclick="activateSync()" class="btn btn-primary">Aktiveeri sünkroniseerimine</button>
-            <span style="font-size:12px;color:#94a3b8">või</span>
-            <input id="sync-code-join" placeholder="arvik-xxxx-xxxx-xxxx-xxxx" class="input" style="flex:1;min-width:240px;font-family:ui-monospace,Menlo,monospace;font-size:13px">
-            <button onclick="joinSync(document.getElementById('sync-code-join').value)" class="btn btn-secondary">Liitu olemasoleva koodiga</button>
+          <div class="sync-paths">
+            <div class="sync-path primary">
+              <div class="sp-ico">⚡</div>
+              <h4>Esimene seade</h4>
+              <p>Aktiveeri sünkroniseerimine sellele seadmele. Saad unikaalse koodi + QR-koodi, mida saad kasutada teistes seadmetes.</p>
+              <button onclick="activateSync()" class="btn btn-primary">Aktiveeri see seade →</button>
+            </div>
+            <div class="sync-path">
+              <div class="sp-ico">📲</div>
+              <h4>Liitu olemasoleva koodiga</h4>
+              <p>Aktiveerisid juba teises seadmes? Sisesta sealne kood, et liituda samade andmetega.</p>
+              <input id="sync-code-join" placeholder="arvik-xxxx-xxxx-xxxx-xxxx" class="input mono" style="margin-bottom:8px">
+              <button onclick="joinSync(document.getElementById('sync-code-join').value)" class="btn btn-secondary">Liitu →</button>
+            </div>
           </div>
         `}
       </div>
@@ -858,6 +948,7 @@ function renderSettings(){
     r.readAsDataURL(f);
   });
   updateSyncStatus();
+  renderSyncQR();
 }
 function removeLogo(){state.business.logo='';save();renderSettings()}
 function saveSettings(){
@@ -966,6 +1057,7 @@ function processRecurring(){
 }
 
 processRecurring();
+renderSidebarSyncIndicator();
 switchView('dashboard');
 if(!localStorage.getItem(TUTORIAL_KEY))showWelcome();
 initSync().then(()=>{switchView(currentView)});
