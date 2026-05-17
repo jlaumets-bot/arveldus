@@ -83,6 +83,10 @@
   .b-unpaid{background:#dbeafe;color:#1d4ed8}
   .b-overdue{background:#ffe4e6;color:#be123c}
   .b-draft{background:#f1f5f9;color:#475569}
+  .attn-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;box-shadow:0 0 0 3px rgba(245,158,11,.2);margin-right:6px;vertical-align:middle;animation:attn-pulse 2s ease-in-out infinite;cursor:help}
+  @keyframes attn-pulse{0%,100%{box-shadow:0 0 0 3px rgba(245,158,11,.2)}50%{box-shadow:0 0 0 6px rgba(245,158,11,0)}}
+  .attn-banner{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px 14px;margin:14px 0;font-size:13px;color:#92400e;display:flex;align-items:center;gap:10px}
+  .attn-banner .ico{font-size:16px}
 
   .empty{padding:56px 24px;text-align:center;color:#64748b}
   .empty-ico{font-size:36px;margin-bottom:10px}
@@ -685,6 +689,14 @@ function invoiceStatus(inv){
   if(inv.dueDate && inv.dueDate<today())return 'overdue';
   return 'unpaid';
 }
+function needsAttention(inv){
+  // Sent invoices nearing or past due — user should check if paid
+  if(inv.status==='paid')return false;
+  if(inv.status==='draft')return false;
+  if(!inv.dueDate)return false;
+  const days=Math.floor((new Date(inv.dueDate)-new Date())/86400000);
+  return days<=3; // due within 3 days OR past due
+}
 function badge(s){return `<span class="badge b-${s}">${STATUS_LABEL[s]}</span>`}
 function totals(inv){
   const sub=(inv.items||[]).reduce((s,i)=>s+(Number(i.qty)||0)*(Number(i.price)||0),0);
@@ -724,6 +736,8 @@ function renderDashboard(){
     if(s==='paid'&&(i.paidDate||'').startsWith(mStart))paid+=t;
   });
   const recent=[...invs].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).slice(0,8);
+  const attnCount=invs.filter(needsAttention).length;
+  const attnHTML=attnCount?`<div class="attn-banner"><span class="ico">⚠️</span><div><strong>${attnCount} ${attnCount===1?'arve':'arvet'} vajab tähelepanu</strong> — kontrolli, kas raha on laekunud, ja vajuta "Märgi tasutuks". Arvik ei jälgi sinu pangakontot.</div></div>`:'';
   const step=onboardNextStep();
   const onboardHTML=step?`
     <div class="onboard-bar">
@@ -750,6 +764,7 @@ function renderDashboard(){
       <div><h1 class="page-title">Töölaud</h1><div class="page-sub">Ülevaade sinu arveldustegevusest</div></div>
       <button onclick="openInvoiceEditor()" class="btn btn-primary">+ Uus arve</button>
     </div>
+    ${attnHTML}
     ${onboardHTML}
     ${nudgeHTML}
     <div class="stat-grid">
@@ -791,7 +806,7 @@ function invoiceTable(invs){
     const c=state.clients.find(x=>x.id===inv.clientId);
     const t=totals(inv).total,s=invoiceStatus(inv);
     return `<tr>
-      <td><strong>${esc(inv.number)}</strong>${inv.recurring?' <span title="Korduv" style="color:#2563eb">↻</span>':''}</td>
+      <td>${needsAttention(inv)?'<span class="attn-dot" title="Vajab tähelepanu — kontrolli, kas tasutud"></span>':''}<strong>${esc(inv.number)}</strong>${inv.recurring?' <span title="Korduv" style="color:#2563eb">↻</span>':''}</td>
       <td>${c?esc(c.name):'<span style="color:#94a3b8">Klient puudub</span>'}</td>
       <td style="color:#475569">${esc(inv.date||'-')}</td>
       <td style="color:#475569">${esc(inv.dueDate||'-')}</td>
