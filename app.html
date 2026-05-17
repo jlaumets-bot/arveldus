@@ -277,6 +277,21 @@
   .sync-indicator.on .dot{background:#10b981;animation:pulse-dot 2s ease-in-out infinite}
   @keyframes pulse-dot{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.5)}50%{box-shadow:0 0 0 4px rgba(16,185,129,0)}}
 
+  /* Sync nudge */
+  .sync-nudge{background:#fff;border:1px solid #fde68a;border-radius:14px;padding:16px 18px;margin-bottom:22px;display:flex;align-items:center;gap:14px;box-shadow:0 4px 12px -4px rgba(251,191,36,.25)}
+  .sync-nudge .sn-ico{font-size:24px;flex-shrink:0;width:42px;height:42px;background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:12px;display:flex;align-items:center;justify-content:center}
+  .sync-nudge .sn-text{flex:1;font-size:13.5px;color:#334155;line-height:1.5}
+  .sync-nudge .sn-text strong{color:#0f172a;display:block;margin-bottom:2px}
+  .sync-nudge .sn-actions{display:flex;gap:8px;flex-shrink:0}
+  .sync-nudge .onboard-btn{background:#2563eb;color:#fff}
+  .sync-nudge .onboard-btn-ghost{color:#64748b;background:transparent}
+  .sync-nudge .onboard-btn-ghost:hover{background:#f1f5f9}
+  @media(max-width:720px){
+    .sync-nudge{flex-direction:column;align-items:flex-start;padding:14px}
+    .sync-nudge .sn-actions{width:100%}
+    .sync-nudge .sn-actions button{flex:1}
+  }
+
   /* Onboard bar on dashboard */
   .onboard-bar{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;padding:16px 22px;border-radius:14px;margin-bottom:22px;display:flex;align-items:center;justify-content:space-between;gap:14px;box-shadow:0 10px 30px -10px rgba(37,99,235,.4)}
   .onboard-bar-text{font-size:14px;line-height:1.4}
@@ -435,12 +450,12 @@
           <p>Vajuta <strong>+ Uus arve</strong>, vali klient, lisa read. Vajuta "Salvesta &amp; lae PDF" — fail ilmub kohe.</p>
         </div>
       </div>
-    </div>
-    <div class="welcome-tip">
-      <div class="welcome-tip-ico">💡</div>
-      <div class="welcome-tip-text">
-        <strong>Pro tipp: sünkroniseerimine seadmete vahel</strong>
-        Aktiveeri Seadetes sünkroniseerimine ja kasuta Arvikut nii arvutis kui telefonis. Andmed krüpteeritakse sinu seadmes — server ei näe neid.
+      <div class="wstep" style="background:linear-gradient(135deg,#eff6ff,#dbeafe);border-color:#bfdbfe">
+        <div class="wstep-num" style="background:#2563eb;color:#fff">4</div>
+        <div class="wstep-body">
+          <h4>Aktiveeri sünkroniseerimine 🔒</h4>
+          <p><strong>Soovitatav.</strong> Hoiab andmed kaitstuna kui seade kaduma läheb ning toob need ka telefoni. Kõik krüpteeritud, kontot ei vaja. <strong>Seaded → Aktiveeri see seade.</strong></p>
+        </div>
       </div>
     </div>
     <div class="welcome-foot">
@@ -718,12 +733,24 @@ function renderDashboard(){
       </div>
     </div>
   `:'';
+  const showSyncNudge=invs.length>=3 && !getSyncCode() && !localStorage.getItem('arvik_sync_nudge_dismissed');
+  const nudgeHTML=showSyncNudge?`
+    <div class="sync-nudge">
+      <div class="sn-ico">🔒</div>
+      <div class="sn-text"><strong>Sul on ${invs.length} arvet selles seadmes — varundus puudub.</strong> Aktiveeri sünkroniseerimine, et hoida andmed kaitstuna ka seadme kaotamise korral. Krüpteeritud, kontot ei vaja.</div>
+      <div class="sn-actions">
+        <button onclick="switchView('settings')" class="onboard-btn">Aktiveeri</button>
+        <button onclick="dismissSyncNudge()" class="onboard-btn-ghost">Hiljem</button>
+      </div>
+    </div>
+  `:'';
   document.getElementById('view-dashboard').innerHTML=`
     <div class="page-head">
       <div><h1 class="page-title">Töölaud</h1><div class="page-sub">Ülevaade sinu arveldustegevusest</div></div>
       <button onclick="openInvoiceEditor()" class="btn btn-primary">+ Uus arve</button>
     </div>
     ${onboardHTML}
+    ${nudgeHTML}
     <div class="stat-grid">
       ${stat('Tasumata',fmt(out),'c-blue','Klientidelt saada')}
       ${stat('Tasutud sel kuul',fmt(paid),'c-emerald','Tulu sel kuul')}
@@ -1063,6 +1090,18 @@ function renderSettings(){
         `}
       </div>
 
+      <div style="margin-top:8px;padding:18px;background:#fff;border:1px solid #e2e8f0;border-radius:12px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <strong style="font-size:14.5px">💾 Varundus</strong>
+        </div>
+        <p style="font-size:12.5px;color:#64748b;margin:0 0 12px;line-height:1.55">Lae kõigi andmete koopia oma seadmesse. Hoia see kindlas kohas (krüpteeritud pilv, parooli haldur). Lisaturvalisus sünkroniseerimise kõrval — kui kaotad seadme ja jagamislingi, on sul siiski varundus.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <button onclick="downloadBackup()" class="btn btn-secondary">⬇ Lae alla varundus</button>
+          <input type="file" id="backup-import" accept=".json,application/json" style="display:none" onchange="importBackup(this.files[0]);this.value=''">
+          <button onclick="document.getElementById('backup-import').click()" class="btn btn-secondary">⬆ Taasta varundusest</button>
+        </div>
+      </div>
+
       <div style="display:flex;justify-content:space-between;align-items:center;padding-top:14px;border-top:1px solid #e2e8f0;margin-top:8px;gap:12px;flex-wrap:wrap">
         <div style="display:flex;gap:14px;align-items:center">
           <button onclick="resetAll()" class="btn-danger-link" style="font-size:13px">Lähtesta kõik andmed</button>
@@ -1099,6 +1138,39 @@ function saveSettings(){
   save();toast('Seaded salvestatud');
 }
 function resetAll(){if(!confirm('Kas kustutada kõik andmed?'))return;localStorage.removeItem(DB_KEY);state=load();renderSettings();toast('Lähtestamine valmis')}
+
+function downloadBackup(){
+  try{
+    const data={version:1,exportedAt:new Date().toISOString(),app:'arvik',state:state};
+    const json=JSON.stringify(data,null,2);
+    const blob=new Blob([json],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=`arvik-varundus-${new Date().toISOString().slice(0,10)}.json`;
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast('Varundus alla laaditud');
+  }catch(e){console.error(e);toast('Varunduse loomine ebaõnnestus')}
+}
+function importBackup(file){
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const data=JSON.parse(e.target.result);
+      if(!data||!data.state||!data.state.business){toast('Vigane varundusfail');return}
+      if(!confirm('Asendada käesoleva seadme andmed selle varundusfailiga? See ei ole tagasipööratav.'))return;
+      state=data.state;
+      localStorage.setItem(DB_KEY,JSON.stringify(state));
+      if(getSyncCode())schedulePush();
+      renderSettings();switchView('dashboard');
+      toast('Varundus taastatud');
+    }catch(err){console.error(err);toast('Vigane fail')}
+  };
+  reader.readAsText(file);
+}
+function dismissSyncNudge(){localStorage.setItem('arvik_sync_nudge_dismissed','1');renderDashboard()}
 
 function printInvoice(id){
   const inv=state.invoices.find(i=>i.id===id);if(!inv)return;
