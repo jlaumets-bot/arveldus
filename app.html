@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Arvik — Lihtsaim viis arveid saata</title>
 <meta name="description" content="Arvik on lihtsaim viis arveid koostada ja saata. Eesti ettevõtjale tehtud." />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js" onerror="this.onerror=null;this.src='https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js'"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js'"></script>
 <style>
   *,*::before,*::after{box-sizing:border-box}
   html,body{margin:0;padding:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,sans-serif;color:#1e293b;background:#f8fafc;font-size:14px;line-height:1.4}
@@ -181,7 +181,8 @@
 
   .sync-paired-body{display:grid;grid-template-columns:200px 1fr;gap:24px;align-items:flex-start;margin-top:6px}
   .qr-side{text-align:center}
-  .qr-side canvas{width:180px;height:180px;border-radius:12px;background:#fff;padding:10px;border:1px solid #e2e8f0}
+  .qr-mount{width:180px;height:180px;border-radius:12px;background:#fff;padding:10px;border:1px solid #e2e8f0;box-sizing:content-box;display:inline-block}
+  .qr-mount img,.qr-mount canvas{display:block;width:180px !important;height:180px !important}
   .qr-hint{font-size:11.5px;color:#64748b;margin:8px 0 0;line-height:1.4}
   .code-side .code-row{display:flex;gap:6px;margin-bottom:14px}
   .paired-steps{padding:12px 14px;background:#f8fafc;border-radius:10px;font-size:12.5px;color:#334155;line-height:1.6}
@@ -463,15 +464,22 @@ function renderSidebarSyncIndicator(){
 }
 function buildPairURL(code){return `${location.origin}${location.pathname}#pair=${code}`}
 function renderSyncQR(retries=0){
-  const canvas=document.getElementById('sync-qr');
-  if(!canvas)return;
+  const el=document.getElementById('sync-qr');
+  if(!el)return;
   const code=getSyncCode();if(!code)return;
-  if(!window.QRCode){
-    if(retries<8){setTimeout(()=>renderSyncQR(retries+1),300);return}
+  if(typeof QRCode==='undefined'){
+    if(retries<10){setTimeout(()=>renderSyncQR(retries+1),300);return}
     console.warn('QR library never loaded');return;
   }
-  QRCode.toCanvas(canvas,buildPairURL(code),{width:180,margin:0,color:{dark:'#0f172a',light:'#ffffff'}})
-    .catch(e=>console.error('QR generation failed',e));
+  try{
+    el.innerHTML='';
+    new QRCode(el,{
+      text:buildPairURL(code),
+      width:180,height:180,
+      colorDark:'#0f172a',colorLight:'#ffffff',
+      correctLevel:QRCode.CorrectLevel.M
+    });
+  }catch(e){console.error('QR generation failed',e)}
 }
 function checkPairURL(){
   const m=(location.hash||'').match(/^#pair=(arvik-[a-z0-9-]{16,30})$/);
@@ -908,7 +916,7 @@ function renderSettings(){
         ${getSyncCode()?`
           <div class="sync-paired-body">
             <div class="qr-side">
-              <canvas id="sync-qr"></canvas>
+              <div id="sync-qr" class="qr-mount"></div>
               <p class="qr-hint">📱 Skanneeri telefoni kaameraga</p>
             </div>
             <div class="code-side">
