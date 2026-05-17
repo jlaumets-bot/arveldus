@@ -50,8 +50,9 @@
   .hero{padding:80px 0 60px;position:relative;overflow:hidden}
   .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 70% 20%, var(--blue-soft) 0%, transparent 60%);z-index:-1}
   .hero-inner{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:center}
-  .hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--blue-soft);color:var(--blue);font-weight:600;font-size:13px;padding:6px 12px;border-radius:999px;margin-bottom:20px}
-  .hero-eyebrow .dot{width:6px;height:6px;background:#10b981;border-radius:50%;box-shadow:0 0 0 4px rgba(16,185,129,.2)}
+  .hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#eff6ff,#dbeafe);color:var(--blue);font-weight:700;font-size:13px;padding:7px 14px 7px 10px;border-radius:999px;margin-bottom:20px;border:1px solid #bfdbfe;letter-spacing:.01em}
+  .hero-eyebrow .lock{width:20px;height:20px;border-radius:50%;background:var(--blue);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:11px}
+  .hero-eyebrow .first-pill{background:#fef3c7;color:#92400e;font-size:10px;font-weight:800;padding:2px 7px;border-radius:6px;letter-spacing:.05em;text-transform:uppercase}
   .hero h1{font-size:clamp(36px,5.2vw,60px);line-height:1.05;letter-spacing:-.03em;font-weight:800;margin:0 0 20px}
   .hero h1 .accent{color:var(--blue)}
   .hero-sub{font-size:19px;color:var(--slate);max-width:520px;margin-bottom:32px}
@@ -298,9 +299,9 @@
   <div class="hero-bg"></div>
   <div class="wrap hero-inner">
     <div>
-      <div class="hero-eyebrow"><span class="dot"></span> Tasuta. Ilma registreerumiseta.</div>
+      <div class="hero-eyebrow"><span class="lock">🔒</span> <span class="first-pill">Esimene</span> null-teadmusega arveldus Eestis</div>
       <h1>Loo arve, saada PDF,<br>saa <span class="accent">tasutud</span>.</h1>
-      <p class="hero-sub">Arvik on lihtsaim viis Eesti väikeettevõtjale arveid koostada. Lisa klient, kirjuta read, lae PDF — kõik 30 sekundiga.</p>
+      <p class="hero-sub">Lihtsaim ja turvaliseim viis Eesti väikeettevõtjale arveid koostada. Sinu andmed elavad sinu seadmes — krüpteeritud. <strong>Tasuta. Ilma kontota.</strong></p>
       <div class="hero-cta">
         <a href="/app.html" class="btn btn-primary btn-lg">Ava Arvik tasuta →</a>
         <a href="#kuidas" class="btn btn-ghost btn-lg">Vaata kuidas →</a>
