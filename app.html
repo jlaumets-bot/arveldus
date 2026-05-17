@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Arvik — Lihtsaim viis arveid saata</title>
 <meta name="description" content="Arvik on lihtsaim viis arveid koostada ja saata. Eesti ettevõtjale tehtud." />
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js" onerror="this.onerror=null;this.src='https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js'"></script>
 <style>
   *,*::before,*::after{box-sizing:border-box}
   html,body{margin:0;padding:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,sans-serif;color:#1e293b;background:#f8fafc;font-size:14px;line-height:1.4}
@@ -462,11 +462,16 @@ function renderSidebarSyncIndicator(){
   el.innerHTML='<span class="dot"></span>'+(code?'Paaritud':'Ainult selles seadmes');
 }
 function buildPairURL(code){return `${location.origin}${location.pathname}#pair=${code}`}
-function renderSyncQR(){
+function renderSyncQR(retries=0){
   const canvas=document.getElementById('sync-qr');
-  if(!canvas||!window.QRCode)return;
+  if(!canvas)return;
   const code=getSyncCode();if(!code)return;
-  QRCode.toCanvas(canvas,buildPairURL(code),{width:180,margin:0,color:{dark:'#0f172a',light:'#ffffff'}}).catch(()=>{});
+  if(!window.QRCode){
+    if(retries<8){setTimeout(()=>renderSyncQR(retries+1),300);return}
+    console.warn('QR library never loaded');return;
+  }
+  QRCode.toCanvas(canvas,buildPairURL(code),{width:180,margin:0,color:{dark:'#0f172a',light:'#ffffff'}})
+    .catch(e=>console.error('QR generation failed',e));
 }
 function checkPairURL(){
   const m=(location.hash||'').match(/^#pair=(arvik-[a-z0-9-]{16,30})$/);
