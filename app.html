@@ -130,6 +130,42 @@
 
   .toast{position:fixed;bottom:24px;right:24px;background:#0f172a;color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;box-shadow:0 8px 20px rgba(0,0,0,.2);z-index:60}
 
+  /* Welcome / Tutorial */
+  .welcome-bg{position:fixed;inset:0;background:rgba(15,23,42,.6);display:flex;align-items:center;justify-content:center;padding:24px;z-index:80;animation:fade-in .3s ease}
+  @keyframes fade-in{from{opacity:0}to{opacity:1}}
+  .welcome-card{background:#fff;border-radius:20px;max-width:640px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 30px 60px -20px rgba(0,0,0,.4);position:relative;animation:pop-in .35s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes pop-in{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+  .welcome-skip{position:absolute;top:14px;right:14px;color:#94a3b8;font-size:13px;padding:6px 10px;border-radius:6px}
+  .welcome-skip:hover{background:#f1f5f9;color:#475569}
+  .welcome-head{text-align:center;padding:36px 32px 8px}
+  .welcome-mascot{width:88px;height:88px;margin:0 auto 18px;border-radius:50%;background:linear-gradient(135deg,#dbeafe,#bfdbfe);display:flex;align-items:center;justify-content:center;font-size:42px;animation:wave-mascot 2s ease-in-out infinite}
+  @keyframes wave-mascot{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+  .welcome-card h2{font-size:24px;font-weight:800;letter-spacing:-.02em;margin:0 0 8px;color:#0f172a}
+  .welcome-card .lede{font-size:14.5px;color:#64748b;margin:0 auto;max-width:440px;line-height:1.55}
+  .welcome-steps{padding:24px 32px 8px;display:flex;flex-direction:column;gap:10px}
+  .wstep{display:flex;gap:14px;align-items:flex-start;padding:14px;border:1px solid #e2e8f0;border-radius:12px;transition:border-color .2s}
+  .wstep:hover{border-color:#bfdbfe;background:#f8fafc}
+  .wstep-num{flex-shrink:0;width:34px;height:34px;border-radius:10px;background:#eff6ff;color:#2563eb;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px}
+  .wstep-body{flex:1}
+  .wstep-body h4{font-size:14.5px;font-weight:700;margin:0 0 2px}
+  .wstep-body p{font-size:13px;color:#64748b;margin:0;line-height:1.5}
+  .welcome-tip{margin:18px 32px;padding:14px 16px;background:linear-gradient(135deg,#eff6ff,#dbeafe);border-radius:12px;display:flex;gap:12px;align-items:flex-start}
+  .welcome-tip-ico{font-size:20px;line-height:1}
+  .welcome-tip-text{font-size:13px;color:#1e40af;line-height:1.5}
+  .welcome-tip-text strong{display:block;margin-bottom:2px}
+  .welcome-foot{padding:14px 32px 28px;display:flex;justify-content:center}
+  .welcome-foot .btn{padding:12px 32px;font-size:15px;font-weight:600;border-radius:12px;background:#2563eb;color:#fff;box-shadow:0 6px 14px -6px rgba(37,99,235,.5)}
+  .welcome-foot .btn:hover{background:#1d4ed8}
+
+  /* Onboard bar on dashboard */
+  .onboard-bar{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;padding:16px 22px;border-radius:14px;margin-bottom:22px;display:flex;align-items:center;justify-content:space-between;gap:14px;box-shadow:0 10px 30px -10px rgba(37,99,235,.4)}
+  .onboard-bar-text{font-size:14px;line-height:1.4}
+  .onboard-bar-text strong{display:block;font-weight:700;font-size:15px;margin-bottom:2px}
+  .onboard-bar-actions{display:flex;gap:8px;flex-shrink:0}
+  .onboard-btn{background:#fff;color:#2563eb;padding:7px 14px;border-radius:8px;font-weight:600;font-size:13px}
+  .onboard-btn-ghost{background:rgba(255,255,255,.15);color:#fff;padding:7px 14px;border-radius:8px;font-weight:500;font-size:13px}
+  .onboard-btn-ghost:hover{background:rgba(255,255,255,.25)}
+
   #print-area{display:none}
   @media print{
     body *{visibility:hidden}
@@ -214,12 +250,74 @@
 <div id="toast" class="toast hidden"></div>
 <div id="print-area"></div>
 
+<!-- Welcome / Tutorial modal -->
+<div id="welcomeModal" class="welcome-bg hidden">
+  <div class="welcome-card">
+    <button class="welcome-skip" onclick="closeWelcome()">Jäta vahele</button>
+    <div class="welcome-head">
+      <div class="welcome-mascot">👋</div>
+      <h2>Tere tulemast Arvikusse!</h2>
+      <p class="lede">Lihtsaim viis Eesti väikeettevõtjale arveid koostada. Vaata kolme sammu — ja sa oled valmis.</p>
+    </div>
+    <div class="welcome-steps">
+      <div class="wstep">
+        <div class="wstep-num">1</div>
+        <div class="wstep-body">
+          <h4>Lisa oma ettevõtte info</h4>
+          <p>Ava <strong>Seaded</strong> → täida ettevõtte nimi, KMKR, IBAN ja lae logo. Need kuvatakse igal arvel automaatselt.</p>
+        </div>
+      </div>
+      <div class="wstep">
+        <div class="wstep-num">2</div>
+        <div class="wstep-body">
+          <h4>Lisa esimene klient</h4>
+          <p>Ava <strong>Kliendid</strong> → lisa klient ühe korra ja taaskasuta hiljem arvete loomisel.</p>
+        </div>
+      </div>
+      <div class="wstep">
+        <div class="wstep-num">3</div>
+        <div class="wstep-body">
+          <h4>Loo arve ja lae PDF</h4>
+          <p>Vajuta <strong>+ Uus arve</strong>, vali klient, lisa read. Vajuta "Salvesta &amp; lae PDF" — fail ilmub kohe.</p>
+        </div>
+      </div>
+    </div>
+    <div class="welcome-tip">
+      <div class="welcome-tip-ico">💡</div>
+      <div class="welcome-tip-text">
+        <strong>Pro tipp: sünkroniseerimine seadmete vahel</strong>
+        Aktiveeri Seadetes sünkroniseerimine ja kasuta Arvikut nii arvutis kui telefonis. Andmed krüpteeritakse sinu seadmes — server ei näe neid.
+      </div>
+    </div>
+    <div class="welcome-foot">
+      <button onclick="closeWelcome()" class="btn">Alusta →</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const DB_KEY='lihtne_arveldus_v1';
 const SYNC_URL='https://swyaqhstdrkqrsekabmc.supabase.co';
 const SYNC_KEY='sb_publishable_ZRMoPGEcUQyvyNeAKc_t0w_o-YY0yay';
 const SYNC_CODE_KEY='arvik_sync_code';
 const SYNC_LAST_KEY='arvik_sync_last';
+const TUTORIAL_KEY='arvik_tutorial_seen';
+
+// ---------- Welcome / tutorial ----------
+function showWelcome(){document.getElementById('welcomeModal').classList.remove('hidden')}
+function closeWelcome(){
+  document.getElementById('welcomeModal').classList.add('hidden');
+  localStorage.setItem(TUTORIAL_KEY,'1');
+}
+function onboardNextStep(){
+  // Returns the first incomplete step, or null if all done
+  const b=state.business;
+  const businessDone=b.name&&b.name!=='Sinu ettevõte'&&(b.email||b.iban||b.regNumber);
+  if(!businessDone)return {n:1,title:'Lisa ettevõtte info',sub:'Lisa nimi, KMKR ja IBAN — kuvatakse igal arvel.',view:'settings'};
+  if(state.clients.length===0)return {n:2,title:'Lisa esimene klient',sub:'Kliendid → + Uus klient. Vali siis arve loomisel rippmenüüst.',view:'clients'};
+  if(state.invoices.length===0)return {n:3,title:'Loo esimene arve',sub:'Vajuta + Uus arve, vali klient, kirjuta read, lae PDF.',view:'invoices',action:'newInvoice'};
+  return null;
+}
 const defaultState={
   business:{name:'Sinu ettevõte',email:'',address:'',phone:'',logo:'',currencySymbol:'€',defaultTaxRate:22,invoicePrefix:'ARVE-',nextNumber:1001,notes:'Täname koostöö eest!'},
   clients:[],invoices:[]
@@ -408,11 +506,22 @@ function renderDashboard(){
     if(s==='paid'&&(i.paidDate||'').startsWith(mStart))paid+=t;
   });
   const recent=[...invs].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).slice(0,8);
+  const step=onboardNextStep();
+  const onboardHTML=step?`
+    <div class="onboard-bar">
+      <div class="onboard-bar-text"><strong>Samm ${step.n}/3 — ${step.title}</strong>${step.sub}</div>
+      <div class="onboard-bar-actions">
+        <button onclick="${step.action==='newInvoice'?'openInvoiceEditor()':`switchView('${step.view}')`}" class="onboard-btn">${step.action==='newInvoice'?'+ Loo arve':'Mine'}</button>
+        <button onclick="showWelcome()" class="onboard-btn-ghost">Õpetus</button>
+      </div>
+    </div>
+  `:'';
   document.getElementById('view-dashboard').innerHTML=`
     <div class="page-head">
       <div><h1 class="page-title">Töölaud</h1><div class="page-sub">Ülevaade sinu arveldustegevusest</div></div>
       <button onclick="openInvoiceEditor()" class="btn btn-primary">+ Uus arve</button>
     </div>
+    ${onboardHTML}
     <div class="stat-grid">
       ${stat('Tasumata',fmt(out),'c-blue','Klientidelt saada')}
       ${stat('Tasutud sel kuul',fmt(paid),'c-emerald','Tulu sel kuul')}
@@ -735,8 +844,11 @@ function renderSettings(){
         `}
       </div>
 
-      <div style="display:flex;justify-content:space-between;padding-top:14px;border-top:1px solid #e2e8f0;margin-top:8px">
-        <button onclick="resetAll()" class="btn-danger-link" style="font-size:13px">Lähtesta kõik andmed</button>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding-top:14px;border-top:1px solid #e2e8f0;margin-top:8px;gap:12px;flex-wrap:wrap">
+        <div style="display:flex;gap:14px;align-items:center">
+          <button onclick="resetAll()" class="btn-danger-link" style="font-size:13px">Lähtesta kõik andmed</button>
+          <button onclick="showWelcome()" class="link" style="font-size:13px">Vaata õpetust uuesti</button>
+        </div>
         <button onclick="saveSettings()" class="btn btn-primary">Salvesta seaded</button>
       </div>
     </div>`;
@@ -855,6 +967,7 @@ function processRecurring(){
 
 processRecurring();
 switchView('dashboard');
+if(!localStorage.getItem(TUTORIAL_KEY))showWelcome();
 initSync().then(()=>{switchView(currentView)});
 </script>
 </body>
