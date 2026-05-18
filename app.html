@@ -6,8 +6,8 @@
 <title>Arvik — Lihtsaim viis arveid saata</title>
 <meta name="description" content="Arvik on lihtsaim viis arveid koostada ja saata. Eesti ettevõtjale tehtud." />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js'"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js'"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
   *,*::before,*::after{box-sizing:border-box}
   html,body{margin:0;padding:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,sans-serif;color:#1e293b;background:#f8fafc;font-size:14px;line-height:1.4}
@@ -145,6 +145,25 @@
   .logo-box .ph{font-size:11px;color:#94a3b8}
 
   .toast{position:fixed;bottom:24px;right:24px;background:#0f172a;color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;box-shadow:0 8px 20px rgba(0,0,0,.2);z-index:60}
+
+  /* Login screen */
+  .login-screen{position:fixed;inset:0;background:linear-gradient(180deg,#f8fafc 0%, #eff6ff 100%);display:flex;align-items:center;justify-content:center;padding:24px;z-index:200}
+  .login-card{background:#fff;border-radius:20px;padding:40px 36px;max-width:420px;width:100%;box-shadow:0 30px 60px -20px rgba(15,23,42,.15);text-align:center}
+  .login-logo{width:64px;height:64px;margin:0 auto 20px}
+  .login-logo svg{width:100%;height:100%;overflow:visible}
+  .login-card h1{font-size:28px;font-weight:800;letter-spacing:-.02em;margin:0 0 8px;color:#0f172a}
+  .login-card .lede{font-size:14.5px;color:#64748b;margin:0 0 28px;line-height:1.55}
+  .login-form{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+  .login-form input{padding:13px 14px;font-size:15px;border:1px solid #cbd5e1;border-radius:10px;text-align:center;font-family:inherit}
+  .login-form input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.15)}
+  .login-form .btn{padding:13px;font-size:15px;font-weight:600;border-radius:10px;background:#2563eb;color:#fff;cursor:pointer;border:none}
+  .login-form .btn:hover{background:#1d4ed8}
+  .login-form .btn:disabled{background:#94a3b8;cursor:not-allowed}
+  .login-status{font-size:13px;color:#475569;min-height:18px;line-height:1.5;margin-bottom:14px}
+  .login-status.ok{color:#047857}
+  .login-status.err{color:#dc2626}
+  .login-tiny{font-size:11.5px;color:#94a3b8;line-height:1.55}
+  .login-tiny strong{color:#475569}
 
   /* Welcome / Tutorial */
   .welcome-bg{position:fixed;inset:0;background:rgba(15,23,42,.6);display:flex;align-items:center;justify-content:center;padding:24px;z-index:80;animation:fade-in .3s ease}
@@ -341,6 +360,33 @@
 </head>
 <body>
 
+<!-- LOGIN SCREEN (shown when no session) -->
+<div id="login-screen" class="login-screen hidden">
+  <div class="login-card">
+    <div class="login-logo">
+      <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="bl-grad-login" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#3b82f6"/>
+            <stop offset="100%" stop-color="#1d4ed8"/>
+          </linearGradient>
+        </defs>
+        <rect class="bl-body" x="3" y="13" width="34" height="25" rx="7" fill="url(#bl-grad-login)"/>
+        <path class="bl-shackle" d="M 12 17 L 12 11 Q 12 4 20 4 Q 28 4 28 11 L 28 17" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <text class="bl-euro" x="20" y="32" text-anchor="middle" font-size="14" font-weight="900" fill="#fff" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif">€</text>
+      </svg>
+    </div>
+    <h1>Arvik</h1>
+    <p class="lede">Encrypted invoicing, without the bloat. Sign in with your email — we send you a magic link.</p>
+    <form class="login-form" onsubmit="event.preventDefault();sendMagicLink()">
+      <input id="login-email" type="email" placeholder="sina@näide.ee" required autocomplete="email">
+      <button type="submit" class="btn" id="login-submit">Saada võlulink →</button>
+    </form>
+    <div id="login-status" class="login-status"></div>
+    <p class="login-tiny"><strong>Ei parooli, ei keerukust.</strong> Sisesta e-post, vajuta nuppu, kliki saabunud lingile. Sama lingiga saad sisse logida igas brauseris ja seadmes.</p>
+  </div>
+</div>
+
 <div class="app">
   <aside class="sidebar">
     <a href="/" class="brand" style="text-decoration:none;color:inherit">
@@ -362,7 +408,6 @@
         <div class="brand-tag">Lihtne arveldus</div>
       </div>
     </a>
-    <div id="sidebar-sync-indicator" class="sync-indicator"></div>
     <nav class="nav">
       <button data-view="dashboard" class="nav-btn"><span class="ico">📊</span>Töölaud</button>
       <button data-view="invoices" class="nav-btn"><span class="ico">📄</span>Arved</button>
@@ -426,32 +471,10 @@
 <div id="toast" class="toast hidden"></div>
 <div id="print-area"></div>
 
-<!-- Join from another device modal -->
-<div id="joinModal" class="modal-bg hidden" style="z-index:90">
-  <div class="modal modal-small">
-    <div class="modal-head">
-      <h2 class="modal-title">📲 Liitu teise seadme andmetega</h2>
-      <button onclick="closeJoinModal()" class="modal-close">×</button>
-    </div>
-    <div class="modal-body">
-      <p style="font-size:13px;color:#475569;margin:0 0 14px;line-height:1.55">Kleebi siia jagamislink või paaristuskood, mille said teises brauseris/seadmes.</p>
-      <input id="join-input" class="input mono" placeholder="https://arvik... või arvik-xxxx-xxxx-xxxx-xxxx" style="font-size:13px" autocomplete="off">
-      <p style="font-size:11.5px;color:#94a3b8;margin:8px 0 16px;line-height:1.55">⚠️ Selle seadme praegused andmed (kui mingid on) asendatakse teise seadme omadega.</p>
-      <div style="display:flex;gap:8px;justify-content:flex-end">
-        <button onclick="closeJoinModal()" class="btn btn-secondary">Tühista</button>
-        <button onclick="submitJoin()" class="btn btn-primary">Liitu →</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- Welcome / Tutorial modal -->
 <div id="welcomeModal" class="welcome-bg hidden">
   <div class="welcome-card">
     <button class="welcome-skip" onclick="closeWelcome()">Jäta vahele</button>
-    <div class="welcome-returning">
-      Kas kasutad Arvikut juba teises brauseris või seadmes? <a onclick="closeWelcome();openJoinModal();return false">Kleebi jagamislink siia →</a>
-    </div>
     <div class="welcome-head">
       <div class="welcome-mascot">👋</div>
       <h2>Tere tulemast Arvikusse!</h2>
@@ -479,13 +502,6 @@
           <p>Vajuta <strong>+ Uus arve</strong>, vali klient, lisa read. Vajuta "Salvesta &amp; lae PDF" — fail ilmub kohe.</p>
         </div>
       </div>
-      <div class="wstep" style="background:linear-gradient(135deg,#eff6ff,#dbeafe);border-color:#bfdbfe">
-        <div class="wstep-num" style="background:#2563eb;color:#fff">4</div>
-        <div class="wstep-body">
-          <h4>Aktiveeri sünkroniseerimine 🔒</h4>
-          <p><strong>Soovitatav.</strong> Hoiab andmed kaitstuna kui seade kaduma läheb ning toob need ka telefoni. Kõik krüpteeritud, kontot ei vaja. <strong>Seaded → Aktiveeri see seade.</strong></p>
-        </div>
-      </div>
     </div>
     <div class="welcome-foot">
       <button onclick="closeWelcome()" class="btn">Alusta →</button>
@@ -495,11 +511,14 @@
 
 <script>
 const DB_KEY='lihtne_arveldus_v1';
-const SYNC_URL='https://swyaqhstdrkqrsekabmc.supabase.co';
-const SYNC_KEY='sb_publishable_ZRMoPGEcUQyvyNeAKc_t0w_o-YY0yay';
-const SYNC_CODE_KEY='arvik_sync_code';
-const SYNC_LAST_KEY='arvik_sync_last';
+const SUPA_URL='https://swyaqhstdrkqrsekabmc.supabase.co';
+const SUPA_KEY='sb_publishable_ZRMoPGEcUQyvyNeAKc_t0w_o-YY0yay';
 const TUTORIAL_KEY='arvik_tutorial_seen';
+const supa = window.supabase ? window.supabase.createClient(SUPA_URL, SUPA_KEY, {
+  auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
+}) : null;
+let session=null;
+let saveTimer=null;
 
 // ---------- Welcome / tutorial ----------
 function showWelcome(){document.getElementById('welcomeModal').classList.remove('hidden')}
@@ -523,170 +542,87 @@ const defaultState={
 let state=load();
 let editingInvoiceId=null,editingClientId=null;
 let currentView='dashboard';
-let pushTimer=null;
 
-// ---------- SYNC (opt-in, E2E encrypted) ----------
-function getSyncCode(){return localStorage.getItem(SYNC_CODE_KEY)||''}
-function setSyncCode(c){if(c)localStorage.setItem(SYNC_CODE_KEY,c);else localStorage.removeItem(SYNC_CODE_KEY)}
-function getSyncLast(){return localStorage.getItem(SYNC_LAST_KEY)||''}
-function setSyncLast(t){localStorage.setItem(SYNC_LAST_KEY,t)}
-
-function generateSyncCode(){
-  const chars='abcdefghjkmnpqrstuvwxyz23456789';
-  const bytes=crypto.getRandomValues(new Uint8Array(16));
-  let s='';
-  for(let i=0;i<16;i++){s+=chars[bytes[i]%chars.length];if(i===3||i===7||i===11)s+='-';}
-  return 'arvik-'+s;
-}
-
-async function deriveKey(code){
-  const enc=new TextEncoder();
-  const material=await crypto.subtle.importKey('raw',enc.encode(code),'PBKDF2',false,['deriveKey']);
-  return crypto.subtle.deriveKey(
-    {name:'PBKDF2',salt:enc.encode('arvik-v1'),iterations:120000,hash:'SHA-256'},
-    material,{name:'AES-GCM',length:256},false,['encrypt','decrypt']
-  );
-}
-function b64encode(bytes){let s='';for(let i=0;i<bytes.length;i++)s+=String.fromCharCode(bytes[i]);return btoa(s)}
-function b64decode(b64){return Uint8Array.from(atob(b64),c=>c.charCodeAt(0))}
-async function encryptState(obj,code){
-  const key=await deriveKey(code);
-  const iv=crypto.getRandomValues(new Uint8Array(12));
-  const data=new TextEncoder().encode(JSON.stringify(obj));
-  const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,data);
-  const combined=new Uint8Array(iv.length+ct.byteLength);
-  combined.set(iv);combined.set(new Uint8Array(ct),iv.length);
-  return b64encode(combined);
-}
-async function decryptState(blob,code){
-  const key=await deriveKey(code);
-  const combined=b64decode(blob);
-  const iv=combined.slice(0,12),ct=combined.slice(12);
-  const data=await crypto.subtle.decrypt({name:'AES-GCM',iv},key,ct);
-  return JSON.parse(new TextDecoder().decode(data));
-}
-
-async function syncPush(){
-  const code=getSyncCode();if(!code)return;
-  try{
-    const blob=await encryptState(state,code);
-    const r=await fetch(`${SYNC_URL}/rest/v1/sync_blobs`,{
-      method:'POST',
-      headers:{'apikey':SYNC_KEY,'Authorization':`Bearer ${SYNC_KEY}`,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates,return=minimal'},
-      body:JSON.stringify({code,blob,updated_at:new Date().toISOString()})
-    });
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    setSyncLast(new Date().toISOString());
-    updateSyncStatus();
-  }catch(e){console.error('sync push',e);updateSyncStatus('Sünkroniseerimine ebaõnnestus')}
-}
-async function syncPull(codeOverride){
-  const code=codeOverride||getSyncCode();if(!code)return null;
-  const r=await fetch(`${SYNC_URL}/rest/v1/sync_blobs?code=eq.${encodeURIComponent(code)}&select=blob,updated_at`,{
-    headers:{'apikey':SYNC_KEY,'Authorization':`Bearer ${SYNC_KEY}`}
-  });
-  if(!r.ok)throw new Error('HTTP '+r.status);
-  const data=await r.json();
-  if(!data.length)return null;
-  const remoteState=await decryptState(data[0].blob,code);
-  return {state:remoteState,updatedAt:data[0].updated_at};
-}
-function schedulePush(){
-  if(!getSyncCode())return;
-  clearTimeout(pushTimer);
-  pushTimer=setTimeout(syncPush,1500);
-}
-function updateSyncStatus(text){
-  renderSidebarSyncIndicator();
-  const el=document.getElementById('sync-status-line');if(!el)return;
-  if(text){el.textContent=text;return}
-  const last=getSyncLast();
-  el.textContent=last?'✓ Viimati sünkroniseeritud: '+new Date(last).toLocaleTimeString('et-EE'):'Sünkroniseerimine aktiivne';
-}
-function renderSidebarSyncIndicator(){
-  const el=document.getElementById('sidebar-sync-indicator');if(!el)return;
-  const code=getSyncCode();
-  el.className=code?'sync-indicator on':'sync-indicator';
-  el.innerHTML='<span class="dot"></span>'+(code?'Paaritud':'Ainult selles seadmes');
-}
-function buildPairURL(code){return `${location.origin}${location.pathname}#pair=${code}`}
-function renderSyncQR(retries=0){
-  const el=document.getElementById('sync-qr');
-  if(!el)return;
-  const code=getSyncCode();if(!code)return;
-  if(typeof QRCode==='undefined'){
-    if(retries<10){setTimeout(()=>renderSyncQR(retries+1),300);return}
-    console.warn('QR library never loaded');return;
+// ---------- AUTH + DATA (Supabase magic-link) ----------
+async function sendMagicLink(){
+  const emailEl=document.getElementById('login-email');
+  const btn=document.getElementById('login-submit');
+  const stEl=document.getElementById('login-status');
+  const email=(emailEl.value||'').trim().toLowerCase();
+  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    stEl.className='login-status err';stEl.textContent='Sisesta korrektne e-post';return;
   }
+  btn.disabled=true;btn.textContent='Saadame…';
+  stEl.className='login-status';stEl.textContent='';
   try{
-    el.innerHTML='';
-    new QRCode(el,{
-      text:buildPairURL(code),
-      width:180,height:180,
-      colorDark:'#0f172a',colorLight:'#ffffff',
-      correctLevel:QRCode.CorrectLevel.M
+    const {error}=await supa.auth.signInWithOtp({
+      email,
+      options:{emailRedirectTo:location.origin+'/app.html'}
     });
-  }catch(e){console.error('QR generation failed',e)}
+    if(error)throw error;
+    stEl.className='login-status ok';
+    stEl.innerHTML='✓ Saatsime lingi aadressile <strong>'+email+'</strong>. Ava oma e-post ja kliki lingile.';
+    btn.textContent='Saatsime!';
+  }catch(e){
+    console.error(e);
+    stEl.className='login-status err';
+    stEl.textContent='Saatmine ebaõnnestus: '+(e.message||'tundmatu viga');
+    btn.disabled=false;btn.textContent='Saada võlulink →';
+  }
 }
-function checkPairURL(){
-  const m=(location.hash||'').match(/^#pair=(arvik-[a-z0-9-]{16,30})$/);
-  if(!m)return false;
-  const code=m[1];
-  history.replaceState(null,'',location.pathname);
-  const current=getSyncCode();
-  if(current===code){toast('See seade on juba selle koodiga paaritud');return true}
-  // Open settings & pre-fill, then prompt join
-  setTimeout(()=>{switchView('settings');setTimeout(()=>joinSync(code),200)},100);
-  return true;
+
+async function signOut(){
+  if(!confirm('Logi välja? Andmed serveris säilivad, saad alati uuesti sisse logida.'))return;
+  try{await supa.auth.signOut()}catch(e){console.error(e)}
+  localStorage.removeItem(DB_KEY);
+  state=JSON.parse(JSON.stringify(defaultState));
+  session=null;
+  showLogin();
 }
-async function activateSync(){
-  const code=generateSyncCode();
-  setSyncCode(code);
-  await syncPush();
-  renderSettings();
-  toast('Sünkroniseerimine aktiveeritud');
-}
-async function joinSync(code){
-  code=(code||'').trim().toLowerCase();
-  if(!/^arvik-[a-z0-9-]{16,30}$/.test(code)){toast('Vigane kood');return}
+
+async function loadFromServer(){
+  if(!session||!supa)return;
   try{
-    const remote=await syncPull(code);
-    if(!remote){toast('Sellise koodiga andmeid pole');return}
-    const hasLocal=(state.invoices||[]).length>0||(state.clients||[]).length>0||(state.business.name&&state.business.name!=='Sinu ettevõte');
-    if(hasLocal&&!confirm('Selles seadmes on juba andmeid. Asendada need pilves olevatega? Senised andmed lähevad kaotsi.'))return;
-    state=remote.state;
-    setSyncCode(code);
-    setSyncLast(remote.updatedAt);
-    localStorage.setItem(DB_KEY,JSON.stringify(state));
-    renderSettings();switchView('dashboard');
-    toast('Seadmed paaritud!');
-  }catch(e){console.error(e);toast('Paaristamine ebaõnnestus')}
-}
-function disableSync(){
-  if(!confirm('Eemaldada see seade sünkroniseerimisest? Andmed jäävad seadmesse alles.'))return;
-  setSyncCode('');localStorage.removeItem(SYNC_LAST_KEY);
-  renderSettings();toast('Sünkroniseerimine välja lülitatud');
-}
-async function initSync(){
-  if(!getSyncCode())return;
-  try{
-    const remote=await syncPull();
-    if(remote){
-      const localTime=getSyncLast();
-      // Last write wins. Server has updated_at; trust it if newer than local last sync.
-      if(!localTime||remote.updatedAt>localTime){
-        state=remote.state;
-        localStorage.setItem(DB_KEY,JSON.stringify(state));
-        setSyncLast(remote.updatedAt);
-      }else{
-        // Local is newer, push it
-        await syncPush();
-      }
+    const {data,error}=await supa.from('user_data')
+      .select('state,updated_at')
+      .eq('user_id',session.user.id)
+      .maybeSingle();
+    if(error&&error.code!=='PGRST116')throw error;
+    if(data&&data.state){
+      state={...defaultState,...data.state,business:{...defaultState.business,...(data.state.business||{})}};
+      localStorage.setItem(DB_KEY,JSON.stringify(state));
     }else{
-      // Code exists but no blob on server — push current state
-      await syncPush();
+      // First time user — push current local/default state
+      await saveToServer();
     }
-  }catch(e){console.error('init sync',e)}
+  }catch(e){console.error('load from server',e)}
+}
+
+async function saveToServer(){
+  if(!session||!supa)return;
+  try{
+    const {error}=await supa.from('user_data').upsert({
+      user_id:session.user.id,
+      state:state,
+      updated_at:new Date().toISOString()
+    });
+    if(error)throw error;
+  }catch(e){console.error('save to server',e)}
+}
+
+function scheduleServerSave(){
+  if(!session)return;
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(saveToServer,1500);
+}
+
+function showLogin(){
+  document.getElementById('login-screen').classList.remove('hidden');
+  document.querySelector('.app').style.display='none';
+}
+function hideLogin(){
+  document.getElementById('login-screen').classList.add('hidden');
+  document.querySelector('.app').style.display='';
 }
 
 const STATUS_LABEL={paid:'TASUTUD',unpaid:'TASUMATA',overdue:'TÄHTAEG ÜLETATUD',draft:'MUSTAND'};
@@ -698,7 +634,7 @@ function load(){
     const s=JSON.parse(r);return {...defaultState,...s,business:{...defaultState.business,...s.business}};
   }catch{return JSON.parse(JSON.stringify(defaultState));}
 }
-function save(){localStorage.setItem(DB_KEY,JSON.stringify(state));schedulePush()}
+function save(){localStorage.setItem(DB_KEY,JSON.stringify(state));scheduleServerSave()}
 function uid(){return Math.random().toString(36).slice(2,10)}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function parseNum(v){if(v==null||v==='')return 0;const n=parseFloat(String(v).replace(',','.').replace(/\s/g,''));return isNaN(n)?0:n}
@@ -772,17 +708,7 @@ function renderDashboard(){
       </div>
     </div>
   `:'';
-  const showSyncNudge=invs.length>=3 && !getSyncCode() && !localStorage.getItem('arvik_sync_nudge_dismissed');
-  const nudgeHTML=showSyncNudge?`
-    <div class="sync-nudge">
-      <div class="sn-ico">🔒</div>
-      <div class="sn-text"><strong>Sul on ${invs.length} arvet selles seadmes — varundus puudub.</strong> Aktiveeri sünkroniseerimine, et hoida andmed kaitstuna ka seadme kaotamise korral. Krüpteeritud, kontot ei vaja.</div>
-      <div class="sn-actions">
-        <button onclick="switchView('settings')" class="onboard-btn">Aktiveeri</button>
-        <button onclick="dismissSyncNudge()" class="onboard-btn-ghost">Hiljem</button>
-      </div>
-    </div>
-  `:'';
+  const nudgeHTML='';
   document.getElementById('view-dashboard').innerHTML=`
     <div class="page-head">
       <div><h1 class="page-title">Töölaud</h1><div class="page-sub">Ülevaade sinu arveldustegevusest</div></div>
@@ -810,10 +736,7 @@ function emptyInvoices(){return `<div class="empty">
   <div class="empty-ico">📄</div>
   <div class="empty-title">Pole veel arveid</div>
   <div class="empty-sub">Loo oma esimene arve, et alustada.</div>
-  <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-    <button onclick="openInvoiceEditor()" class="btn btn-primary">+ Uus arve</button>
-    <button onclick="openJoinModal()" class="btn btn-secondary">📲 Liitu teise seadme andmetega</button>
-  </div>
+  <button onclick="openInvoiceEditor()" class="btn btn-primary">+ Uus arve</button>
 </div>`}
 
 function renderInvoices(){
@@ -1089,48 +1012,13 @@ function renderSettings(){
       </div>
       <div class="field"><label class="field-label">Vaikemärkused arvel</label><textarea id="s-notes" class="input" rows="2">${esc(b.notes)}</textarea></div>
 
-      <div class="sync-panel ${getSyncCode()?'paired':''}">
-        <div class="sync-head">
-          <strong>📲 Seadmete paaristamine</strong>
-          ${getSyncCode()?'<span class="sync-status on">Paaritud</span>':'<span class="sync-status off">Pole aktiveeritud</span>'}
+      <div style="margin-top:8px;padding:18px;background:#fff;border:1px solid #e2e8f0;border-radius:12px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <strong style="font-size:14.5px">👤 Konto</strong>
+          <span style="background:#d1fae5;color:#047857;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;letter-spacing:.04em">SISSE LOGITUD</span>
         </div>
-        <p class="sync-lede">${getSyncCode()?'See seade sünkroniseerib andmeid teiste paaristuses olevate seadmetega. Andmed on krüpteeritud — server ei näe neid.':'Kasuta Arvikut samaaegselt arvutis ja telefonis. <strong>Mõtle nagu Bluetoothi paaristamisest</strong> — anna ühele seadmele kood, sisesta sama kood teises ja seadmed räägivad omavahel. Andmed krüpteeritakse sinu seadmes <strong>enne</strong> serverisse saatmist.'}</p>
-
-        ${getSyncCode()?`
-          <div class="sync-paired-body">
-            <div class="qr-side">
-              <div id="sync-qr" class="qr-mount"></div>
-              <p class="qr-hint">📱 Skanneeri telefoni kaameraga</p>
-            </div>
-            <div class="code-side">
-              <div class="paired-steps">
-                <strong>Kuidas teine seade kaasata:</strong>
-                <ol>
-                  <li><strong>Telefonil:</strong> ava kaamera ja suuna QR-koodile → vajuta avanevat linki</li>
-                  <li><strong>Arvutil:</strong> kopeeri jagamislink siit ja ava see teises brauseris</li>
-                </ol>
-              </div>
-              <button onclick="navigator.clipboard.writeText(buildPairURL(getSyncCode())).then(()=>toast('Jagamislink kopeeritud'))" class="btn btn-primary" style="width:100%;margin-top:14px">📋 Kopeeri jagamislink</button>
-              <details style="margin-top:10px">
-                <summary style="font-size:12px;color:#64748b;cursor:pointer">Näita paaristuskoodi</summary>
-                <div class="code-row" style="margin-top:8px">
-                  <input id="sync-code-display" type="text" readonly value="${esc(getSyncCode())}" class="input mono">
-                  <button onclick="navigator.clipboard.writeText(getSyncCode()).then(()=>toast('Kood kopeeritud'))" class="btn btn-secondary" style="padding:8px 12px">Kopeeri</button>
-                </div>
-              </details>
-              <div id="sync-status-line" class="sync-status-line"></div>
-            </div>
-          </div>
-          <div class="paired-footer">
-            <div class="hint">⚠️ Kaotsiminud link/kood = pilves andmetele ei pääse enam ligi. Salvesta kindlasse kohta.</div>
-            <button onclick="disableSync()" class="btn-danger-link" style="font-size:12px">Eemalda see seade</button>
-          </div>
-        `:`
-          <div style="text-align:center;padding:8px 0 4px">
-            <button onclick="activateSync()" class="btn btn-primary" style="font-size:15px;padding:14px 32px">⚡ Aktiveeri see seade</button>
-            <p style="font-size:12.5px;color:#94a3b8;margin:14px auto 0;max-width:420px;line-height:1.55">Juba aktiveerisid teises seadmes? <strong style="color:#475569">Skanneeri sealne QR-kood telefoni kaameraga</strong> või <strong style="color:#475569">ava sealne jagamislink selles brauseris</strong>. Need teevad paaristuse automaatselt.</p>
-          </div>
-        `}
+        <p style="font-size:12.5px;color:#64748b;margin:0 0 14px;line-height:1.55">Logitud sisse aadressiga <strong style="color:#0f172a">${esc(session?.user?.email||'')}</strong>. Andmed sünkroniseeruvad automaatselt iga muudatusega — ava arvik.ee ükskõik millises brauseris ja seadmes, kasutades sama e-posti, ning su andmed on seal.</p>
+        <button onclick="signOut()" class="btn btn-secondary">Logi välja</button>
       </div>
 
       <div style="margin-top:8px;padding:18px;background:#fff;border:1px solid #e2e8f0;border-radius:12px">
@@ -1158,8 +1046,6 @@ function renderSettings(){
     const r=new FileReader();r.onload=ev=>{state.business.logo=ev.target.result;save();renderSettings();toast('Logo salvestatud')};
     r.readAsDataURL(f);
   });
-  updateSyncStatus();
-  renderSyncQR();
 }
 function removeLogo(){state.business.logo='';save();renderSettings()}
 function saveSettings(){
@@ -1206,26 +1092,12 @@ function importBackup(file){
       if(!confirm('Asendada käesoleva seadme andmed selle varundusfailiga? See ei ole tagasipööratav.'))return;
       state=data.state;
       localStorage.setItem(DB_KEY,JSON.stringify(state));
-      if(getSyncCode())schedulePush();
+      scheduleServerSave();
       renderSettings();switchView('dashboard');
       toast('Varundus taastatud');
     }catch(err){console.error(err);toast('Vigane fail')}
   };
   reader.readAsText(file);
-}
-function dismissSyncNudge(){localStorage.setItem('arvik_sync_nudge_dismissed','1');renderDashboard()}
-
-function openJoinModal(){
-  document.getElementById('joinModal').classList.remove('hidden');
-  setTimeout(()=>{const i=document.getElementById('join-input');if(i){i.value='';i.focus()}}, 100);
-}
-function closeJoinModal(){document.getElementById('joinModal').classList.add('hidden')}
-function submitJoin(){
-  const v=document.getElementById('join-input').value||'';
-  const m=v.match(/arvik-[a-z0-9-]{16,30}/i);
-  if(!m){toast('Vigane link või kood');return}
-  closeJoinModal();
-  joinSync(m[0].toLowerCase());
 }
 
 function printInvoice(id){
@@ -1433,15 +1305,33 @@ function processRecurring(){
   if(changed)save();
 }
 
-processRecurring();
-renderSidebarSyncIndicator();
-switchView('dashboard');
-if(checkPairURL()){
-  // auto-pair handles its own UI
-}else if(!localStorage.getItem(TUTORIAL_KEY)){
-  showWelcome();
+async function init(){
+  if(!supa){
+    alert('Sisselogimisteenus pole laaditud. Palun kontrolli internetiühendust ja värskenda lehte.');
+    return;
+  }
+  const {data:{session:s}}=await supa.auth.getSession();
+  session=s;
+  if(!session){
+    showLogin();
+    return;
+  }
+  hideLogin();
+  await loadFromServer();
+  processRecurring();
+  switchView('dashboard');
+  if(!localStorage.getItem(TUTORIAL_KEY))showWelcome();
 }
-initSync().then(()=>{switchView(currentView)});
+init();
+// React to auth state changes (sign-in via magic link, sign-out)
+if(supa)supa.auth.onAuthStateChange((event,newSession)=>{
+  if(event==='SIGNED_IN'&&newSession){
+    if(!session){location.reload()}
+  }else if(event==='SIGNED_OUT'){
+    session=null;
+    showLogin();
+  }
+});
 </script>
 </body>
 </html>
