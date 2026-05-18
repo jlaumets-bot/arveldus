@@ -172,6 +172,8 @@
   .welcome-foot{padding:14px 32px 28px;display:flex;justify-content:center}
   .welcome-foot .btn{padding:12px 32px;font-size:15px;font-weight:600;border-radius:12px;background:#2563eb;color:#fff;box-shadow:0 6px 14px -6px rgba(37,99,235,.5)}
   .welcome-foot .btn:hover{background:#1d4ed8}
+  .welcome-returning{background:#f1f5f9;padding:10px 18px;font-size:12.5px;color:#475569;text-align:center;border-bottom:1px solid #e2e8f0}
+  .welcome-returning a{color:#2563eb;font-weight:600;text-decoration:underline;cursor:pointer}
 
   /* Sync panel (Settings) */
   .sync-panel{margin-top:8px;padding:24px;background:#fff;border:1px solid #e2e8f0;border-radius:14px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
@@ -424,10 +426,32 @@
 <div id="toast" class="toast hidden"></div>
 <div id="print-area"></div>
 
+<!-- Join from another device modal -->
+<div id="joinModal" class="modal-bg hidden" style="z-index:90">
+  <div class="modal modal-small">
+    <div class="modal-head">
+      <h2 class="modal-title">📲 Liitu teise seadme andmetega</h2>
+      <button onclick="closeJoinModal()" class="modal-close">×</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:#475569;margin:0 0 14px;line-height:1.55">Kleebi siia jagamislink või paaristuskood, mille said teises brauseris/seadmes.</p>
+      <input id="join-input" class="input mono" placeholder="https://arvik... või arvik-xxxx-xxxx-xxxx-xxxx" style="font-size:13px" autocomplete="off">
+      <p style="font-size:11.5px;color:#94a3b8;margin:8px 0 16px;line-height:1.55">⚠️ Selle seadme praegused andmed (kui mingid on) asendatakse teise seadme omadega.</p>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button onclick="closeJoinModal()" class="btn btn-secondary">Tühista</button>
+        <button onclick="submitJoin()" class="btn btn-primary">Liitu →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Welcome / Tutorial modal -->
 <div id="welcomeModal" class="welcome-bg hidden">
   <div class="welcome-card">
     <button class="welcome-skip" onclick="closeWelcome()">Jäta vahele</button>
+    <div class="welcome-returning">
+      Kas kasutad Arvikut juba teises brauseris või seadmes? <a onclick="closeWelcome();openJoinModal();return false">Kleebi jagamislink siia →</a>
+    </div>
     <div class="welcome-head">
       <div class="welcome-mascot">👋</div>
       <h2>Tere tulemast Arvikusse!</h2>
@@ -786,7 +810,10 @@ function emptyInvoices(){return `<div class="empty">
   <div class="empty-ico">📄</div>
   <div class="empty-title">Pole veel arveid</div>
   <div class="empty-sub">Loo oma esimene arve, et alustada.</div>
-  <button onclick="openInvoiceEditor()" class="btn btn-primary">+ Uus arve</button>
+  <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+    <button onclick="openInvoiceEditor()" class="btn btn-primary">+ Uus arve</button>
+    <button onclick="openJoinModal()" class="btn btn-secondary">📲 Liitu teise seadme andmetega</button>
+  </div>
 </div>`}
 
 function renderInvoices(){
@@ -1187,6 +1214,19 @@ function importBackup(file){
   reader.readAsText(file);
 }
 function dismissSyncNudge(){localStorage.setItem('arvik_sync_nudge_dismissed','1');renderDashboard()}
+
+function openJoinModal(){
+  document.getElementById('joinModal').classList.remove('hidden');
+  setTimeout(()=>{const i=document.getElementById('join-input');if(i){i.value='';i.focus()}}, 100);
+}
+function closeJoinModal(){document.getElementById('joinModal').classList.add('hidden')}
+function submitJoin(){
+  const v=document.getElementById('join-input').value||'';
+  const m=v.match(/arvik-[a-z0-9-]{16,30}/i);
+  if(!m){toast('Vigane link või kood');return}
+  closeJoinModal();
+  joinSync(m[0].toLowerCase());
+}
 
 function printInvoice(id){
   // Try jsPDF first (works on all platforms incl. in-app browsers). Fallback to window.print().
