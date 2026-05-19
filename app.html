@@ -107,6 +107,28 @@
   .modal-head{position:sticky;top:0;background:#fff;padding:18px 22px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;z-index:2}
   .modal-title{font-size:18px;font-weight:700;margin:0}
   .modal-close{font-size:24px;line-height:1;color:#94a3b8;padding:0 6px}
+
+  /* Pro modal */
+  .pro-modal{max-width:520px;padding:28px;position:relative}
+  .pro-modal .modal-close{position:absolute;top:14px;right:14px;background:#f1f5f9;border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center}
+  .pro-modal .modal-close:hover{background:#e2e8f0;color:#475569}
+  .pro-plans{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+  .pro-plan{border:1px solid #e2e8f0;border-radius:12px;padding:16px;text-align:center;background:#f8fafc;position:relative}
+  .pro-plan-best{border:2px solid #2563eb;background:linear-gradient(180deg,#eff6ff,#f8fafc);box-shadow:0 8px 24px -10px rgba(37,99,235,.25)}
+  .pro-plan-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#2563eb;color:#fff;font-size:10px;font-weight:800;padding:3px 10px;border-radius:999px;letter-spacing:.06em}
+  .pro-plan-name{font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+  .pro-plan-price{margin:6px 0 4px}
+  .pp-big{font-size:30px;font-weight:800;letter-spacing:-.02em;color:#0f172a}
+  .pp-per{font-size:13px;color:#64748b;margin-left:4px}
+  .pro-plan-note{font-size:11.5px;color:#64748b}
+  .pro-plan-best .pro-plan-note{color:#1d4ed8;font-weight:600}
+  .pro-feat-list{list-style:none;padding:0;margin:0 0 18px;display:grid;gap:6px}
+  .pro-feat-list li{font-size:13.5px;color:#334155;padding:2px 0}
+  .pro-waitlist{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px}
+  @media (max-width:520px){
+    .pro-modal{padding:22px 18px}
+    .pro-plans{grid-template-columns:1fr}
+  }
   .modal-close:hover{color:#475569}
   .modal-body{padding:22px}
   .hidden{display:none !important}
@@ -536,9 +558,33 @@ function onboardNextStep(){
   return null;
 }
 const defaultState={
-  business:{name:'Sinu ettevõte',email:'',address:'',phone:'',logo:'',currencySymbol:'€',defaultTaxRate:24,invoicePrefix:'ARVE-',nextNumber:1001,notes:'Täname koostöö eest!'},
+  business:{name:'Sinu ettevõte',email:'',address:'',phone:'',logo:'',currencySymbol:'€',defaultTaxRate:24,invoicePrefix:'ARVE-',nextNumber:1001,notes:'Täname koostöö eest!',brandColor:'#2563eb',pro:false},
   clients:[],invoices:[]
 };
+// Free tier limits — Pro removes
+const FREE_MONTHLY_INVOICE_CAP=15;
+// Note: state.business.pro is a UI flag only. Stripe + server-side verification not yet wired.
+// Don't trust this for billing decisions; once Stripe is added the source of truth moves server-side.
+function isPro(){return !!(state.business && state.business.pro)}
+function invoicesThisMonth(){
+  const now=new Date();const y=now.getFullYear();const m=now.getMonth();
+  return (state.invoices||[]).filter(inv=>{
+    if(!inv.date)return false;
+    const d=new Date(inv.date);
+    return d.getFullYear()===y && d.getMonth()===m;
+  }).length;
+}
+function canCreateInvoice(){return isPro()||invoicesThisMonth()<FREE_MONTHLY_INVOICE_CAP}
+// Currencies — Pro unlocks all. Free is locked to EUR.
+const CURRENCIES=[
+  {code:'EUR',symbol:'€',name:'Euro'},
+  {code:'USD',symbol:'$',name:'US Dollar'},
+  {code:'GBP',symbol:'£',name:'British Pound'},
+  {code:'SEK',symbol:'kr',name:'Swedish Krona'},
+  {code:'NOK',symbol:'kr',name:'Norwegian Krone'},
+  {code:'DKK',symbol:'kr',name:'Danish Krone'},
+  {code:'CHF',symbol:'CHF',name:'Swiss Franc'}
+];
 let state=load();
 let editingInvoiceId=null,editingClientId=null;
 let currentView='dashboard';
@@ -775,6 +821,11 @@ function markPaid(id){const i=state.invoices.find(x=>x.id===id);i.status='paid';
 function deleteInvoice(id){if(!confirm('Kas kustutada see arve?'))return;state.invoices=state.invoices.filter(i=>i.id!==id);save();renderInvoices()}
 
 function openInvoiceEditor(id){
+  // Free tier: enforce monthly cap when creating new invoices (editing existing is always allowed)
+  if(!id && !canCreateInvoice()){
+    openProModal('cap');
+    return;
+  }
   editingInvoiceId=id||null;
   let inv;
   if(id) inv=JSON.parse(JSON.stringify(state.invoices.find(i=>i.id===id)));
@@ -783,8 +834,11 @@ function openInvoiceEditor(id){
     clientId:state.clients[0]?.id||'',date:today(),dueDate:addDays(today(),14),
     items:[{desc:'',qty:1,price:0}],taxRate:state.business.defaultTaxRate,
     discount:0,discountType:'amount',notes:state.business.notes,
-    status:'draft',recurring:false,recurringInterval:'monthly'
+    status:'draft',recurring:false,recurringInterval:'monthly',
+    currency:'EUR'
   };
+  // Free users locked to EUR; Pro can change currency per invoice
+  if(!isPro())inv.currency='EUR';
   document.getElementById('invoiceModalTitle').textContent=id?'Muuda arvet':'Uus arve';
   window._editingInv=inv;
   renderInvoiceForm();
@@ -794,6 +848,8 @@ function closeInvoiceEditor(){document.getElementById('invoiceModal').classList.
 
 function renderInvoiceForm(){
   const inv=window._editingInv;const t=totals(inv);
+  const invSym=invoiceCurrencySymbol(inv);
+  const fmtInv=(n)=>(Number(n)||0).toFixed(2).replace('.',',')+' '+invSym;
   document.getElementById('invoiceEditorBody').innerHTML=`
     <div class="grid-2">
       <div class="field"><label class="field-label">Arve nr</label><input id="f-number" class="input" value="${esc(inv.number)}"></div>
@@ -808,6 +864,12 @@ function renderInvoiceForm(){
       </div>
       <div class="field"><label class="field-label">Kuupäev</label><input type="date" id="f-date" class="input" value="${esc(inv.date)}"></div>
       <div class="field"><label class="field-label">Maksetähtaeg</label><input type="date" id="f-due" class="input" value="${esc(inv.dueDate)}"></div>
+      <div class="field">
+        <label class="field-label">Valuuta ${isPro()?'':'<span style="font-size:10px;color:#94a3b8;font-weight:500;margin-left:4px">🔒 Pro</span>'}</label>
+        <select id="f-currency" class="input" ${isPro()?'':'onchange="if(this.value!==\'EUR\'){this.value=\'EUR\';openProModal(\'currency\')}"'}>
+          ${CURRENCIES.map(cur=>`<option value="${cur.code}" ${(inv.currency||'EUR')===cur.code?'selected':''}>${cur.code} — ${cur.symbol} ${cur.name}</option>`).join('')}
+        </select>
+      </div>
     </div>
 
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;margin-top:8px">
@@ -839,18 +901,18 @@ function renderInvoiceForm(){
         </div>
       </div>
       <div class="totals-list">
-        <div class="t-row"><span class="lbl">Vahesumma</span><span id="t-subtotal" style="font-weight:500">${fmt(t.subtotal)}</span></div>
+        <div class="t-row"><span class="lbl">Vahesumma</span><span id="t-subtotal" style="font-weight:500">${fmtInv(t.subtotal)}</span></div>
         <div class="t-row"><span class="lbl">Allahindlus</span>
           <div style="display:flex;gap:4px;align-items:center">
             <input id="f-discount" type="text" inputmode="decimal" value="${inv.discount||''}" placeholder="0">
             <select id="f-discount-type">
-              <option value="amount" ${inv.discountType==='amount'?'selected':''}>${state.business.currencySymbol}</option>
+              <option value="amount" ${inv.discountType==='amount'?'selected':''}>${invSym}</option>
               <option value="percent" ${inv.discountType==='percent'?'selected':''}>%</option>
             </select>
           </div>
         </div>
         <div class="t-row"><span class="lbl">Käibemaks (%)</span><input id="f-tax" type="text" inputmode="decimal" value="${inv.taxRate||0}"></div>
-        <div class="t-row t-total"><span>Kokku</span><span id="t-total">${fmt(t.total)}</span></div>
+        <div class="t-row t-total"><span>Kokku</span><span id="t-total">${fmtInv(t.total)}</span></div>
       </div>
     </div>
 
@@ -871,11 +933,12 @@ function renderInvoiceForm(){
 }
 function itemRow(it,i){
   const lt=(parseNum(it.qty))*(parseNum(it.price));
+  const sym=invoiceCurrencySymbol(window._editingInv);
   return `<tr data-idx="${i}">
     <td><input data-field="desc" data-idx="${i}" value="${esc(it.desc)}" placeholder="Toote või teenuse kirjeldus"></td>
     <td class="item-num"><input type="text" inputmode="decimal" data-field="qty" data-idx="${i}" value="${it.qty||1}" style="text-align:right"></td>
     <td class="item-num"><input type="text" inputmode="decimal" data-field="price" data-idx="${i}" value="${it.price||''}" placeholder="0" style="text-align:right"></td>
-    <td class="line-total">${fmt(lt)}</td>
+    <td class="line-total">${(Number(lt)||0).toFixed(2).replace('.',',')+' '+sym}</td>
     <td><button onclick="removeItem(${i})" class="rm">×</button></td>
   </tr>`;
 }
@@ -898,16 +961,20 @@ function syncForm(){
   inv.status=document.getElementById('f-status').value;
   inv.recurring=document.getElementById('f-recurring').checked;
   inv.recurringInterval=document.getElementById('f-recurring-interval').value;
+  const curEl=document.getElementById('f-currency');
+  if(curEl)inv.currency=isPro()?curEl.value:'EUR';
 }
 function recalc(){
   syncForm();const inv=window._editingInv;
+  const sym=invoiceCurrencySymbol(inv);
+  const f=(n)=>(Number(n)||0).toFixed(2).replace('.',',')+' '+sym;
   document.querySelectorAll('#f-items tr').forEach(tr=>{
     const i=Number(tr.dataset.idx);
-    tr.children[3].textContent=fmt((Number(inv.items[i].qty)||0)*(Number(inv.items[i].price)||0));
+    tr.children[3].textContent=f((Number(inv.items[i].qty)||0)*(Number(inv.items[i].price)||0));
   });
   const t=totals(inv);
-  document.getElementById('t-subtotal').textContent=fmt(t.subtotal);
-  document.getElementById('t-total').textContent=fmt(t.total);
+  document.getElementById('t-subtotal').textContent=f(t.subtotal);
+  document.getElementById('t-total').textContent=f(t.total);
 }
 function saveInvoice(thenPDF){
   syncForm();const inv=window._editingInv;
@@ -1012,6 +1079,37 @@ function renderSettings(){
       </div>
       <div class="field"><label class="field-label">Vaikemärkused arvel</label><textarea id="s-notes" class="input" rows="2">${esc(b.notes)}</textarea></div>
 
+      ${isPro()?`
+      <div style="margin-top:8px;padding:18px;background:linear-gradient(135deg,#fef3c7,#fde68a);border:1px solid #fbbf24;border-radius:12px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <strong style="font-size:14.5px">⭐ Arvik Pro</strong>
+          <span style="background:#92400e;color:#fff;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;letter-spacing:.04em">AKTIIVNE</span>
+        </div>
+        <div class="field" style="margin-bottom:8px">
+          <label class="field-label">Brändi värv (kuvatakse arve PDF-il)</label>
+          <div style="display:flex;align-items:center;gap:10px">
+            <input id="s-brand-color" type="color" value="${esc(b.brandColor||'#2563eb')}" style="width:60px;height:40px;border:1px solid #cbd5e1;border-radius:8px;cursor:pointer;padding:2px">
+            <input id="s-brand-color-text" class="input" value="${esc(b.brandColor||'#2563eb')}" style="width:120px;font-family:ui-monospace,monospace">
+          </div>
+        </div>
+      </div>
+      `:`
+      <div style="margin-top:8px;padding:20px;background:linear-gradient(135deg,#1e293b,#0f172a);color:#fff;border-radius:14px;position:relative;overflow:hidden">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <strong style="font-size:15.5px">⭐ Tee Arvikust enda oma</strong>
+          <span style="background:#fbbf24;color:#78350f;font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px;letter-spacing:.05em">PRO</span>
+        </div>
+        <p style="font-size:13px;color:#cbd5e1;margin:0 0 14px;line-height:1.55">Eemalda Arvik-i jalus arvelt, vali oma brändi värv, kasuta ükskõik millist valuutat, saada piiramatult arveid. <strong style="color:#fff">€3/kuus</strong> või <strong style="color:#fff">€59 elueaks</strong>.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+          <button onclick="openProModal()" class="btn" style="background:#fbbf24;color:#78350f;font-weight:700;padding:10px 20px;border-radius:10px">Saa esimesena teada →</button>
+          <span style="font-size:11.5px;color:#94a3b8">Stripe veel ühendamata — paneme su järjekorda</span>
+        </div>
+        <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.1);font-size:12px;color:#94a3b8">
+          Sel kuul kasutatud: <strong style="color:#fff">${invoicesThisMonth()}/${FREE_MONTHLY_INVOICE_CAP}</strong> tasuta arvet
+        </div>
+      </div>
+      `}
+
       <div style="margin-top:8px;padding:18px;background:#fff;border:1px solid #e2e8f0;border-radius:12px">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
           <strong style="font-size:14.5px">👤 Konto</strong>
@@ -1046,6 +1144,16 @@ function renderSettings(){
     const r=new FileReader();r.onload=ev=>{state.business.logo=ev.target.result;save();renderSettings();toast('Logo salvestatud')};
     r.readAsDataURL(f);
   });
+  // Pro brand color picker — bidirectional sync between color input and hex text
+  const bc=document.getElementById('s-brand-color');
+  const bct=document.getElementById('s-brand-color-text');
+  if(bc && bct){
+    bc.addEventListener('input',()=>{bct.value=bc.value});
+    bct.addEventListener('input',()=>{
+      const v=bct.value.trim();
+      if(/^#?[0-9a-fA-F]{6}$/.test(v))bc.value=v.startsWith('#')?v:'#'+v;
+    });
+  }
 }
 function removeLogo(){state.business.logo='';save();renderSettings()}
 function saveSettings(){
@@ -1064,7 +1172,89 @@ function saveSettings(){
     defaultTaxRate:parseNum(document.getElementById('s-tax').value),
     notes:document.getElementById('s-notes').value
   });
+  // Pro: save brand color if the picker is mounted
+  const bc=document.getElementById('s-brand-color');
+  if(bc && isPro())state.business.brandColor=bc.value;
   save();toast('Seaded salvestatud');
+}
+
+// ---------- Pro modal (waitlist + pricing) ----------
+function openProModal(reason){
+  const html=`
+  <div class="modal-bg" onclick="if(event.target===this)closeProModal()">
+    <div class="modal pro-modal">
+      <button onclick="closeProModal()" class="modal-close" aria-label="Sulge">×</button>
+      <div style="text-align:center;padding:8px 0 14px">
+        <div style="display:inline-flex;align-items:center;gap:6px;background:#fef3c7;color:#92400e;font-size:11px;font-weight:800;padding:4px 10px;border-radius:999px;letter-spacing:.06em">⭐ ARVIK PRO</div>
+      </div>
+      <h2 style="text-align:center;margin:0 0 6px;font-size:24px;letter-spacing:-.02em">Tee Arvikust enda oma</h2>
+      <p style="text-align:center;color:#64748b;font-size:14px;margin:0 0 20px">${reason==='cap'?'Oled jõudnud kuu tasuta limiidini ('+FREE_MONTHLY_INVOICE_CAP+' arvet).':reason==='currency'?'Mitme valuuta tugi on Pro funktsioon.':'Anna teada — saadame sulle teada, kui Pro on saadaval.'}</p>
+      <div class="pro-plans">
+        <div class="pro-plan">
+          <div class="pro-plan-name">Igakuine</div>
+          <div class="pro-plan-price"><span class="pp-big">€3</span><span class="pp-per">/kuus</span></div>
+          <div class="pro-plan-note">Tühista igal ajal</div>
+        </div>
+        <div class="pro-plan pro-plan-best">
+          <div class="pro-plan-badge">PARIM HIND</div>
+          <div class="pro-plan-name">Elueaks</div>
+          <div class="pro-plan-price"><span class="pp-big">€59</span><span class="pp-per">üks kord</span></div>
+          <div class="pro-plan-note">Säästad 64% vs igakuine 2a peale</div>
+        </div>
+      </div>
+      <ul class="pro-feat-list">
+        <li>✓ Eemalda Arvik-i jalus arvelt</li>
+        <li>✓ Vali oma brändi värv (PDF-il)</li>
+        <li>✓ Mitu valuutat (EUR, USD, GBP, SEK jt)</li>
+        <li>✓ Piiramatult arveid kuus</li>
+        <li>✓ Eelistatud klienditugi</li>
+      </ul>
+      <div class="pro-waitlist" id="pro-waitlist-wrap">
+        <label class="field-label" style="margin-bottom:6px;display:block">E-posti aadress (paneme sind järjekorda)</label>
+        <div style="display:flex;gap:8px">
+          <input id="pro-wl-email" class="input" type="email" placeholder="sina@nair.ee" style="flex:1" value="${esc(session?.user?.email||'')}">
+          <button onclick="submitProWaitlist()" class="btn btn-primary" id="pro-wl-btn">Saa esimesena teada →</button>
+        </div>
+        <div id="pro-wl-status" style="font-size:12.5px;color:#64748b;margin-top:8px;line-height:1.5">Saadame e-kirja kohe, kui Pro avaneb. Pole hinda. Pole spämmi.</div>
+      </div>
+    </div>
+  </div>`;
+  let wrap=document.getElementById('pro-modal-mount');
+  if(!wrap){wrap=document.createElement('div');wrap.id='pro-modal-mount';document.body.appendChild(wrap)}
+  wrap.innerHTML=html;
+}
+function closeProModal(){
+  const wrap=document.getElementById('pro-modal-mount');
+  if(wrap)wrap.innerHTML='';
+}
+async function submitProWaitlist(){
+  const emailEl=document.getElementById('pro-wl-email');
+  const btn=document.getElementById('pro-wl-btn');
+  const st=document.getElementById('pro-wl-status');
+  const email=(emailEl.value||'').trim().toLowerCase();
+  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    st.style.color='#dc2626';st.textContent='Sisesta korrektne e-posti aadress.';
+    return;
+  }
+  btn.disabled=true;btn.textContent='Saadame…';
+  try{
+    if(!supa)throw new Error('Andmebaas pole valmis');
+    const {error}=await supa.from('pro_waitlist').insert({
+      email,
+      user_id:session?.user?.id||null,
+      plan_interest:'unknown'
+    });
+    if(error && error.code!=='23505')throw error; // 23505 = unique violation (already on list)
+    st.style.color='#059669';
+    st.innerHTML='✓ Aitäh! Oled järjekorras — anname kohe teada, kui Pro avaneb.';
+    btn.textContent='Lisatud ✓';
+    setTimeout(closeProModal,2200);
+  }catch(e){
+    console.error(e);
+    st.style.color='#dc2626';
+    st.textContent='Midagi läks valesti. Proovi uuesti või kirjuta hello@arvik.ee';
+    btn.disabled=false;btn.textContent='Saa esimesena teada →';
+  }
 }
 function resetAll(){if(!confirm('Kas kustutada kõik andmed?'))return;localStorage.removeItem(DB_KEY);state=load();renderSettings();toast('Lähtestamine valmis')}
 
@@ -1108,6 +1298,19 @@ function printInvoice(id){
   return legacyPrintInvoice(id);
 }
 
+function hexToRgb(hex){
+  const m=/^#?([a-f0-9]{6})$/i.exec(String(hex||''));
+  if(!m)return [37,99,235]; // fallback Arvik blue
+  const n=parseInt(m[1],16);
+  return [(n>>16)&255,(n>>8)&255,n&255];
+}
+function invoiceCurrencySymbol(inv){
+  if(inv && inv.currency){
+    const c=CURRENCIES.find(x=>x.code===inv.currency);
+    if(c)return c.symbol;
+  }
+  return state.business.currencySymbol||'€';
+}
 function generatePDF(id){
   const inv=state.invoices.find(i=>i.id===id);if(!inv)return;
   const c=state.clients.find(x=>x.id===inv.clientId);
@@ -1117,7 +1320,10 @@ function generatePDF(id){
   const W = doc.internal.pageSize.getWidth();
   const H = doc.internal.pageSize.getHeight();
   let y = 50;
-  const eur = (n) => (Number(n)||0).toFixed(2).replace('.',',') + ' ' + (b.currencySymbol||'€');
+  // Pro-only brand color, falls back to neutral dark for free tier
+  const brandRgb = isPro() ? hexToRgb(b.brandColor) : [40,40,40];
+  const sym = invoiceCurrencySymbol(inv);
+  const eur = (n) => (Number(n)||0).toFixed(2).replace('.',',') + ' ' + sym;
 
   // Logo
   if(b.logo){try{doc.addImage(b.logo,'PNG',50,y,60,60)}catch(e){}}
@@ -1129,8 +1335,8 @@ function generatePDF(id){
   if(b.vatNumber)bizLines.push('KMKR nr: '+b.vatNumber);
   bizLines.forEach((ln,i)=>doc.text(String(ln), b.logo?125:50, y+34+i*12));
   doc.setTextColor(0);
-  // INVOICE title
-  doc.setFont('helvetica','bold').setFontSize(28).setTextColor(40,40,40).text('ARVE', W-50, y+24, {align:'right'});
+  // INVOICE title — Pro uses brand color, free tier uses neutral dark
+  doc.setFont('helvetica','bold').setFontSize(28).setTextColor(brandRgb[0],brandRgb[1],brandRgb[2]).text('ARVE', W-50, y+24, {align:'right'});
   doc.setFont('helvetica','normal').setFontSize(10).setTextColor(80).text(String(inv.number||''), W-50, y+42, {align:'right'});
   doc.setTextColor(0);
 
@@ -1155,9 +1361,15 @@ function generatePDF(id){
   doc.text(String(inv.dueDate||''), W-50, y+18, {align:'right'});
 
   y += 110;
-  // Items header
-  doc.setFillColor(245,247,250).rect(50, y, W-100, 22, 'F');
-  doc.setFont('helvetica','bold').setFontSize(10).setTextColor(80);
+  // Items header — Pro tints the header bar in brand color (subtle), free stays neutral
+  if(isPro()){
+    doc.setFillColor(brandRgb[0],brandRgb[1],brandRgb[2]).rect(50, y, W-100, 22, 'F');
+    doc.setTextColor(255,255,255);
+  }else{
+    doc.setFillColor(245,247,250).rect(50, y, W-100, 22, 'F');
+    doc.setTextColor(80);
+  }
+  doc.setFont('helvetica','bold').setFontSize(10);
   doc.text('Kirjeldus', 60, y+15);
   doc.text('Kogus', W-260, y+15, {align:'right'});
   doc.text('Hind', W-170, y+15, {align:'right'});
@@ -1212,9 +1424,11 @@ function generatePDF(id){
     doc.setTextColor(0);
   }
 
-  // Arvik footer (free advertising / removable later)
-  doc.setFont('helvetica','normal').setFontSize(8).setTextColor(160);
-  doc.text('Loodud Arvikuga · arvik.ee', W/2, H-30, {align:'center'});
+  // Arvik footer — free tier only. Pro removes branding.
+  if(!isPro()){
+    doc.setFont('helvetica','normal').setFontSize(8).setTextColor(160);
+    doc.text('Loodud Arvikuga · arvik.ee', W/2, H-30, {align:'center'});
+  }
 
   doc.save(`${inv.number||'arve'}.pdf`);
   toast('PDF alla laaditud');
