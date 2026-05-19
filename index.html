@@ -165,6 +165,25 @@
   .security-tech code{background:rgba(255,255,255,.06);padding:1px 6px;border-radius:4px;color:#e0e7ff;font-size:11.5px}
   .security-tech a{color:#60a5fa;text-decoration:underline}
 
+  /* Compare table */
+  .compare-wrap{max-width:880px;margin:0 auto 32px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:18px;overflow:hidden}
+  .compare-table{width:100%;border-collapse:collapse;font-size:14.5px}
+  .compare-table th,.compare-table td{padding:16px 20px;text-align:left;border-bottom:1px solid rgba(255,255,255,.06);color:#cbd5e1}
+  .compare-table thead th{background:rgba(2,6,23,.5);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;padding-top:18px;padding-bottom:18px}
+  .compare-table tbody tr:last-child td{border-bottom:none}
+  .compare-table tbody td:first-child{font-weight:600;color:#fff;width:32%}
+  .compare-table .them{color:#94a3b8}
+  .compare-table .us{color:#fff;font-weight:700;background:rgba(37,99,235,.12)}
+  .compare-table tbody td.them-cell{color:#94a3b8}
+  .compare-table tbody td.us-cell{background:rgba(37,99,235,.08);color:#fff;font-weight:600}
+  .compare-table .check{color:#34d399;font-weight:800;margin-right:6px;display:inline-block;min-width:18px}
+  .compare-table .x{color:#fbbf24;margin-right:6px;display:inline-block;min-width:18px}
+  @media (max-width:680px){
+    .compare-table{font-size:13px}
+    .compare-table th,.compare-table td{padding:12px 12px}
+    .compare-table tbody td:first-child{width:38%}
+  }
+
   /* Trust strip */
   .trust-strip{max-width:920px;margin:0 auto 28px;padding:32px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:20px}
   .ts-label{text-align:center;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#60a5fa;margin-bottom:22px}
@@ -186,6 +205,18 @@
 
   /* SYNC EXPLAINER */
   .sync-sec{background:linear-gradient(180deg,var(--bg) 0%, #fff 100%);padding:90px 0}
+  .signin-row{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:14px;max-width:940px;margin:0 auto 28px;align-items:stretch}
+  .signin-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:24px 22px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:8px;transition:transform .15s ease, box-shadow .15s ease}
+  .signin-card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+  .signin-num{width:30px;height:30px;border-radius:9px;background:var(--blue-soft);color:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;margin-bottom:4px}
+  .signin-card h4{font-size:16px;font-weight:700;margin:0;letter-spacing:-.01em}
+  .signin-card p{font-size:14px;color:var(--mute);margin:0;line-height:1.55}
+  .signin-arrow{display:flex;align-items:center;justify-content:center;color:var(--blue);font-size:22px;font-weight:300;opacity:.6}
+  .signin-foot{max-width:680px;margin:0 auto;text-align:center;font-size:13.5px;color:var(--mute);line-height:1.6;padding:14px 18px;background:var(--bg);border-radius:12px}
+  @media (max-width:860px){
+    .signin-row{grid-template-columns:1fr;gap:12px}
+    .signin-arrow{transform:rotate(90deg);padding:4px 0}
+  }
   .sync-stage{position:relative;display:grid;grid-template-columns:1fr 1.4fr 1fr;align-items:center;gap:30px;max-width:880px;margin:0 auto 56px;padding:40px 20px}
   .device{position:relative;filter:drop-shadow(0 20px 40px rgba(15,23,42,.15))}
   .device.phone svg{width:120px;height:auto;margin:0 auto;display:block}
@@ -528,94 +559,34 @@
 <section class="security-sec" id="security">
   <div class="wrap">
     <div class="sec-head light">
-      <div class="sec-eyebrow" data-i18n="sec_eyebrow">Security</div>
-      <h2 data-i18n="sec_h2">The server can't read your invoices. Ever.</h2>
-      <p class="sec-sub" data-i18n="sec_sub">Arvik is zero-knowledge — every byte is encrypted on your device <strong>before</strong> it reaches the cloud. Even we cannot open your invoices.</p>
+      <div class="sec-eyebrow" data-i18n="sec_eyebrow">How Arvik is different</div>
+      <h2 data-i18n="sec_h2">Encrypted. EU-hosted. Yours to leave anytime.</h2>
+      <p class="sec-sub" data-i18n="sec_sub">Arvik is built around one principle: <strong>do invoicing well, do nothing else.</strong> Your data is encrypted, hosted in the EU under GDPR, and you can export or delete everything in one click.</p>
     </div>
 
-    <div class="security-stage">
-      <div class="security-panel sp-clear">
-        <div class="sp-label" data-i18n="sec_panel_l">On your device</div>
-        <div class="receipt">
-          <div class="receipt-head"><span>INV-1042</span><span class="b" data-i18n="sec_receipt_paid">PAID</span></div>
-          <div class="receipt-row"><span class="l" data-i18n="sec_receipt_client">Client</span><span class="r">Acme Holdings</span></div>
-          <div class="receipt-row"><span class="l" data-i18n="sec_receipt_amount">Amount</span><span class="r">€1,480.00</span></div>
-          <div class="receipt-row"><span class="l" data-i18n="sec_receipt_due">Due date</span><span class="r">15.06.2026</span></div>
-          <div class="receipt-row"><span class="l" data-i18n="sec_receipt_vat">VAT no.</span><span class="r">DE100123456</span></div>
-        </div>
-      </div>
-
-      <div class="security-arrow">
-        <svg viewBox="0 0 60 60">
-          <defs>
-            <linearGradient id="ag" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stop-color="#34d399"/>
-              <stop offset="100%" stop-color="#fb923c"/>
-            </linearGradient>
-          </defs>
-          <path d="M5 30 L48 30 M40 18 L52 30 L40 42" stroke="url(#ag)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <div class="arrow-label" data-i18n="sec_arrow">AES-256<br>encryption</div>
-      </div>
-
-      <div class="security-panel sp-cipher">
-        <div class="sp-label" data-i18n="sec_panel_r">On our server</div>
-        <div class="cipher">
-          <div class="cipher-row">a8B3f9k2Lm4qNs7tpZc...</div>
-          <div class="cipher-row">x9LbVH3a4dKpQ8wY2eRm...</div>
-          <div class="cipher-row">pZ4f8Hw3aF2nQ7mX9CbT...</div>
-          <div class="cipher-row">b2gT9rJk7vX1nQ4PuMzL...</div>
-          <div class="cipher-row">m4FpRL6sBnQ3xC8tYhWk...</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="security-cards">
-      <div class="sc">
-        <div class="sc-ico">🔒</div>
-        <h4 data-i18n="sec_card_1_t">Encrypted on your device</h4>
-        <p data-i18n="sec_card_1_d">Every change is encrypted in your browser with AES-256-GCM before being sent. The key never leaves your device.</p>
-      </div>
-      <div class="sc">
-        <div class="sc-ico">🔑</div>
-        <h4 data-i18n="sec_card_2_t">Your code is your key</h4>
-        <p data-i18n="sec_card_2_d">The sync code doubles as the decryption key. Without the code, nobody — including us — can read your data.</p>
-      </div>
-      <div class="sc">
-        <div class="sc-ico">🛡️</div>
-        <h4 data-i18n="sec_card_3_t">Zero-knowledge storage</h4>
-        <p data-i18n="sec_card_3_d">The server only stores ciphertext. A breach on our end = meaningless bytes. Your business stays untouched.</p>
-      </div>
-    </div>
-
-    <div class="trust-strip">
-      <div class="ts-label" data-i18n="ts_label">The same zero-knowledge tech also protects</div>
-      <div class="ts-row">
-        <div class="ts-card">
-          <div class="ts-brand">Bitwarden</div>
-          <div class="ts-protect" data-i18n="ts_bw">Your passwords</div>
-        </div>
-        <div class="ts-card">
-          <div class="ts-brand">Proton</div>
-          <div class="ts-protect" data-i18n="ts_pt">Your email</div>
-        </div>
-        <div class="ts-card">
-          <div class="ts-brand">Signal</div>
-          <div class="ts-protect" data-i18n="ts_sg">Your messages</div>
-        </div>
-        <div class="ts-divider">+</div>
-        <div class="ts-card ts-card-us">
-          <div class="ts-brand">Arvik <span class="ts-badge" data-i18n="ts_new">NEW</span></div>
-          <div class="ts-protect" data-i18n="ts_us">Your invoices</div>
-        </div>
-      </div>
-      <div class="ts-line" data-i18n="ts_line">
-        Standard invoicing tools — <strong>QuickBooks, Xero, FreshBooks, Wave and the rest</strong> — keep your data in readable form on their servers. Employees and anyone who breaches them can open it. Arvik <strong>can't open yours</strong> — even if we wanted to. And you don't need an account.
-      </div>
+    <div class="compare-wrap">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th class="them" data-i18n="cmp_them">Standard invoicing SaaS</th>
+            <th class="us">Arvik</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td data-i18n="cmp_r1">Single-purpose</td><td class="them-cell"><span class="x">✕</span><span data-i18n="cmp_r1_them">Full accounting suite</span></td><td class="us-cell"><span class="check">✓</span><span data-i18n="cmp_r1_us">Just invoicing</span></td></tr>
+          <tr><td data-i18n="cmp_r2">Setup time</td><td class="them-cell"><span class="x">⚠️</span><span data-i18n="cmp_r2_them">20–60 minutes</span></td><td class="us-cell"><span class="check">✓</span><span data-i18n="cmp_r2_us">30 seconds</span></td></tr>
+          <tr><td data-i18n="cmp_r3">Hosted in EU (GDPR)</td><td class="them-cell"><span class="x">⚠️</span><span data-i18n="cmp_r3_them">Sometimes</span></td><td class="us-cell"><span class="check">✓</span><span data-i18n="cmp_r3_us">Always</span></td></tr>
+          <tr><td data-i18n="cmp_r4">Encrypted at rest</td><td class="them-cell"><span class="x">⚠️</span><span data-i18n="cmp_r4_them">Sometimes</span></td><td class="us-cell"><span class="check">✓</span><span data-i18n="cmp_r4_us">Always</span></td></tr>
+          <tr><td data-i18n="cmp_r5">One-click data export</td><td class="them-cell"><span class="x">⚠️</span><span data-i18n="cmp_r5_them">Rarely</span></td><td class="us-cell"><span class="check">✓</span><span data-i18n="cmp_r5_us">Anytime</span></td></tr>
+          <tr><td data-i18n="cmp_r6">One-click account delete</td><td class="them-cell"><span class="x">⚠️</span><span data-i18n="cmp_r6_them">"Contact support"</span></td><td class="us-cell"><span class="check">✓</span><span data-i18n="cmp_r6_us">Anytime, self-serve</span></td></tr>
+          <tr><td data-i18n="cmp_r7">Pricing model</td><td class="them-cell"><span class="x">⚠️</span><span data-i18n="cmp_r7_them">Subscription + your data</span></td><td class="us-cell"><span class="check">✓</span><span data-i18n="cmp_r7_us">Subscription only</span></td></tr>
+        </tbody>
+      </table>
     </div>
 
     <div class="security-tech" data-i18n="sec_tech">
-      Encryption: <code>AES-256-GCM</code>, key derived from your sync code via <code>PBKDF2</code> (120,000 iterations, SHA-256). All encryption happens in your browser through the <code>Web Crypto API</code>.
+      <code>AES-256</code> encryption at rest, <code>TLS 1.3</code> in transit, hosted on Supabase (AWS Frankfurt, EU). Magic-link sign-in — we don't store passwords.
     </div>
   </div>
 </section>
@@ -625,118 +596,31 @@
   <div class="wrap">
     <div class="sec-head">
       <div class="sec-eyebrow" data-i18n="sync_eyebrow">Sync</div>
-      <h2 data-i18n="sync_h2">Phone and computer — same Arvik</h2>
-      <p class="sec-sub" data-i18n="sync_sub"><strong>Scan the QR code</strong> with your phone, or <strong>copy the share link</strong> to another browser. Paired in one tap. Data is encrypted on your device <strong>before</strong> it reaches the server.</p>
+      <h2 data-i18n="sync_h2">Phone, laptop, tablet — same Arvik</h2>
+      <p class="sec-sub" data-i18n="sync_sub">Sign in with your email on any device. <strong>No password to remember</strong>, no QR code to scan. Open Arvik, tap your inbox link, you're in.</p>
     </div>
 
-    <div class="sync-stage">
-      <div class="device phone">
-        <svg viewBox="0 0 100 180" xmlns="http://www.w3.org/2000/svg">
-          <rect x="6" y="6" width="88" height="168" rx="14" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>
-          <rect x="14" y="22" width="72" height="136" rx="6" fill="#eff6ff"/>
-          <circle cx="50" cy="14" r="2" fill="#94a3b8"/>
-          <rect x="20" y="32" width="24" height="6" rx="2" fill="#2563eb"/>
-          <rect x="20" y="44" width="60" height="20" rx="4" fill="#fff" stroke="#dbeafe"/>
-          <rect x="24" y="50" width="20" height="3" rx="1.5" fill="#cbd5e1"/>
-          <rect x="24" y="56" width="32" height="3" rx="1.5" fill="#94a3b8"/>
-          <rect x="20" y="70" width="60" height="20" rx="4" fill="#fff" stroke="#dbeafe"/>
-          <rect x="24" y="76" width="20" height="3" rx="1.5" fill="#cbd5e1"/>
-          <rect x="24" y="82" width="36" height="3" rx="1.5" fill="#94a3b8"/>
-          <rect x="20" y="96" width="60" height="20" rx="4" fill="#fff" stroke="#dbeafe"/>
-          <rect x="24" y="102" width="22" height="3" rx="1.5" fill="#cbd5e1"/>
-          <rect x="24" y="108" width="30" height="3" rx="1.5" fill="#94a3b8"/>
-          <circle cx="50" cy="166" r="2" fill="#cbd5e1"/>
-        </svg>
-        <div class="device-label" data-i18n="sync_phone">📱 Scans QR</div>
+    <div class="signin-row">
+      <div class="signin-card">
+        <div class="signin-num">1</div>
+        <h4 data-i18n="sync_step_1_t">Type your email</h4>
+        <p data-i18n="sync_step_1_d">Open Arvik on any device and enter your email. That's the whole sign-up.</p>
       </div>
-
-      <div class="sync-flow">
-        <div class="scan-chip top" data-i18n="sync_chip_top">🔗 share link</div>
-        <svg class="flow-anim" viewBox="0 0 400 120" preserveAspectRatio="none">
-          <defs>
-            <path id="flow-path" d="M 10 60 Q 200 -10 390 60"/>
-            <path id="flow-path-rev" d="M 390 60 Q 200 130 10 60"/>
-          </defs>
-          <use href="#flow-path" stroke="#cbd5e1" stroke-width="2" fill="none" stroke-dasharray="5 6"/>
-          <use href="#flow-path-rev" stroke="#cbd5e1" stroke-width="2" fill="none" stroke-dasharray="5 6"/>
-          <circle r="5" fill="#2563eb"><animateMotion dur="3s" repeatCount="indefinite"><mpath href="#flow-path"/></animateMotion></circle>
-          <circle r="5" fill="#2563eb"><animateMotion dur="3s" repeatCount="indefinite" begin="1s"><mpath href="#flow-path"/></animateMotion></circle>
-          <circle r="5" fill="#2563eb"><animateMotion dur="3s" repeatCount="indefinite" begin="2s"><mpath href="#flow-path"/></animateMotion></circle>
-          <circle r="5" fill="#60a5fa"><animateMotion dur="3s" repeatCount="indefinite" begin="0.5s"><mpath href="#flow-path-rev"/></animateMotion></circle>
-          <circle r="5" fill="#60a5fa"><animateMotion dur="3s" repeatCount="indefinite" begin="1.5s"><mpath href="#flow-path-rev"/></animateMotion></circle>
-          <circle r="5" fill="#60a5fa"><animateMotion dur="3s" repeatCount="indefinite" begin="2.5s"><mpath href="#flow-path-rev"/></animateMotion></circle>
-        </svg>
-        <div class="qr-mini" aria-label="QR">
-          <svg viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-            <rect width="21" height="21" fill="#fff"/>
-            <g fill="#0f172a">
-              <rect x="0" y="0" width="7" height="1"/><rect x="0" y="0" width="1" height="7"/><rect x="6" y="0" width="1" height="7"/><rect x="0" y="6" width="7" height="1"/>
-              <rect x="2" y="2" width="3" height="3"/>
-              <rect x="14" y="0" width="7" height="1"/><rect x="14" y="0" width="1" height="7"/><rect x="20" y="0" width="1" height="7"/><rect x="14" y="6" width="7" height="1"/>
-              <rect x="16" y="2" width="3" height="3"/>
-              <rect x="0" y="14" width="7" height="1"/><rect x="0" y="14" width="1" height="7"/><rect x="6" y="14" width="1" height="7"/><rect x="0" y="20" width="7" height="1"/>
-              <rect x="2" y="16" width="3" height="3"/>
-              <rect x="8" y="2" width="1" height="1"/><rect x="10" y="0" width="1" height="1"/><rect x="11" y="2" width="1" height="1"/><rect x="9" y="4" width="1" height="1"/><rect x="12" y="4" width="1" height="1"/>
-              <rect x="8" y="8" width="1" height="1"/><rect x="10" y="8" width="2" height="1"/><rect x="13" y="8" width="1" height="1"/><rect x="15" y="8" width="2" height="1"/><rect x="18" y="8" width="1" height="1"/>
-              <rect x="2" y="9" width="1" height="2"/><rect x="4" y="10" width="2" height="1"/><rect x="9" y="10" width="1" height="2"/><rect x="11" y="11" width="1" height="1"/><rect x="13" y="10" width="2" height="1"/><rect x="16" y="10" width="1" height="2"/><rect x="19" y="11" width="1" height="1"/>
-              <rect x="3" y="12" width="1" height="1"/><rect x="5" y="13" width="1" height="1"/><rect x="7" y="12" width="2" height="1"/><rect x="10" y="13" width="1" height="1"/><rect x="12" y="13" width="3" height="1"/><rect x="17" y="13" width="2" height="1"/>
-              <rect x="8" y="15" width="1" height="3"/><rect x="10" y="16" width="2" height="1"/><rect x="13" y="15" width="1" height="2"/><rect x="15" y="17" width="2" height="1"/><rect x="18" y="15" width="1" height="2"/>
-              <rect x="9" y="18" width="1" height="1"/><rect x="11" y="19" width="2" height="1"/><rect x="14" y="20" width="1" height="1"/><rect x="16" y="19" width="1" height="1"/><rect x="19" y="18" width="1" height="2"/>
-            </g>
-          </svg>
-        </div>
-        <div class="scan-chip bot" data-i18n="sync_chip_bot">🔒 encrypted</div>
+      <div class="signin-arrow">→</div>
+      <div class="signin-card">
+        <div class="signin-num">2</div>
+        <h4 data-i18n="sync_step_2_t">Tap the link in your inbox</h4>
+        <p data-i18n="sync_step_2_d">We send a one-time magic link. Tap it — you're signed in. No password to set, no password to forget.</p>
       </div>
-
-      <div class="device laptop">
-        <svg viewBox="0 0 220 150" xmlns="http://www.w3.org/2000/svg">
-          <rect x="20" y="6" width="180" height="118" rx="8" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>
-          <rect x="28" y="14" width="164" height="100" rx="4" fill="#eff6ff"/>
-          <rect x="32" y="18" width="34" height="92" rx="3" fill="#fff"/>
-          <rect x="36" y="24" width="18" height="3" rx="1.5" fill="#2563eb"/>
-          <rect x="36" y="36" width="22" height="3" rx="1.5" fill="#94a3b8"/>
-          <rect x="36" y="44" width="22" height="3" rx="1.5" fill="#94a3b8"/>
-          <rect x="36" y="52" width="22" height="3" rx="1.5" fill="#94a3b8"/>
-          <rect x="72" y="22" width="40" height="4" rx="2" fill="#2563eb"/>
-          <rect x="72" y="32" width="56" height="3" rx="1.5" fill="#94a3b8"/>
-          <rect x="72" y="42" width="118" height="22" rx="3" fill="#fff" stroke="#dbeafe"/>
-          <rect x="76" y="48" width="36" height="3" rx="1.5" fill="#cbd5e1"/>
-          <rect x="76" y="56" width="60" height="3" rx="1.5" fill="#94a3b8"/>
-          <rect x="72" y="70" width="118" height="22" rx="3" fill="#fff" stroke="#dbeafe"/>
-          <rect x="76" y="76" width="36" height="3" rx="1.5" fill="#cbd5e1"/>
-          <rect x="76" y="84" width="48" height="3" rx="1.5" fill="#94a3b8"/>
-          <rect x="72" y="98" width="118" height="14" rx="3" fill="#fff" stroke="#dbeafe"/>
-          <rect x="76" y="103" width="40" height="3" rx="1.5" fill="#cbd5e1"/>
-          <path d="M10 124 L210 124 L218 138 L2 138 Z" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="2" stroke-linejoin="round"/>
-          <rect x="90" y="124" width="40" height="3" rx="1.5" fill="#cbd5e1"/>
-        </svg>
-        <div class="device-label" data-i18n="sync_laptop">💻 Pastes link</div>
+      <div class="signin-arrow">→</div>
+      <div class="signin-card">
+        <div class="signin-num">3</div>
+        <h4 data-i18n="sync_step_3_t">Same data everywhere</h4>
+        <p data-i18n="sync_step_3_d">Your invoices show up on every device you sign in on. Encrypted at rest in our EU database.</p>
       </div>
     </div>
 
-    <div class="sync-steps-row">
-      <div class="ss-step">
-        <div class="ss-num">1</div>
-        <div>
-          <h4 data-i18n="sync_step_1_t">Activate the first device</h4>
-          <p data-i18n="sync_step_1_d">Settings → "Activate this device". A QR code and share link appear on screen.</p>
-        </div>
-      </div>
-      <div class="ss-step">
-        <div class="ss-num">2</div>
-        <div>
-          <h4 data-i18n="sync_step_2_t">Pair the second device</h4>
-          <p data-i18n="sync_step_2_d"><strong>Phone:</strong> open the camera, point at the QR, tap the link that appears. <strong>Computer:</strong> copy the share link and open it in another browser. Nothing to type.</p>
-        </div>
-      </div>
-      <div class="ss-step">
-        <div class="ss-num">3</div>
-        <div>
-          <h4 data-i18n="sync_step_3_t">Done</h4>
-          <p data-i18n="sync_step_3_d">Every change flows between devices automatically — encrypted on your device before it ever leaves.</p>
-        </div>
-      </div>
-    </div>
+    <div class="signin-foot" data-i18n="sync_foot">No passwords stored. No app to install. Sign out anytime. Delete your account anytime — one click, all data gone.</div>
   </div>
 </section>
 
@@ -754,28 +638,28 @@
           <div class="faq-body" data-i18n="faq_1_a">Yes. Arvik is fully free right now — no limits on invoices, clients, or PDF downloads. A paid plan with team features may come later, but current use stays free forever.</div>
         </details>
         <details class="faq-item">
-          <summary data-i18n="faq_why_q">Why does invoicing even need this kind of security?</summary>
-          <div class="faq-body" data-i18n="faq_why_a">Invoices contain more than just amounts. They reveal your <strong>client list, addresses, VAT numbers, IBANs, payment terms and revenue patterns</strong> — aggregated, that's a competitive intelligence goldmine, a GDPR liability, and material for invoice fraud. Standard cloud invoicing tools have suffered breaches; even without a breach, employees at those companies can read your business data. With zero-knowledge encryption, nobody at Arvik can — even if we wanted to. The cost of encryption is zero; the cost of a leak is high. So we made it the default.</div>
+          <summary data-i18n="faq_pick_q">Why pick Arvik over other invoicing tools?</summary>
+          <div class="faq-body" data-i18n="faq_pick_a">Three reasons. <strong>One — single-purpose.</strong> Most invoicing software is one tab inside a full accounting suite. Arvik does invoicing and nothing else, which is why setup takes 30 seconds instead of an hour. <strong>Two — EU-hosted, encrypted, GDPR-compliant by default.</strong> Your data sits in AWS Frankfurt, encrypted at rest, never crosses an ocean. <strong>Three — transparent pricing, full data ownership.</strong> Export everything as JSON anytime, delete your account anytime — self-serve, one click. If something better comes along, you can walk out the door with your data.</div>
         </details>
         <details class="faq-item">
-          <summary data-i18n="faq_trust_q">Why should I trust you? You're a new product.</summary>
-          <div class="faq-body" data-i18n="faq_trust_a">Fair question — don't trust us, <strong>verify us</strong>. (1) The encryption happens in your browser. Open dev tools → Network tab → you'll see only ciphertext leaving your device, never plaintext. (2) No account, no email, no payment required. We don't know who you are. There's no data to sell because we don't collect it. (3) The default mode is <strong>fully local</strong> — no cloud at all unless you turn on sync. (4) EU-based, GDPR-bound. The privacy is built in, not promised.</div>
+          <summary data-i18n="faq_signin_q">How do I sign in?</summary>
+          <div class="faq-body" data-i18n="faq_signin_a">Type your email — we send you a one-time magic link. Tap the link in your inbox, you're signed in. No password to set, no password to forget. Same flow on every device: open Arvik, enter your email, tap the link. Your invoices follow you everywhere you sign in.</div>
         </details>
         <details class="faq-item">
           <summary data-i18n="faq_2_q">Where is my data stored?</summary>
-          <div class="faq-body" data-i18n="faq_2_a">By default, in your browser's local storage — it never leaves your device. If you turn on sync, data is encrypted in your browser <strong>before</strong> being sent to the cloud — the server only sees ciphertext that can't be opened without your code. Encryption uses AES-256-GCM and the key is derived from your code via PBKDF2 (120,000 iterations).</div>
-        </details>
-        <details class="faq-item">
-          <summary data-i18n="faq_access_q">If there's no login, how do I get back to my invoices later?</summary>
-          <div class="faq-body" data-i18n="faq_access_a">Just like reopening a notes app — the data is already there. Your invoices live in your browser's local storage, so opening arvik.ee again on the same device shows everything where you left it. <strong>Browser restart, computer reboot — data persists.</strong> Think of it less like "logging into a website" and more like "opening a file." The browser is your account. No password to forget, no email to verify. If you switch devices or want a backup, activate sync — you get a QR code / share link that brings the same data to another device. That's the only "account-like" step, and it's optional.</div>
+          <div class="faq-body" data-i18n="faq_2_a">In our database in <strong>AWS Frankfurt (EU)</strong>, hosted on Supabase. All data is encrypted at rest with AES-256 and travels over TLS 1.3. Authentication is magic-link only — we don't store passwords. You can export your full data as JSON or delete your account in one click from Settings.</div>
         </details>
         <details class="faq-item">
           <summary data-i18n="faq_3_q">Can I use it on multiple devices?</summary>
-          <div class="faq-body" data-i18n="faq_3_a">Yes. Activate sync on one device — you get a QR code and a share link. Scan the QR with your phone camera and tap the link, or paste the share link into another browser. <strong>Nothing to type.</strong> Data is encrypted on your device before being sent — we never see it. Keep the link safe — losing it means losing access to the synced data.</div>
+          <div class="faq-body" data-i18n="faq_3_a">Yes. Sign in with the same email on any device — phone, tablet, laptop. Your invoices sync automatically. No QR code to scan, no link to copy, no app to install. Just your email.</div>
+        </details>
+        <details class="faq-item">
+          <summary data-i18n="faq_export_q">Can I export or delete my data?</summary>
+          <div class="faq-body" data-i18n="faq_export_a">Anytime. Settings → Export gives you a clean JSON file with every invoice, client, and setting. Settings → Delete account wipes everything in one click — invoices, clients, profile, account. No "contact support to delete", no waiting period. Self-serve, instant.</div>
         </details>
         <details class="faq-item">
           <summary data-i18n="faq_4_q">Is there VAT support?</summary>
-          <div class="faq-body" data-i18n="faq_4_a">Yes. Add your company's VAT number and your client's VAT number. The VAT rate is editable on every invoice (default 22%, change to whatever your country uses). VAT and registration number show on the PDF following standard invoice format.</div>
+          <div class="faq-body" data-i18n="faq_4_a">Yes. Add your company's VAT number and your client's VAT number. The VAT rate is editable on every invoice (default 24%, change to whatever your country uses). VAT and registration number show on the PDF following standard invoice format.</div>
         </details>
         <details class="faq-item">
           <summary data-i18n="faq_5_q">How do I send the invoice to my client?</summary>
@@ -800,8 +684,8 @@
 <section class="cta-wrap">
   <div class="wrap">
     <div class="cta-card">
-      <h2 data-i18n="cta_h2">The most private invoicing.<br>No account needed.</h2>
-      <p data-i18n="cta_p">No account. No signup. 30 seconds to your first invoice.</p>
+      <h2 data-i18n="cta_h2">Encrypted invoicing<br>in 30 seconds.</h2>
+      <p data-i18n="cta_p">Sign in with your email. No password. Free forever.</p>
       <a href="/app.html" class="btn btn-white btn-lg" data-i18n="cta_btn">Open Arvik free →</a>
     </div>
   </div>
@@ -823,14 +707,14 @@ const i18n = {
     nav_faq: 'KKK',
     nav_cta: 'Ava Arvik →',
 
-    hero_first: 'Max privaatsus',
-    hero_eyebrow: 'null-teadmusega arveldus · kontot ei eksisteeri',
-    hero_h1: 'Veebis <span class="accent">kõige privaatsem</span> arveldus.',
-    hero_sub: '<strong>AES-256 krüpteeritud</strong>, sinu arved elavad sinu seadmes — nagu märkmete rakendus, mitte pilveteenus. Lisa lehe järjehoidja ja need on alati seal. Pole registreerumist, pole e-posti, pole kontot. <strong>Sest kõige privaatsem süsteem on see, mis sind üldse ei tunne.</strong>',
+    hero_first: 'Tasuta',
+    hero_eyebrow: 'krüpteeritud · ühe asja tööriist · ainult sinu e-post',
+    hero_h1: 'Krüpteeritud arveldus,<br><span class="accent">ilma müra ja lisadeta</span>.',
+    hero_sub: 'Ülilihtne — mitte midagi üleliigset. Pole pearaamatu­tarkvara, mida õppida. Pole parooli, mida unustada. Ainult sinu e-post ja puhas tööriist, mis teeb ühte asja: saadab arve 30 sekundiga. Krüpteeritud, EU-s majutatud, igal ajal eksporditav.',
     hero_cta1: 'Ava Arvik tasuta →',
     hero_cta2: 'Vaata kuidas →',
-    hero_privacy_t: 'Sinu andmed jäävad sinu seadmesse · krüpteeritud',
-    hero_privacy_s: 'Sama tehnoloogia mis Bitwarden, Proton, Signal · loe lähemalt →',
+    hero_privacy_t: 'Krüpteeritud puhkeolekus · EU-s majutatud · Üks töö, korralikult tehtud',
+    hero_privacy_s: 'Vaata, kuidas Arvik teistest erineb →',
 
     trust_vat: 'Käibemaksu tugi',
     trust_iban: 'IBAN-iga',
@@ -867,64 +751,61 @@ const i18n = {
     step_3_t: 'Saada PDF',
     step_3_d: 'Lae alla PDF, saada e-postiga. Märgi tasutuks, kui raha laekub.',
 
-    sec_eyebrow: 'Turvalisus',
-    sec_h2: 'Server ei näe sinu arveid. Mitte iial.',
-    sec_sub: 'Arvik on null-teadmusega — kõik andmed krüpteeritakse sinu seadmes <strong>enne</strong> pilve saatmist. Isegi meie ise ei saa sinu arveid avada.',
-    sec_panel_l: 'Sinu seadmes',
-    sec_panel_r: 'Meie serveris',
-    sec_receipt_paid: 'TASUTUD',
-    sec_receipt_client: 'Klient',
-    sec_receipt_amount: 'Summa',
-    sec_receipt_due: 'Tähtaeg',
-    sec_receipt_vat: 'KMKR nr',
-    sec_arrow: 'AES-256<br>krüpteerimine',
-    sec_card_1_t: 'Krüpteeritud sinu seadmes',
-    sec_card_1_d: 'Iga muudatus krüpteeritakse sinu brauseris AES-256-GCM-ga enne saatmist. Võti ei lahku kunagi sinu seadmest.',
-    sec_card_2_t: 'Sinu kood = sinu võti',
-    sec_card_2_d: 'Sünkroniseerimiskood toimib ka dekrüpteerimise võtmena. Ilma koodita ei saa keegi — sealhulgas meie — andmeid lugeda.',
-    sec_card_3_t: 'Null-teadmusega salvestus',
-    sec_card_3_d: 'Server hoiab ainult krüptogrammi. Andmeleke meie poolt = mõttetud baidid. Sinu äri jääb puutumatuks.',
+    sec_eyebrow: 'Mis teeb Arviku teistsuguseks',
+    sec_h2: 'Krüpteeritud. EU-s majutatud. Sinu lahkuda igal hetkel.',
+    sec_sub: 'Arvik on ehitatud ühe põhimõtte ümber: <strong>tee arveldust hästi, ära tee midagi muud.</strong> Sinu andmed on krüpteeritud, majutatud EU-s GDPR-i all, ja sa saad eksportida või kustutada kõik ühe nupuvajutusega.',
+    cmp_them: 'Tavaline arveldus-SaaS',
+    cmp_r1: 'Üks asi, korralikult',
+    cmp_r1_them: 'Täielik raamatupidamis­pakett',
+    cmp_r1_us: 'Ainult arveldus',
+    cmp_r2: 'Seadistamise aeg',
+    cmp_r2_them: '20–60 minutit',
+    cmp_r2_us: '30 sekundit',
+    cmp_r3: 'Majutatud EU-s (GDPR)',
+    cmp_r3_them: 'Mõnikord',
+    cmp_r3_us: 'Alati',
+    cmp_r4: 'Krüpteeritud puhkeolekus',
+    cmp_r4_them: 'Mõnikord',
+    cmp_r4_us: 'Alati',
+    cmp_r5: 'Andmete eksport ühe nupuga',
+    cmp_r5_them: 'Harva',
+    cmp_r5_us: 'Igal ajal',
+    cmp_r6: 'Konto kustutamine ühe nupuga',
+    cmp_r6_them: '"Võtke ühendust toega"',
+    cmp_r6_us: 'Igal ajal, ise',
+    cmp_r7: 'Hinnamudel',
+    cmp_r7_them: 'Tellimus + sinu andmed',
+    cmp_r7_us: 'Ainult tellimus',
 
-    ts_label: 'Sama null-teadmusega tehnoloogiat kasutavad ka',
-    ts_bw: 'Kaitseb sinu paroole',
-    ts_pt: 'Kaitseb sinu e-kirju',
-    ts_sg: 'Kaitseb sinu sõnumeid',
-    ts_us: 'Kaitseb sinu arveid',
-    ts_new: 'UUS',
-    ts_line: 'Tavalised arveldustarkvarad — <strong>QuickBooks, Xero, FreshBooks, Wave ja kõik teised</strong> — hoiavad sinu andmeid loetavas vormis oma serverites. Töötajad ja seal kuriteoga tegelevad häkkerid saavad need lahti võtta. Arvik <strong>ei saa sinu andmeid avada</strong> — isegi kui tahaksime. Ja sa ei vaja kontot.',
-
-    sec_tech: 'Krüpteerimine: <code>AES-256-GCM</code>, võti tuletatud sinu sünkroniseerimiskoodi pealt <code>PBKDF2-ga</code> (120 000 iteratsiooni, SHA-256). Kogu krüpteerimine toimub sinu brauseris <code>Web Crypto API</code> kaudu.',
+    sec_tech: '<code>AES-256</code> krüpteerimine puhkeolekus, <code>TLS 1.3</code> ülekandes, majutatud Supabase\'is (AWS Frankfurt, EU). Magic-link sisselogimine — me ei salvesta paroole.',
 
     sync_eyebrow: 'Sünkroniseerimine',
-    sync_h2: 'Telefon ja arvuti — sama Arvik',
-    sync_sub: '<strong>Skanneeri QR-kood</strong> telefoniga või <strong>kopeeri jagamislink</strong> teise arvutisse. Ühe puudutusega paaritud. Andmed krüpteeritakse sinu seadmes <strong>enne</strong> serverisse jõudmist.',
-    sync_phone: '📱 Skanneerib QR',
-    sync_laptop: '💻 Kleebib lingi',
-    sync_chip_top: '🔗 jagamislink',
-    sync_chip_bot: '🔒 krüpteeritud',
-    sync_step_1_t: 'Aktiveeri esimeses seadmes',
-    sync_step_1_d: 'Seaded → "Aktiveeri see seade". Ekraanile ilmub QR-kood ja jagamislink.',
-    sync_step_2_t: 'Paarista teine seade',
-    sync_step_2_d: '<strong>Telefoniga:</strong> ava kaamera, suuna QR-koodile, vajuta avanevat linki. <strong>Arvutiga:</strong> kopeeri jagamislink ja ava see teises brauseris. Mitte midagi tippida pole vaja.',
-    sync_step_3_t: 'Valmis',
-    sync_step_3_d: 'Iga muudatus liigub seadmete vahel automaatselt — krüpteerituna sinu seadmes enne saatmist.',
+    sync_h2: 'Telefon, sülearvuti, tahvelarvuti — sama Arvik',
+    sync_sub: 'Logi sisse oma e-postiga igas seadmes. <strong>Pole parooli, mida meeles pidada</strong>, pole QR-koodi, mida skanneerida. Ava Arvik, vajuta postkasti tulnud lingile, oledki sees.',
+    sync_step_1_t: 'Sisesta oma e-post',
+    sync_step_1_d: 'Ava Arvik mistahes seadmes ja sisesta oma e-posti aadress. See ongi kogu registreerimine.',
+    sync_step_2_t: 'Vajuta postkasti tulnud lingile',
+    sync_step_2_d: 'Saadame ühekordse magic-lingi. Vajuta sellele — sa oledki sisse logitud. Pole parooli, mida seadistada, pole parooli, mida unustada.',
+    sync_step_3_t: 'Samad andmed igal pool',
+    sync_step_3_d: 'Sinu arved ilmuvad igas seadmes, kus sisse logid. Krüpteeritud puhkeolekus meie EU-andmebaasis.',
+    sync_foot: 'Paroole ei salvestata. Rakendust pole vaja paigaldada. Logi välja igal ajal. Kustuta konto igal ajal — üks klikk, kõik andmed läinud.',
 
     faq_eyebrow: 'Korduma kippuvad küsimused',
     faq_h2: 'Tüüpilised küsimused',
     faq_1_q: 'Kas see on tõesti tasuta?',
     faq_1_a: 'Jah. Arvik on praegu täiesti tasuta — ilma piiranguteta arvete arvule, klientide arvule või PDF-ide allalaadimisele. Tulevikus võib lisanduda tasuline versioon meeskonnafunktsioonidega, aga praegune kasutus jääb alati tasuta.',
-    faq_why_q: 'Miks arveldus üldse vajab sellist turvalisust?',
-    faq_why_a: 'Arvetel on rohkem kui pelgalt summad. Need näevad sinu <strong>klientide nimekirja, aadresse, KMKR-numbreid, IBAN-eid, maksetingimusi ja tulumustreid</strong> — koondatuna on need kuldne konkurentsiteave, GDPR-i kohustuste allikas ja materjal arvepettusteks. Tavalised pilvepõhised arveldustarkvarad on kannatanud andmelekkeid; isegi ilma lekketa saavad nende ettevõtete töötajad sinu äriinfot lugeda. Null-teadmusega krüpteerimisega ei saa keegi Arvikus seda teha — isegi mitte meie ise. Krüpteerimine ei maksa midagi; lekke hind on suur. Seetõttu tegime sellest vaikesätte.',
-    faq_trust_q: 'Miks ma teid usaldama peaksin? Olete uus toode.',
-    faq_trust_a: 'Õiglane küsimus — ärge meid usaldage, vaid <strong>kontrollige meid</strong>. (1) Krüpteerimine toimub sinu brauseris. Ava arendaja tööriistad → võrgu vaheleht → näed, et serverisse läheb ainult krüptogramm, mitte kunagi avatekst. (2) Kontot pole, e-posti pole, makset pole. Me ei tea, kes sa oled. Andmeid pole müüa, sest me neid ei kogu. (3) Vaikimisi töötab Arvik <strong>täielikult sinu seadmes</strong> — pilv on valikuline. (4) EU-põhine, GDPR-i alluvuses. Privaatsus on sisse ehitatud, mitte lubatud.',
+    faq_pick_q: 'Miks valida Arvik teiste arveldustööriistade asemel?',
+    faq_pick_a: 'Kolm põhjust. <strong>Üks — ühe töö tööriist.</strong> Enamik arveldustarkvarasid on üks vaheleht täielikus raamatupidamis­paketis. Arvik teeb arveldust ja mitte midagi muud — sellepärast võtab seadistamine 30 sekundit, mitte tundi. <strong>Kaks — EU-s majutatud, krüpteeritud, GDPR-iga vaikimisi.</strong> Sinu andmed asuvad AWS Frankfurtis, krüpteeritud puhkeolekus, ei ületa kunagi ookeani. <strong>Kolm — läbipaistev hinnastamine, täielik andmete omandiõigus.</strong> Eksportige kõik JSON-ina igal ajal, kustutage konto igal ajal — ise, ühe nupuvajutusega. Kui leiad parema lahenduse, saad oma andmetega rahulikult välja kõndida.',
+    faq_signin_q: 'Kuidas ma sisse login?',
+    faq_signin_a: 'Sisesta oma e-post — saadame ühekordse magic-lingi. Vajuta postkasti tulnud lingile, sa oledki sees. Pole parooli, mida seadistada, pole parooli, mida unustada. Sama protsess igas seadmes: ava Arvik, sisesta e-post, vajuta lingile. Sinu arved järgnevad sulle igal pool, kus sisse logid.',
     faq_2_q: 'Kuhu mu andmed salvestuvad?',
-    faq_2_a: 'Vaikimisi sinu brauseri kohalikku salvestusse (localStorage) — need ei lahku sinu seadmest. Kui aktiveerid sünkroniseerimise, krüpteeritakse andmed enne pilve saatmist sinu seadmes — server näeb ainult krüpteeritud andmeid, mida ei saa ilma sinu koodita lahti võtta. Krüpteerimine kasutab AES-256-GCM ja võti tuletatakse sinu koodist PBKDF2-ga (120 000 iteratsiooni).',
-    faq_access_q: 'Kui pole sisselogimist, kuidas ma oma arvete juurde tagasi pääsen?',
-    faq_access_a: 'Täpselt nagu märkmete rakenduse uuesti avamine — andmed on juba seal. Sinu arved elavad brauseri kohalikus salvestuses, nii et arvik.ee uuesti avamine samas seadmes näitab kõike sealt, kus pooleli jätsid. <strong>Brauseri taaskäivitus, arvuti restart — andmed püsivad.</strong> Mõtle sellele vähem kui "veebilehele sisselogimisele" ja rohkem kui "faili avamisele". Brauser ongi sinu konto. Pole parooli, mida unustada, pole e-posti, mida kinnitada. Kui vahetad seadet või soovid varundust, aktiveeri sünkroniseerimine — saad QR-koodi / jagamislingi, mis toob samad andmed teise seadmesse. See on ainus "konto-laadne" samm ja see on valikuline.',
+    faq_2_a: 'Meie andmebaasis <strong>AWS Frankfurtis (EU)</strong>, Supabase\'is majutatud. Kõik andmed on krüpteeritud puhkeolekus AES-256-ga ja liiguvad TLS 1.3 üle. Autentimine on ainult magic-link põhine — me ei salvesta paroole. Saad oma andmed JSON-ina eksportida või kogu konto kustutada ühe nupuvajutusega Seadetes.',
     faq_3_q: 'Kas saan kasutada mitmes seadmes?',
-    faq_3_a: 'Jah. Aktiveeri ühel seadmel sünkroniseerimine — saad QR-koodi ja jagamislingi. Telefoniga skanneerid QR-koodi kaameraga ja vajutad avanevat linki. Teises arvutis avad jagamislingi brauseris. <strong>Mitte midagi tippida pole vaja.</strong> Andmed krüpteeritakse sinu seadmes enne saatmist — meie ei näe neid kunagi. Hoia link kindlas kohas — kui kaotad selle, kaotad pilves olnud andmetele ligipääsu.',
+    faq_3_a: 'Jah. Logi sama e-postiga sisse igas seadmes — telefonis, tahvelarvutis, sülearvutis. Sinu arved sünkroniseeruvad automaatselt. Pole QR-koodi, mida skanneerida, pole linki, mida kopeerida, pole rakendust, mida paigaldada. Ainult sinu e-post.',
+    faq_export_q: 'Kas saan oma andmeid eksportida või kustutada?',
+    faq_export_a: 'Igal ajal. Seaded → Eksport annab sulle puhta JSON-faili kõikide arvete, klientide ja seadetega. Seaded → Kustuta konto pühib ühe klikiga kõik — arved, kliendid, profiili, konto. Pole "võtke kustutamiseks toega ühendust", pole ooteaega. Ise tehtav, kohene.',
     faq_4_q: 'Kas on käibemaksu tugi?',
-    faq_4_a: 'Jah. Saad lisada nii oma ettevõtte KMKR numbri kui ka kliendi KMKR numbri. Käibemaksu määr on muudetav igal arvel (vaikimisi 22%). KMKR ja registrikood kuvatakse arve PDF-il vastavalt tavadele.',
+    faq_4_a: 'Jah. Saad lisada nii oma ettevõtte KMKR numbri kui ka kliendi KMKR numbri. Käibemaksu määr on muudetav igal arvel (vaikimisi 24%, Eesti 2025. aasta määr). KMKR ja registrikood kuvatakse arve PDF-il vastavalt tavadele.',
     faq_5_q: 'Kuidas ma arve kliendile saadan?',
     faq_5_a: 'Vajuta "Salvesta &amp; lae PDF" — saad PDF-faili kohe alla. Edasi saadad selle e-postiga oma tavalisest e-postiprogrammist (Gmail, Outlook). Hoiame teadlikult lihtsana: sinu e-post jääb sinu kontrolli alla.',
     faq_6_q: 'Kas saan lisada oma logo ja IBAN-i?',
@@ -933,8 +814,8 @@ const i18n = {
     faq_aside_p: 'Kirjuta — vastame samal päeval.',
     faq_aside_btn: 'Saada e-kiri',
 
-    cta_h2: 'Kõige privaatsem arveldus.<br>Kontot pole vaja.',
-    cta_p: 'Ei kontot. Ei registreerumist. 30 sekundit esimese arveni.',
+    cta_h2: 'Krüpteeritud arveldus<br>30 sekundiga.',
+    cta_p: 'Logi sisse oma e-postiga. Parooli pole. Tasuta kogu eluks.',
     cta_btn: 'Ava Arvik tasuta →',
 
     footer: '© 2026 Arvik · Tehtud maailmale · <a href="/app.html" style="color:var(--blue)">Ava rakendus</a>',
@@ -949,8 +830,8 @@ const i18n = {
 })();
 
 const titles = {
-  en: { title: "Arvik — The most private invoicing on the web", desc: "The most private invoicing on the web. Zero-knowledge encryption, no account, no email — because the most private system is the one that doesn't know you exist. Free." },
-  et: { title: "Arvik — Veebis kõige privaatsem arveldus", desc: "Veebis kõige privaatsem arveldus. Null-teadmusega krüpteerimine, pole kontot ega e-posti — sest kõige privaatsem süsteem on see, mis sind üldse ei tunne. Tasuta." }
+  en: { title: "Arvik — Encrypted invoicing, without the bloat", desc: "Dead simple invoicing tool. No accounting suite, no password — just your email and a clean tool that sends invoices in 30 seconds. Encrypted, EU-hosted, exportable anytime. Free." },
+  et: { title: "Arvik — Krüpteeritud arveldus, ilma müra ja lisadeta", desc: "Ülilihtne arveldustööriist. Pole pearaamatu­tarkvara, pole parooli — ainult sinu e-post ja puhas tööriist, mis saadab arve 30 sekundiga. Krüpteeritud, EU-s majutatud, igal ajal eksporditav. Tasuta." }
 };
 
 function detectLang(){
