@@ -835,7 +835,7 @@ function openInvoiceEditor(id){
     items:[{desc:'',qty:1,price:0}],taxRate:state.business.defaultTaxRate,
     discount:0,discountType:'amount',notes:state.business.notes,
     status:'draft',recurring:false,recurringInterval:'monthly',
-    currency:'EUR'
+    currency:'EUR',paymentMethod:'bank'
   };
   // Free users locked to EUR; Pro can change currency per invoice
   if(!isPro())inv.currency='EUR';
@@ -868,6 +868,13 @@ function renderInvoiceForm(){
         <label class="field-label">Valuuta ${isPro()?'':'<span style="font-size:10px;color:#94a3b8;font-weight:500;margin-left:4px">🔒 Pro</span>'}</label>
         <select id="f-currency" class="input" ${isPro()?'':'onchange="if(this.value!==\'EUR\'){this.value=\'EUR\';openProModal(\'currency\')}"'}>
           ${CURRENCIES.map(cur=>`<option value="${cur.code}" ${(inv.currency||'EUR')===cur.code?'selected':''}>${cur.code} — ${cur.symbol} ${cur.name}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field">
+        <label class="field-label">Makseviis</label>
+        <select id="f-payment" class="input">
+          <option value="bank" ${(inv.paymentMethod||'bank')==='bank'?'selected':''}>Pangaülekanne</option>
+          <option value="cash" ${inv.paymentMethod==='cash'?'selected':''}>Sularaha</option>
         </select>
       </div>
     </div>
@@ -963,6 +970,8 @@ function syncForm(){
   inv.recurringInterval=document.getElementById('f-recurring-interval').value;
   const curEl=document.getElementById('f-currency');
   if(curEl)inv.currency=isPro()?curEl.value:'EUR';
+  const payEl=document.getElementById('f-payment');
+  if(payEl)inv.paymentMethod=payEl.value;
 }
 function recalc(){
   syncForm();const inv=window._editingInv;
@@ -1402,12 +1411,14 @@ function generatePDF(id){
   doc.setDrawColor(220).line(W-260, y-6, W-50, y-6);
   row('TASUDA KOKKU', eur(t.total), true);
 
-  // Bank / IBAN
-  if(b.bank||b.iban){
+  // Bank / IBAN / payment method
+  const isCash = inv.paymentMethod==='cash';
+  if(b.bank||b.iban||isCash){
     y += 14;
     doc.setFont('helvetica','bold').setFontSize(10).text('Maksja info', 50, y);
     y += 14;
     doc.setFont('helvetica','normal').setFontSize(9).setTextColor(80);
+    doc.text('Makseviis: '+(isCash?'Sularaha':'Pangaülekanne'), 50, y);y+=12;
     if(b.bank){doc.text('Pank: '+b.bank, 50, y);y+=12}
     if(b.iban){doc.text('IBAN: '+b.iban, 50, y);y+=12}
     doc.text('Viitenumber / Selgitus: '+inv.number, 50, y);y+=12;
@@ -1489,11 +1500,12 @@ function legacyPrintInvoice(id){
       ${t.taxAmt?`<div class="tr"><span>Käibemaks (${inv.taxRate}%)</span><span>${fmt(t.taxAmt)}</span></div>`:''}
       <div class="tr tot"><span>TASUDA KOKKU</span><span>${fmt(t.total)}</span></div>
     </div>
-    ${(b.bank||b.iban)?`<div style="margin-top:24px;font-size:11px;color:#444">
+    <div style="margin-top:24px;font-size:11px;color:#444">
+      <div><strong>Makseviis:</strong> ${inv.paymentMethod==='cash'?'Sularaha':'Pangaülekanne'}</div>
       ${b.bank?`<div><strong>Pank:</strong> ${esc(b.bank)}</div>`:''}
       ${b.iban?`<div><strong>IBAN:</strong> ${esc(b.iban)}</div>`:''}
       <div><strong>Viitenumber / Selgitus:</strong> ${esc(inv.number)}</div>
-    </div>`:''}
+    </div>
     ${inv.notes?`<div class="pa-notes"><div class="pa-notes-label">Märkused</div><div class="pa-notes-text">${esc(inv.notes)}</div></div>`:''}
   `;
   const oldTitle=document.title;
