@@ -8,6 +8,13 @@
 <meta property="og:title" content="Arvik — Maximally private and easy invoicing, no BS" />
 <meta property="og:description" content="Just invoicing — encrypted, EU-hosted, magic-link login. 30 seconds to your first invoice. Free." />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="manifest" href="/manifest.webmanifest" />
+<meta name="theme-color" content="#2563eb" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Arvik" />
 <style>
   :root{
     --blue:#2563eb; --blue-dark:#1d4ed8; --blue-soft:#eff6ff; --blue-100:#dbeafe;
@@ -363,9 +370,40 @@
     .cta-card h2{font-size:22px}
     .ftr{font-size:12px;padding:24px 0}
   }
+  /* PWA install banner */
+  .pwa-hidden{display:none !important}
+  .install-banner{position:fixed;left:12px;right:12px;bottom:12px;z-index:9000;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 32px rgba(15,23,42,.20);display:flex;align-items:center;gap:11px;padding:11px 13px;animation:ib-in .28s ease both}
+  @keyframes ib-in{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+  .install-banner .ib-icon{width:40px;height:40px;flex-shrink:0;border-radius:10px;background:linear-gradient(180deg,#3b82f6,#1d4ed8);display:flex;align-items:center;justify-content:center}
+  .install-banner .ib-icon svg{width:23px;height:23px}
+  .install-banner .ib-text{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.32}
+  .install-banner .ib-text strong{font-size:14px;color:var(--ink)}
+  .install-banner .ib-text span{font-size:12px;color:var(--mute)}
+  .install-banner .ib-btn{flex-shrink:0;background:var(--blue);color:#fff;font-weight:600;font-size:13px;padding:9px 15px;border-radius:9px;border:none;cursor:pointer;font-family:inherit}
+  .install-banner .ib-btn:hover{background:var(--blue-dark)}
+  .install-banner .ib-close{flex-shrink:0;width:28px;height:28px;border-radius:7px;color:var(--mute);font-size:15px;line-height:1;background:none;border:none;cursor:pointer}
+  .install-banner .ib-close:hover{background:var(--bg)}
+  @media(min-width:560px){.install-banner{left:auto;right:18px;bottom:18px;max-width:390px}}
 </style>
 </head>
 <body>
+
+<!-- PWA INSTALL BANNER -->
+<div id="install-banner" class="install-banner pwa-hidden">
+  <div class="ib-icon">
+    <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect x="3" y="13" width="34" height="25" rx="7" fill="#fff"/>
+      <path d="M 12 17 L 12 11 Q 12 4 20 4 Q 28 4 28 11 L 28 17" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <text x="20" y="32" text-anchor="middle" font-size="14" font-weight="900" fill="#1d4ed8" font-family="-apple-system,BlinkMacSystemFont,sans-serif">€</text>
+    </svg>
+  </div>
+  <div class="ib-text">
+    <strong data-i18n="ib_title">Install Arvik</strong>
+    <span id="ib-sub" data-i18n="ib_sub">Add it to your home screen — opens like a real app.</span>
+  </div>
+  <button id="ib-install" class="ib-btn" data-i18n="ib_install">Install</button>
+  <button id="ib-close" class="ib-close" aria-label="Close">✕</button>
+</div>
 
 <!-- Reusable mascot SVG -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -449,6 +487,7 @@
       <div class="hero-cta">
         <a href="/app.html" class="btn btn-primary btn-lg" data-i18n="hero_cta1">Open Arvik free →</a>
         <a href="#how" class="btn btn-ghost btn-lg" data-i18n="hero_cta2">See how →</a>
+        <a id="install-btn-hero" href="#" class="btn btn-ghost btn-lg pwa-hidden" onclick="triggerInstall();return false;" data-i18n="install_btn">📲 Install app</a>
       </div>
       <a href="#security" class="hero-privacy">
         <div class="hero-privacy-ico">🔒</div>
@@ -700,6 +739,10 @@ const i18n = {
   en: {}, // English values live in the HTML; empty dict means no replacement needed
   et: {
     brand_tag: 'Lihtne arveldus',
+    install_btn: '📲 Installi äpp',
+    ib_title: 'Installi Arvik',
+    ib_sub: 'Lisa avaekraanile — avaneb nagu päris äpp.',
+    ib_install: 'Installi',
     nav_features: 'Funktsioonid',
     nav_how: 'Kuidas töötab',
     nav_security: 'Turvalisus',
@@ -867,6 +910,74 @@ document.querySelectorAll('[data-lang-btn]').forEach(b => {
 });
 
 applyLang(detectLang());
+
+/* ---------- PWA: service worker + install (banner + hero button) ---------- */
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('/sw.js').catch(function(){});
+  });
+}
+var pwaDeferred=null;
+function pwaIsStandalone(){
+  return window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
+}
+function triggerInstall(){
+  if(pwaDeferred){
+    pwaDeferred.prompt();
+    pwaDeferred.userChoice.then(function(){
+      pwaDeferred=null;
+      var b=document.getElementById('install-banner');if(b)b.classList.add('pwa-hidden');
+    });
+    return;
+  }
+  // No native prompt available — explain the manual route.
+  var ua=navigator.userAgent||'';
+  if(/iPad|iPhone|iPod/.test(ua)){
+    alert('Installimiseks: vajuta brauseri Jaga-nuppu ja siis “Lisa avaekraanile”.');
+  }else{
+    alert('Installimiseks: ava brauseri menüü ja vali “Lisa avaekraanile” või “Installi rakendus”.');
+  }
+}
+(function(){
+  if(pwaIsStandalone())return;            // already running as an installed app
+  var banner=document.getElementById('install-banner');
+  var heroBtn=document.getElementById('install-btn-hero');
+  var bInstall=document.getElementById('ib-install');
+  var bClose=document.getElementById('ib-close');
+  var bSub=document.getElementById('ib-sub');
+  var DKEY='arvik_install_dismissed';
+  function showBanner(){
+    if(!banner)return;
+    try{if(localStorage.getItem(DKEY)==='1')return;}catch(_){}
+    banner.classList.remove('pwa-hidden');
+  }
+  function hideBanner(){if(banner)banner.classList.add('pwa-hidden');}
+
+  if(heroBtn)heroBtn.classList.remove('pwa-hidden');   // permanent install button
+
+  window.addEventListener('beforeinstallprompt',function(e){
+    e.preventDefault();
+    pwaDeferred=e;
+    showBanner();
+  });
+  window.addEventListener('appinstalled',function(){
+    pwaDeferred=null;hideBanner();
+    if(heroBtn)heroBtn.classList.add('pwa-hidden');
+  });
+  if(bInstall)bInstall.addEventListener('click',triggerInstall);
+  if(bClose)bClose.addEventListener('click',function(){
+    hideBanner();
+    try{localStorage.setItem(DKEY,'1');}catch(_){}
+  });
+
+  /* iOS Safari has no beforeinstallprompt — banner shows a manual hint. */
+  var ua=navigator.userAgent||'';
+  if(/iPad|iPhone|iPod/.test(ua)&&!/CriOS|FxiOS|EdgiOS/.test(ua)){
+    if(bInstall)bInstall.style.display='none';
+    if(bSub)bSub.textContent='Vajuta Jaga-nuppu ja siis “Lisa avaekraanile”.';
+    showBanner();
+  }
+})();
 </script>
 </body>
 </html>
