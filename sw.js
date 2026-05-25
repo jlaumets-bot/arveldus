@@ -1,6 +1,6 @@
 /* Arvik service worker — offline app shell.
    Bump VERSION whenever you change cached static assets or this file. */
-const VERSION = 'v1';
+const VERSION = 'v2';
 const CACHE = 'arvik-' + VERSION;
 
 /* Same-origin files precached on install. */

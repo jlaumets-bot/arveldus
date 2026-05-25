@@ -1538,30 +1538,41 @@ function processRecurring(){
   if(changed)save();
 }
 
-async function init(){
-  if(!supa){
-    alert('Sisselogimisteenus pole laaditud. Palun kontrolli internetiühendust ja värskenda lehte.');
-    return;
-  }
-  const {data:{session:s}}=await supa.auth.getSession();
-  session=s;
-  if(!session){
-    showLogin();
-    return;
-  }
+let appEntered=false;
+async function enterApp(){
+  if(appEntered)return;          // run the post-login load exactly once
+  appEntered=true;
   hideLogin();
   await loadFromServer();
   processRecurring();
   switchView('dashboard');
   if(!localStorage.getItem(TUTORIAL_KEY))showWelcome();
 }
+
+async function init(){
+  if(!supa){
+    alert('Sisselogimisteenus pole laaditud. Palun kontrolli internetiühendust ja värskenda lehte.');
+    return;
+  }
+  const {data:{session:s}}=await supa.auth.getSession();
+  if(s){
+    session=s;
+    enterApp();
+  }else{
+    showLogin();
+  }
+}
 init();
-// React to auth state changes (sign-in via magic link, sign-out)
+// React to auth state changes (sign-in via magic link, sign-out).
+// No location.reload() here — reloading before Supabase strips the token
+// from the URL causes an infinite sign-in/reload loop.
 if(supa)supa.auth.onAuthStateChange((event,newSession)=>{
-  if(event==='SIGNED_IN'&&newSession){
-    if(!session){location.reload()}
+  if(newSession){
+    if(!session)session=newSession;
+    enterApp();
   }else if(event==='SIGNED_OUT'){
     session=null;
+    appEntered=false;
     showLogin();
   }
 });
