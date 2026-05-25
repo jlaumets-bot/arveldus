@@ -385,9 +385,39 @@
     .pa-notes-text{font-size:11px;color:#444;white-space:pre-line}
     @page{margin:0}
   }
+  /* PWA install banner */
+  .install-banner{position:fixed;left:12px;right:12px;bottom:12px;z-index:9000;background:#fff;border:1px solid #e2e8f0;border-radius:14px;box-shadow:0 12px 32px rgba(15,23,42,.20);display:flex;align-items:center;gap:11px;padding:11px 13px;animation:ib-in .28s ease both}
+  @keyframes ib-in{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+  .install-banner .ib-icon{width:40px;height:40px;flex-shrink:0;border-radius:10px;background:linear-gradient(180deg,#3b82f6,#1d4ed8);display:flex;align-items:center;justify-content:center}
+  .install-banner .ib-icon svg{width:23px;height:23px}
+  .install-banner .ib-text{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.32}
+  .install-banner .ib-text strong{font-size:14px;color:#0f172a}
+  .install-banner .ib-text span{font-size:12px;color:#64748b}
+  .install-banner .ib-btn{flex-shrink:0;background:#2563eb;color:#fff;font-weight:600;font-size:13px;padding:9px 15px;border-radius:9px}
+  .install-banner .ib-btn:hover{background:#1d4ed8}
+  .install-banner .ib-close{flex-shrink:0;width:28px;height:28px;border-radius:7px;color:#94a3b8;font-size:15px;line-height:1}
+  .install-banner .ib-close:hover{background:#f1f5f9}
+  @media(min-width:560px){.install-banner{left:auto;right:18px;bottom:18px;max-width:390px}}
 </style>
 </head>
 <body>
+
+<!-- PWA INSTALL BANNER -->
+<div id="install-banner" class="install-banner hidden">
+  <div class="ib-icon">
+    <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect x="3" y="13" width="34" height="25" rx="7" fill="#fff"/>
+      <path d="M 12 17 L 12 11 Q 12 4 20 4 Q 28 4 28 11 L 28 17" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <text x="20" y="32" text-anchor="middle" font-size="14" font-weight="900" fill="#1d4ed8" font-family="-apple-system,BlinkMacSystemFont,sans-serif">€</text>
+    </svg>
+  </div>
+  <div class="ib-text">
+    <strong>Installi Arvik</strong>
+    <span id="ib-sub">Lisa avaekraanile — avaneb nagu päris äpp.</span>
+  </div>
+  <button id="ib-install" class="ib-btn">Installi</button>
+  <button id="ib-close" class="ib-close" aria-label="Sulge">✕</button>
+</div>
 
 <!-- LOGIN SCREEN (shown when no session) -->
 <div id="login-screen" class="login-screen hidden">
@@ -442,6 +472,7 @@
       <button data-view="invoices" class="nav-btn"><span class="ico">📄</span>Arved</button>
       <button data-view="clients" class="nav-btn"><span class="ico">👥</span>Kliendid</button>
       <button data-view="settings" class="nav-btn"><span class="ico">⚙️</span>Seaded</button>
+      <button id="nav-install" class="nav-btn hidden" onclick="triggerInstall()"><span class="ico">📲</span>Installi äpp</button>
     </nav>
     <div class="sidebar-foot">
       <button onclick="openInvoiceEditor()" class="btn btn-primary full">+ Uus arve</button>
@@ -719,7 +750,7 @@ function totals(inv){
   return {subtotal:sub,discountAmt:dAmt,taxAmt:tAmt,total:taxable+tAmt};
 }
 
-document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>{switchView(b.dataset.view);closeMobileMenu()}));
+document.querySelectorAll('.nav-btn[data-view]').forEach(b=>b.addEventListener('click',()=>{switchView(b.dataset.view);closeMobileMenu()}));
 function switchView(v){
   currentView=v;
   document.querySelectorAll('.view').forEach(e=>e.classList.add('hidden'));
@@ -1583,6 +1614,70 @@ if('serviceWorker' in navigator){
     navigator.serviceWorker.register('/sw.js').catch(function(){});
   });
 }
+
+/* PWA install — dismissible banner + a permanent "Installi äpp" menu item. */
+var pwaDeferred=null;
+function pwaIsStandalone(){
+  return window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
+}
+function triggerInstall(){
+  if(typeof closeMobileMenu==='function')closeMobileMenu();
+  if(pwaDeferred){
+    pwaDeferred.prompt();
+    pwaDeferred.userChoice.then(function(){
+      pwaDeferred=null;
+      var b=document.getElementById('install-banner');if(b)b.classList.add('hidden');
+    });
+    return;
+  }
+  // No native prompt available — explain the manual route.
+  var ua=navigator.userAgent||'';
+  if(/iPad|iPhone|iPod/.test(ua)){
+    alert('Installimiseks: vajuta brauseri Jaga-nuppu ja siis “Lisa avaekraanile”.');
+  }else{
+    alert('Installimiseks: ava brauseri menüü (⋮) ja vali “Lisa avaekraanile” või “Installi rakendus”.');
+  }
+}
+(function(){
+  if(pwaIsStandalone())return;            // already running as an installed app
+  var banner=document.getElementById('install-banner');
+  var installBtn=document.getElementById('ib-install');
+  var closeBtn=document.getElementById('ib-close');
+  var sub=document.getElementById('ib-sub');
+  var navItem=document.getElementById('nav-install');
+  var DKEY='arvik_install_dismissed';
+  function showBanner(){
+    if(!banner)return;
+    try{if(localStorage.getItem(DKEY)==='1')return;}catch(_){}
+    banner.classList.remove('hidden');
+  }
+  function hideBanner(){if(banner)banner.classList.add('hidden');}
+
+  if(navItem)navItem.classList.remove('hidden');   // permanent menu entry, always available
+
+  window.addEventListener('beforeinstallprompt',function(e){
+    e.preventDefault();
+    pwaDeferred=e;
+    showBanner();
+  });
+  window.addEventListener('appinstalled',function(){
+    pwaDeferred=null;hideBanner();
+    if(navItem)navItem.classList.add('hidden');
+  });
+  if(installBtn)installBtn.addEventListener('click',triggerInstall);
+  if(closeBtn)closeBtn.addEventListener('click',function(){
+    hideBanner();
+    try{localStorage.setItem(DKEY,'1');}catch(_){}
+  });
+
+  // iOS Safari has no beforeinstallprompt — banner shows a manual hint.
+  var ua=navigator.userAgent||'';
+  if(/iPad|iPhone|iPod/.test(ua)&&!/CriOS|FxiOS|EdgiOS/.test(ua)){
+    if(installBtn)installBtn.style.display='none';
+    if(sub)sub.textContent='Vajuta Jaga-nuppu ja siis “Lisa avaekraanile”.';
+    showBanner();
+  }
+})();
 </script>
 </body>
 </html>
