@@ -1434,7 +1434,7 @@ function buildInvoiceDoc(id){
   // ---- Two pastel cards: MAKSJA + Dates/Status ----
   const colGap = 14;
   const colW   = (W-100-colGap)/2;
-  const cardH  = 118;
+  const cardH  = 104;
   const radius = 16;
 
   // Left card: MAKSJA
@@ -1466,14 +1466,14 @@ function buildInvoiceDoc(id){
   dateRow('MAKSETÄHTAEG', inv.dueDate, y+50);
   // Status capsule (right side)
   doc.setFont('helvetica','bold').setFontSize(8).setTextColor(mute[0],mute[1],mute[2]);
-  doc.text('STAATUS', rcX+16, y+82);
+  doc.text('STAATUS', rcX+16, y+80);
   const st = statusMap[statusKey] || statusMap.unpaid;
   doc.setFont('helvetica','bold').setFontSize(9);
   const pillText = st.label;
   const pillW = doc.getTextWidth(pillText) + 22;
   const pillX = rcX+colW-16-pillW;
-  doc.setFillColor(st.bg[0],st.bg[1],st.bg[2]).roundedRect(pillX, y+72, pillW, 18, 9, 9, 'F');
-  doc.setTextColor(st.fg[0],st.fg[1],st.fg[2]).text(pillText, pillX+11, y+85);
+  doc.setFillColor(st.bg[0],st.bg[1],st.bg[2]).roundedRect(pillX, y+70, pillW, 18, 9, 9, 'F');
+  doc.setTextColor(st.fg[0],st.fg[1],st.fg[2]).text(pillText, pillX+11, y+83);
 
   y += cardH + 28;
 
@@ -1574,21 +1574,25 @@ function buildInvoiceDoc(id){
     doc.setTextColor(0);
   }
 
-  // ---- Branded Arvik footer (free tier only) — compact: a quiet sign-off, not a header. ----
+  // ---- Branded Arvik footer (free tier only) — compact sign-off card. ----
   if(!pro){
-    if(y > H - 78){ doc.addPage(); y = 60; }
-    const fX = 50, fW = 178, fH = 42, fY = H - 70;
+    if(y > H - 86){ doc.addPage(); y = 60; }
+    const fX = 50, fW = 220, fH = 54, fY = H - 78;
     doc.setFillColor(card[0],card[1],card[2]).roundedRect(fX, fY, fW, fH, 14, 14, 'F');
-    try{ doc.addImage(ARVIK_LOGO_B64,'PNG', fX+9, fY+9, 24, 24); }catch(e){}
+    try{ doc.addImage(ARVIK_LOGO_B64,'PNG', fX+10, fY+12, 30, 30); }catch(e){}
+    // Sign-off line
     doc.setFont('helvetica','bold').setFontSize(9.5).setTextColor(ink[0],ink[1],ink[2]);
-    doc.text('Saadetud kasutades Arvik', fX+40, fY+18);
+    doc.text('Saadetud kasutades Arvik', fX+48, fY+17);
+    // Tagline
+    doc.setFont('helvetica','normal').setFontSize(7).setTextColor(mute[0],mute[1],mute[2]);
+    doc.text('Maksimaalselt privaatne ja lihtne arveldus', fX+48, fY+28);
     // arvik.ee — small accent capsule
     doc.setFont('helvetica','bold').setFontSize(7.5);
     const urlTxt = 'arvik.ee';
     const urlW = doc.getTextWidth(urlTxt) + 14;
     doc.setFillColor(cardHero[0],cardHero[1],cardHero[2])
-       .roundedRect(fX+40, fY+25, urlW, 13, 6.5, 6.5, 'F');
-    doc.setTextColor(accent[0],accent[1],accent[2]).text(urlTxt, fX+47, fY+34);
+       .roundedRect(fX+48, fY+35, urlW, 13, 6.5, 6.5, 'F');
+    doc.setTextColor(accent[0],accent[1],accent[2]).text(urlTxt, fX+55, fY+44);
     doc.setTextColor(0);
   }
 
