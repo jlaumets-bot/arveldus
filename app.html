@@ -1362,7 +1362,10 @@ function invoiceCurrencySymbol(inv){
   }
   return state.business.currencySymbol||'€';
 }
-/* Build a jsPDF document object for an invoice — used by both download and preview. */
+/* Small Arvik mark — embedded so footer renders offline without a network request. */
+const ARVIK_LOGO_B64 = 'data:image/png;base64,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';
+
+/* Build a jsPDF document for an invoice — used by both download and preview. */
 function buildInvoiceDoc(id){
   const inv=state.invoices.find(i=>i.id===id);if(!inv)return null;
   const c=state.clients.find(x=>x.id===inv.clientId);
@@ -1372,17 +1375,20 @@ function buildInvoiceDoc(id){
   const W = doc.internal.pageSize.getWidth();
   const H = doc.internal.pageSize.getHeight();
 
-  // Palette: Pro uses brand color, free tier uses slate-800.
-  const pro = isPro();
-  const accent      = pro ? hexToRgb(b.brandColor) : [30,41,59];
-  const accentSoft  = [240,243,250];
-  const ink         = [15,23,42];
-  const mute        = [100,116,139];
-  const line        = [226,232,240];
+  // ---- Palette: light pastels + greyscale. Pro adds a brand-color accent. ----
+  const pro       = isPro();
+  const accent    = pro ? hexToRgb(b.brandColor) : [37,99,235];   // accent text only
+  const card      = [248,250,252];   // slate-50
+  const cardSoft  = [241,245,251];   // very faint blue-gray
+  const cardHero  = [237,242,250];   // totals "hero" tint
+  const cardLine  = [228,232,240];   // soft border
+  const ink       = [15,23,42];
+  const mute      = [100,116,139];
+  const headerInk = [30,41,59];      // dark slate for items header bar (kept neutral, not branded)
   const sym = invoiceCurrencySymbol(inv);
   const eur = (n) => (Number(n)||0).toFixed(2).replace('.',',') + ' ' + sym;
 
-  // Resolved status (mirror of statusOf logic).
+  // Status capsule colors
   const statusKey = (function(){
     if(inv.status==='paid')return 'paid';
     if(inv.status==='draft')return 'draft';
@@ -1390,170 +1396,185 @@ function buildInvoiceDoc(id){
     return 'unpaid';
   })();
   const statusMap = {
-    paid:    {label:'TASUTUD',          bg:[209,250,229], fg:[4,120,87]},
-    unpaid:  {label:'MAKSMATA',         bg:[219,234,254], fg:[29,78,216]},
-    overdue: {label:'TÄHTAEG ÜLETATUD', bg:[254,226,226], fg:[185,28,28]},
-    draft:   {label:'MUSTAND',          bg:[241,245,249], fg:[71,85,105]}
+    paid:    {label:'TASUTUD',          bg:[214,247,229], fg:[5,107,77]},
+    unpaid:  {label:'MAKSMATA',         bg:[224,234,254], fg:[30,64,175]},
+    overdue: {label:'TÄHTAEG ÜLETATUD', bg:[254,228,228], fg:[185,28,28]},
+    draft:   {label:'MUSTAND',          bg:[238,242,247], fg:[71,85,105]}
   };
 
-  // ---- Top accent bar (full width, 6pt) ----
-  doc.setFillColor(accent[0],accent[1],accent[2]).rect(0,0,W,6,'F');
+  let y = 56;
 
-  let y = 50;
-
-  // ---- Header: logo + business info (left), ARVE title + number (right) ----
+  // ---- Header: business (left) + ARVE NR / number (right) ----
   let textX = 50;
   if(b.logo){
     try{doc.addImage(b.logo,'PNG',50,y,56,56)}catch(e){}
     textX = 120;
   }
-  doc.setFont('helvetica','bold').setFontSize(15).setTextColor(ink[0],ink[1],ink[2])
-     .text(String(b.name||'Arvik'), textX, y+15);
+  doc.setFont('helvetica','bold').setFontSize(16).setTextColor(ink[0],ink[1],ink[2])
+     .text(String(b.name||'Arvik'), textX, y+16);
   doc.setFont('helvetica','normal').setFontSize(9).setTextColor(mute[0],mute[1],mute[2]);
   const bizLines=[b.address,b.email,b.phone].filter(Boolean);
   if(b.regNumber)bizLines.push('Registrikood: '+b.regNumber);
   if(b.vatNumber)bizLines.push('KMKR nr: '+b.vatNumber);
-  bizLines.forEach((ln,i)=>doc.text(String(ln), textX, y+30+i*12));
+  bizLines.forEach((ln,i)=>doc.text(String(ln), textX, y+33+i*12));
 
-  doc.setFont('helvetica','bold').setFontSize(30).setTextColor(accent[0],accent[1],accent[2])
-     .text('ARVE', W-50, y+22, {align:'right'});
-  doc.setFont('helvetica','normal').setFontSize(11).setTextColor(mute[0],mute[1],mute[2])
+  // Right
+  doc.setFont('helvetica','bold').setFontSize(8).setTextColor(mute[0],mute[1],mute[2])
+     .text('ARVE NR', W-50, y+12, {align:'right'});
+  doc.setFont('helvetica','bold').setFontSize(26).setTextColor(accent[0],accent[1],accent[2])
      .text(String(inv.number||''), W-50, y+40, {align:'right'});
 
-  y += 110;
-  doc.setDrawColor(line[0],line[1],line[2]).setLineWidth(0.5).line(50,y,W-50,y);
-  y += 22;
+  y += 100;
 
-  // ---- Bill-to (left) ----
+  // ---- Two pastel cards: MAKSJA + Dates/Status ----
+  const colGap = 14;
+  const colW   = (W-100-colGap)/2;
+  const cardH  = 118;
+  const radius = 16;
+
+  // Left card: MAKSJA
+  doc.setFillColor(card[0],card[1],card[2]).roundedRect(50, y, colW, cardH, radius, radius, 'F');
   doc.setFont('helvetica','bold').setFontSize(8).setTextColor(mute[0],mute[1],mute[2]);
-  doc.text('MAKSJA', 50, y);
-  let yL = y+15;
+  doc.text('MAKSJA', 66, y+20);
+  let yL = y+38;
   if(c){
     doc.setFont('helvetica','bold').setFontSize(11).setTextColor(ink[0],ink[1],ink[2]);
-    doc.text(String(c.name||''), 50, yL); yL+=15;
+    doc.text(String(c.name||''), 66, yL); yL+=15;
     doc.setFont('helvetica','normal').setFontSize(9).setTextColor(mute[0],mute[1],mute[2]);
-    if(c.regNumber){doc.text('Registrikood: '+c.regNumber, 50, yL);yL+=12}
-    if(c.vatNumber){doc.text('KMKR nr: '+c.vatNumber, 50, yL);yL+=12}
-    (c.address||'').split('\n').forEach(ln=>{if(ln){doc.text(String(ln),50,yL);yL+=12}});
-    if(c.email){doc.text(String(c.email),50,yL);yL+=12}
+    if(c.regNumber && yL<y+cardH-10){doc.text('Registrikood: '+c.regNumber, 66, yL);yL+=12}
+    if(c.vatNumber && yL<y+cardH-10){doc.text('KMKR nr: '+c.vatNumber, 66, yL);yL+=12}
+    (c.address||'').split('\n').forEach(ln=>{if(ln && yL<y+cardH-10){doc.text(String(ln),66,yL);yL+=12}});
+    if(c.email && yL<y+cardH-10){doc.text(String(c.email),66,yL);yL+=12}
   }
 
-  // ---- Dates + status (right) ----
-  const rx = W-200;
+  // Right card: Dates + Status
+  const rcX = 50 + colW + colGap;
+  doc.setFillColor(card[0],card[1],card[2]).roundedRect(rcX, y, colW, cardH, radius, radius, 'F');
+  // Two date rows + status capsule
+  const dateRow = (label, value, ry) => {
+    doc.setFont('helvetica','bold').setFontSize(8).setTextColor(mute[0],mute[1],mute[2]);
+    doc.text(label, rcX+16, ry);
+    doc.setFont('helvetica','normal').setFontSize(11).setTextColor(ink[0],ink[1],ink[2]);
+    doc.text(String(value||'-'), rcX+colW-16, ry, {align:'right'});
+  };
+  dateRow('KUUPÄEV', inv.date, y+22);
+  dateRow('MAKSETÄHTAEG', inv.dueDate, y+50);
+  // Status capsule (right side)
   doc.setFont('helvetica','bold').setFontSize(8).setTextColor(mute[0],mute[1],mute[2]);
-  doc.text('KUUPÄEV', rx, y);
-  doc.text('MAKSETÄHTAEG', rx, y+30);
-  doc.text('STAATUS', rx, y+60);
-  doc.setFont('helvetica','normal').setFontSize(10).setTextColor(ink[0],ink[1],ink[2]);
-  doc.text(String(inv.date||'-'), W-50, y, {align:'right'});
-  doc.text(String(inv.dueDate||'-'), W-50, y+30, {align:'right'});
-
-  // Status pill
+  doc.text('STAATUS', rcX+16, y+82);
   const st = statusMap[statusKey] || statusMap.unpaid;
   doc.setFont('helvetica','bold').setFontSize(9);
   const pillText = st.label;
-  const pillW = doc.getTextWidth(pillText) + 18;
-  const pillX = W-50-pillW;
-  doc.setFillColor(st.bg[0],st.bg[1],st.bg[2]).roundedRect(pillX, y+50, pillW, 16, 8, 8, 'F');
-  doc.setTextColor(st.fg[0],st.fg[1],st.fg[2]).text(pillText, pillX+9, y+61);
+  const pillW = doc.getTextWidth(pillText) + 22;
+  const pillX = rcX+colW-16-pillW;
+  doc.setFillColor(st.bg[0],st.bg[1],st.bg[2]).roundedRect(pillX, y+72, pillW, 18, 9, 9, 'F');
+  doc.setTextColor(st.fg[0],st.fg[1],st.fg[2]).text(pillText, pillX+11, y+85);
 
-  y = Math.max(yL, y+80) + 25;
+  y += cardH + 28;
 
-  // ---- Items table ----
-  doc.setFillColor(accent[0],accent[1],accent[2]).rect(50,y,W-100,24,'F');
+  // ---- Items table — neutral dark header (greyscale, no brand) ----
+  doc.setFillColor(headerInk[0],headerInk[1],headerInk[2]).roundedRect(50, y, W-100, 28, 8, 8, 'F');
   doc.setTextColor(255,255,255).setFont('helvetica','bold').setFontSize(9);
-  doc.text('KIRJELDUS', 60, y+15);
-  doc.text('KOGUS', W-260, y+15, {align:'right'});
-  doc.text('HIND', W-170, y+15, {align:'right'});
-  doc.text('KOKKU', W-60, y+15, {align:'right'});
-  y += 30;
+  doc.text('KIRJELDUS', 66, y+18);
+  doc.text('KOGUS', W-260, y+18, {align:'right'});
+  doc.text('HIND', W-170, y+18, {align:'right'});
+  doc.text('KOKKU', W-64, y+18, {align:'right'});
+  y += 48;
   doc.setTextColor(ink[0],ink[1],ink[2]).setFont('helvetica','normal').setFontSize(10);
 
   (inv.items||[]).forEach(it=>{
     if(y>720){doc.addPage();y=60}
     const descLines = doc.splitTextToSize(String(it.desc||''), W-340);
-    doc.text(descLines, 60, y);
+    doc.text(descLines, 66, y);
     doc.text(String(parseNum(it.qty)), W-260, y, {align:'right'});
     doc.text(eur(parseNum(it.price)), W-170, y, {align:'right'});
-    doc.text(eur(parseNum(it.qty)*parseNum(it.price)), W-60, y, {align:'right'});
-    const rowH = Math.max(descLines.length*14, 18);
+    doc.text(eur(parseNum(it.qty)*parseNum(it.price)), W-64, y, {align:'right'});
+    const rowH = Math.max(descLines.length*14, 22);
     y += rowH;
-    doc.setDrawColor(line[0],line[1],line[2]).setLineWidth(0.4).line(60,y-4,W-60,y-4);
+    doc.setDrawColor(cardLine[0],cardLine[1],cardLine[2]).setLineWidth(0.4).line(66,y-6,W-64,y-6);
   });
 
-  // ---- Totals card (right) ----
-  y += 10;
-  const cardX = W-260, cardW = 210;
-  const cardH = 64 + (t.discountAmt?16:0) + (t.taxAmt?16:0);
-  if(y+cardH>770){doc.addPage();y=60}
-  doc.setFillColor(accentSoft[0],accentSoft[1],accentSoft[2])
-     .roundedRect(cardX,y,cardW,cardH,8,8,'F');
-  let ty = y + 18;
-  const drawTotalRow = (label, val) => {
+  // ---- Totals "hero" card (right) ----
+  y += 16;
+  const tcW = 250, tcX = W - 50 - tcW;
+  const rowCount = 1 + (t.discountAmt?1:0) + (t.taxAmt?1:0);
+  const tcH = 32 + rowCount*18 + 14 + 30;
+  if(y+tcH>770){doc.addPage();y=60}
+  doc.setFillColor(cardHero[0],cardHero[1],cardHero[2]).roundedRect(tcX, y, tcW, tcH, 18, 18, 'F');
+  let ty = y + 26;
+  const totalRow = (label, val) => {
     doc.setFont('helvetica','normal').setFontSize(10).setTextColor(mute[0],mute[1],mute[2]);
-    doc.text(label, cardX+12, ty);
-    doc.setTextColor(ink[0],ink[1],ink[2]);
-    doc.text(val, cardX+cardW-12, ty, {align:'right'});
-    ty += 16;
+    doc.text(label, tcX+18, ty);
+    doc.setTextColor(ink[0],ink[1],ink[2]).text(val, tcX+tcW-18, ty, {align:'right'});
+    ty += 18;
   };
-  drawTotalRow('Vahesumma', eur(t.subtotal));
-  if(t.discountAmt) drawTotalRow('Allahindlus', '-'+eur(t.discountAmt));
-  if(t.taxAmt)      drawTotalRow('Käibemaks ('+inv.taxRate+'%)', eur(t.taxAmt));
-  doc.setDrawColor(line[0],line[1],line[2]).setLineWidth(0.5)
-     .line(cardX+12, ty-4, cardX+cardW-12, ty-4);
-  ty += 10;
-  doc.setFont('helvetica','bold').setFontSize(13).setTextColor(accent[0],accent[1],accent[2]);
-  doc.text('TASUDA KOKKU', cardX+12, ty);
-  doc.text(eur(t.total), cardX+cardW-12, ty, {align:'right'});
+  totalRow('Vahesumma', eur(t.subtotal));
+  if(t.discountAmt)totalRow('Allahindlus', '-'+eur(t.discountAmt));
+  if(t.taxAmt)     totalRow('Käibemaks ('+inv.taxRate+'%)', eur(t.taxAmt));
+  doc.setDrawColor(cardLine[0],cardLine[1],cardLine[2]).setLineWidth(0.5)
+     .line(tcX+18, ty-4, tcX+tcW-18, ty-4);
+  ty += 14;
+  doc.setFont('helvetica','bold').setFontSize(14).setTextColor(accent[0],accent[1],accent[2]);
+  doc.text('TASUDA KOKKU', tcX+18, ty);
+  doc.text(eur(t.total), tcX+tcW-18, ty, {align:'right'});
   doc.setTextColor(0);
 
-  y = y + cardH + 26;
+  y += tcH + 28;
 
-  // ---- Payment info box ----
+  // ---- Payment info card (full width, soft pastel, rounded) ----
   const isCash = inv.paymentMethod==='cash';
   if(b.bank||b.iban||isCash){
-    let lineCount = 2; // makseviis + viitenumber
+    let lineCount = 2;
     if(b.bank)lineCount++;
     if(b.iban)lineCount++;
-    const boxH = 26 + lineCount*14 + 10;
-    if(y+boxH>780){doc.addPage();y=60}
-    doc.setDrawColor(line[0],line[1],line[2]).setLineWidth(0.6)
-       .setFillColor(252,253,254)
-       .roundedRect(50,y,W-100,boxH,8,8,'FD');
-    doc.setFont('helvetica','bold').setFontSize(9).setTextColor(mute[0],mute[1],mute[2]);
-    doc.text('MAKSJA INFO', 64, y+18);
-    let py = y+34;
+    const pcH = 32 + lineCount*15 + 14;
+    if(y+pcH>780){doc.addPage();y=60}
+    doc.setFillColor(card[0],card[1],card[2]).roundedRect(50, y, W-100, pcH, 16, 16, 'F');
+    doc.setFont('helvetica','bold').setFontSize(8).setTextColor(mute[0],mute[1],mute[2]);
+    doc.text('MAKSJA INFO', 66, y+20);
+    let py = y+40;
     const kv = (k,v)=>{
       doc.setFont('helvetica','normal').setFontSize(10).setTextColor(mute[0],mute[1],mute[2]);
-      doc.text(k, 64, py);
-      doc.setTextColor(ink[0],ink[1],ink[2]);
-      doc.text(String(v), 160, py);
-      py += 14;
+      doc.text(k, 66, py);
+      doc.setTextColor(ink[0],ink[1],ink[2]).text(String(v), 172, py);
+      py += 15;
     };
     kv('Makseviis:', isCash?'Sularaha':'Pangaülekanne');
     if(b.bank)kv('Pank:', b.bank);
     if(b.iban)kv('IBAN:', b.iban);
     kv('Viitenumber:', inv.number);
     doc.setTextColor(0);
-    y += boxH + 16;
+    y += pcH + 18;
   }
 
   // ---- Notes ----
   if(inv.notes){
     if(y>720){doc.addPage();y=60}
-    doc.setFont('helvetica','bold').setFontSize(9).setTextColor(mute[0],mute[1],mute[2]);
+    doc.setFont('helvetica','bold').setFontSize(8).setTextColor(mute[0],mute[1],mute[2]);
     doc.text('MÄRKUSED', 50, y);
-    y += 14;
+    y += 15;
     doc.setFont('helvetica','normal').setFontSize(10).setTextColor(ink[0],ink[1],ink[2]);
     const nLines = doc.splitTextToSize(String(inv.notes), W-100);
     doc.text(nLines, 50, y);
     doc.setTextColor(0);
   }
 
-  // ---- Footer (free tier only) ----
+  // ---- Branded Arvik footer card (free tier only) ----
   if(!pro){
-    doc.setFont('helvetica','normal').setFontSize(8).setTextColor(170,178,189);
-    doc.text('Loodud Arvikuga · arvik.ee', W/2, H-30, {align:'center'});
+    // Make sure there's room — push to a new page if the body filled the bottom.
+    if(y > H - 100){ doc.addPage(); y = 60; }
+    const fX = 50, fW = 260, fH = 64, fY = H - 92;
+    doc.setFillColor(card[0],card[1],card[2]).roundedRect(fX, fY, fW, fH, 18, 18, 'F');
+    // Logo
+    try{ doc.addImage(ARVIK_LOGO_B64,'PNG', fX+14, fY+14, 36, 36); }catch(e){}
+    // Text block
+    doc.setFont('helvetica','bold').setFontSize(13).setTextColor(ink[0],ink[1],ink[2]);
+    doc.text('Arvik', fX+62, fY+24);
+    doc.setFont('helvetica','normal').setFontSize(8.5).setTextColor(mute[0],mute[1],mute[2]);
+    doc.text('Maksimaalselt privaatne ja lihtne arveldus.', fX+62, fY+37);
+    doc.setFont('helvetica','bold').setFontSize(9).setTextColor(accent[0],accent[1],accent[2]);
+    doc.text('arvik.ee', fX+62, fY+52);
+    doc.setTextColor(0);
   }
 
   return doc;
