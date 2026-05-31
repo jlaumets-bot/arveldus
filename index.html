@@ -930,10 +930,20 @@ function triggerInstall(){
     });
     return;
   }
-  // No native prompt available — explain the manual route.
+  // No native prompt available — explain the manual route per platform.
   var ua=navigator.userAgent||'';
-  if(/iPad|iPhone|iPod/.test(ua)){
+  var hasTouch=('ontouchend' in document);
+  var isIOS = /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && hasTouch);
+  var isMacDesktop = /Macintosh/.test(ua) && !hasTouch;
+  var isFirefox = /Firefox/i.test(ua);
+  var isSafari = /Safari/.test(ua) && !/Chrome|Chromium|CriOS|EdgiOS|Android/.test(ua);
+
+  if(isIOS){
     alert('Installimiseks: vajuta brauseri Jaga-nuppu ja siis “Lisa avaekraanile”.');
+  }else if(isMacDesktop && isSafari){
+    alert('Installimiseks Safari’s: vali menüüribalt File → Add to Dock…');
+  }else if(isFirefox){
+    alert('Firefox ei toeta veebirakenduse installimist. Kasuta Chrome’i, Edge’i või Safari’t.');
   }else{
     alert('Installimiseks: ava brauseri menüü ja vali “Lisa avaekraanile” või “Installi rakendus”.');
   }
