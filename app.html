@@ -848,6 +848,7 @@ function invoiceTable(invs){
       <td>${badge(s)}</td>
       <td class="actions">
         <button onclick="openInvoiceEditor('${inv.id}')" class="link">Muuda</button>
+        <button onclick="previewInvoice('${inv.id}')" class="link link-slate">Eelvaade</button>
         <button onclick="printInvoice('${inv.id}')" class="link link-slate">PDF</button>
         ${s!=='paid'?`<button onclick="markPaid('${inv.id}')" class="link link-emerald">Märgi tasutuks</button>`:''}
         <button onclick="deleteInvoice('${inv.id}')" class="btn-danger-link">Kustuta</button>
@@ -969,8 +970,9 @@ function renderInvoiceForm(){
       </div>
       <div class="right">
         <button onclick="closeInvoiceEditor()" class="btn btn-secondary">Tühista</button>
-        <button onclick="saveInvoice(false)" class="btn btn-secondary">Salvesta</button>
-        <button onclick="saveInvoice(true)" class="btn btn-primary">Salvesta &amp; lae PDF</button>
+        <button onclick="saveInvoice()" class="btn btn-secondary">Salvesta</button>
+        <button onclick="saveInvoice('pdf')" class="btn btn-secondary">Salvesta &amp; lae PDF</button>
+        <button onclick="saveInvoice('preview')" class="btn btn-primary">Salvesta &amp; eelvaata</button>
       </div>
     </div>`;
   ['f-discount','f-discount-type','f-tax'].forEach(id=>document.getElementById(id).addEventListener('input',recalc));
@@ -1023,7 +1025,7 @@ function recalc(){
   document.getElementById('t-subtotal').textContent=f(t.subtotal);
   document.getElementById('t-total').textContent=f(t.total);
 }
-function saveInvoice(thenPDF){
+function saveInvoice(thenAction){
   syncForm();const inv=window._editingInv;
   if(!inv.clientId){toast('Vali esmalt klient');return;}
   const idx=state.invoices.findIndex(i=>i.id===inv.id);
@@ -1031,7 +1033,9 @@ function saveInvoice(thenPDF){
   else{state.invoices.push(inv);state.business.nextNumber=(state.business.nextNumber||1001)+1;}
   if(inv.status==='paid'&&!inv.paidDate)inv.paidDate=today();
   save();closeInvoiceEditor();toast('Arve salvestatud');
-  if(thenPDF)setTimeout(()=>printInvoice(inv.id),200);
+  // Backwards-compat: saveInvoice(true) still triggers PDF download.
+  if(thenAction==='pdf'||thenAction===true) setTimeout(()=>printInvoice(inv.id),200);
+  else if(thenAction==='preview')           setTimeout(()=>previewInvoice(inv.id),200);
   switchView('invoices');
 }
 
@@ -1358,129 +1362,227 @@ function invoiceCurrencySymbol(inv){
   }
   return state.business.currencySymbol||'€';
 }
-function generatePDF(id){
-  const inv=state.invoices.find(i=>i.id===id);if(!inv)return;
+/* Build a jsPDF document object for an invoice — used by both download and preview. */
+function buildInvoiceDoc(id){
+  const inv=state.invoices.find(i=>i.id===id);if(!inv)return null;
   const c=state.clients.find(x=>x.id===inv.clientId);
   const b=state.business,t=totals(inv);
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({unit:'pt',format:'a4'});
   const W = doc.internal.pageSize.getWidth();
   const H = doc.internal.pageSize.getHeight();
-  let y = 50;
-  // Pro-only brand color, falls back to neutral dark for free tier
-  const brandRgb = isPro() ? hexToRgb(b.brandColor) : [40,40,40];
+
+  // Palette: Pro uses brand color, free tier uses slate-800.
+  const pro = isPro();
+  const accent      = pro ? hexToRgb(b.brandColor) : [30,41,59];
+  const accentSoft  = [240,243,250];
+  const ink         = [15,23,42];
+  const mute        = [100,116,139];
+  const line        = [226,232,240];
   const sym = invoiceCurrencySymbol(inv);
   const eur = (n) => (Number(n)||0).toFixed(2).replace('.',',') + ' ' + sym;
 
-  // Logo
-  if(b.logo){try{doc.addImage(b.logo,'PNG',50,y,60,60)}catch(e){}}
-  // Business info
-  doc.setFont('helvetica','bold').setFontSize(14).text(b.name||'Arvik', b.logo?125:50, y+18);
-  doc.setFont('helvetica','normal').setFontSize(9).setTextColor(90);
+  // Resolved status (mirror of statusOf logic).
+  const statusKey = (function(){
+    if(inv.status==='paid')return 'paid';
+    if(inv.status==='draft')return 'draft';
+    if(inv.dueDate && inv.dueDate<today())return 'overdue';
+    return 'unpaid';
+  })();
+  const statusMap = {
+    paid:    {label:'TASUTUD',          bg:[209,250,229], fg:[4,120,87]},
+    unpaid:  {label:'MAKSMATA',         bg:[219,234,254], fg:[29,78,216]},
+    overdue: {label:'TÄHTAEG ÜLETATUD', bg:[254,226,226], fg:[185,28,28]},
+    draft:   {label:'MUSTAND',          bg:[241,245,249], fg:[71,85,105]}
+  };
+
+  // ---- Top accent bar (full width, 6pt) ----
+  doc.setFillColor(accent[0],accent[1],accent[2]).rect(0,0,W,6,'F');
+
+  let y = 50;
+
+  // ---- Header: logo + business info (left), ARVE title + number (right) ----
+  let textX = 50;
+  if(b.logo){
+    try{doc.addImage(b.logo,'PNG',50,y,56,56)}catch(e){}
+    textX = 120;
+  }
+  doc.setFont('helvetica','bold').setFontSize(15).setTextColor(ink[0],ink[1],ink[2])
+     .text(String(b.name||'Arvik'), textX, y+15);
+  doc.setFont('helvetica','normal').setFontSize(9).setTextColor(mute[0],mute[1],mute[2]);
   const bizLines=[b.address,b.email,b.phone].filter(Boolean);
   if(b.regNumber)bizLines.push('Registrikood: '+b.regNumber);
   if(b.vatNumber)bizLines.push('KMKR nr: '+b.vatNumber);
-  bizLines.forEach((ln,i)=>doc.text(String(ln), b.logo?125:50, y+34+i*12));
-  doc.setTextColor(0);
-  // INVOICE title — Pro uses brand color, free tier uses neutral dark
-  doc.setFont('helvetica','bold').setFontSize(28).setTextColor(brandRgb[0],brandRgb[1],brandRgb[2]).text('ARVE', W-50, y+24, {align:'right'});
-  doc.setFont('helvetica','normal').setFontSize(10).setTextColor(80).text(String(inv.number||''), W-50, y+42, {align:'right'});
-  doc.setTextColor(0);
+  bizLines.forEach((ln,i)=>doc.text(String(ln), textX, y+30+i*12));
+
+  doc.setFont('helvetica','bold').setFontSize(30).setTextColor(accent[0],accent[1],accent[2])
+     .text('ARVE', W-50, y+22, {align:'right'});
+  doc.setFont('helvetica','normal').setFontSize(11).setTextColor(mute[0],mute[1],mute[2])
+     .text(String(inv.number||''), W-50, y+40, {align:'right'});
 
   y += 110;
-  // Bill to
-  doc.setFont('helvetica','bold').setFontSize(10).text('Maksja', 50, y);
-  doc.setFont('helvetica','normal').setFontSize(10);
+  doc.setDrawColor(line[0],line[1],line[2]).setLineWidth(0.5).line(50,y,W-50,y);
+  y += 22;
+
+  // ---- Bill-to (left) ----
+  doc.setFont('helvetica','bold').setFontSize(8).setTextColor(mute[0],mute[1],mute[2]);
+  doc.text('MAKSJA', 50, y);
+  let yL = y+15;
   if(c){
-    let yy = y+15;
-    doc.text(String(c.name||''), 50, yy); yy+=13;
-    if(c.regNumber){doc.text('Registrikood: '+c.regNumber, 50, yy);yy+=13}
-    if(c.vatNumber){doc.text('KMKR nr: '+c.vatNumber, 50, yy);yy+=13}
-    (c.address||'').split('\n').forEach(ln=>{if(ln){doc.text(String(ln), 50, yy);yy+=13}});
-    if(c.email)doc.text(String(c.email), 50, yy);
+    doc.setFont('helvetica','bold').setFontSize(11).setTextColor(ink[0],ink[1],ink[2]);
+    doc.text(String(c.name||''), 50, yL); yL+=15;
+    doc.setFont('helvetica','normal').setFontSize(9).setTextColor(mute[0],mute[1],mute[2]);
+    if(c.regNumber){doc.text('Registrikood: '+c.regNumber, 50, yL);yL+=12}
+    if(c.vatNumber){doc.text('KMKR nr: '+c.vatNumber, 50, yL);yL+=12}
+    (c.address||'').split('\n').forEach(ln=>{if(ln){doc.text(String(ln),50,yL);yL+=12}});
+    if(c.email){doc.text(String(c.email),50,yL);yL+=12}
   }
-  // Dates (right)
-  doc.setFont('helvetica','bold').setFontSize(10);
-  doc.text('Kuupäev', W-180, y);
-  doc.text('Maksetähtaeg', W-180, y+18);
-  doc.setFont('helvetica','normal');
-  doc.text(String(inv.date||''), W-50, y, {align:'right'});
-  doc.text(String(inv.dueDate||''), W-50, y+18, {align:'right'});
 
-  y += 110;
-  // Items header — Pro tints the header bar in brand color (subtle), free stays neutral
-  if(isPro()){
-    doc.setFillColor(brandRgb[0],brandRgb[1],brandRgb[2]).rect(50, y, W-100, 22, 'F');
-    doc.setTextColor(255,255,255);
-  }else{
-    doc.setFillColor(245,247,250).rect(50, y, W-100, 22, 'F');
-    doc.setTextColor(80);
-  }
-  doc.setFont('helvetica','bold').setFontSize(10);
-  doc.text('Kirjeldus', 60, y+15);
-  doc.text('Kogus', W-260, y+15, {align:'right'});
-  doc.text('Hind', W-170, y+15, {align:'right'});
-  doc.text('Kokku', W-60, y+15, {align:'right'});
-  doc.setTextColor(0);
+  // ---- Dates + status (right) ----
+  const rx = W-200;
+  doc.setFont('helvetica','bold').setFontSize(8).setTextColor(mute[0],mute[1],mute[2]);
+  doc.text('KUUPÄEV', rx, y);
+  doc.text('MAKSETÄHTAEG', rx, y+30);
+  doc.text('STAATUS', rx, y+60);
+  doc.setFont('helvetica','normal').setFontSize(10).setTextColor(ink[0],ink[1],ink[2]);
+  doc.text(String(inv.date||'-'), W-50, y, {align:'right'});
+  doc.text(String(inv.dueDate||'-'), W-50, y+30, {align:'right'});
+
+  // Status pill
+  const st = statusMap[statusKey] || statusMap.unpaid;
+  doc.setFont('helvetica','bold').setFontSize(9);
+  const pillText = st.label;
+  const pillW = doc.getTextWidth(pillText) + 18;
+  const pillX = W-50-pillW;
+  doc.setFillColor(st.bg[0],st.bg[1],st.bg[2]).roundedRect(pillX, y+50, pillW, 16, 8, 8, 'F');
+  doc.setTextColor(st.fg[0],st.fg[1],st.fg[2]).text(pillText, pillX+9, y+61);
+
+  y = Math.max(yL, y+80) + 25;
+
+  // ---- Items table ----
+  doc.setFillColor(accent[0],accent[1],accent[2]).rect(50,y,W-100,24,'F');
+  doc.setTextColor(255,255,255).setFont('helvetica','bold').setFontSize(9);
+  doc.text('KIRJELDUS', 60, y+15);
+  doc.text('KOGUS', W-260, y+15, {align:'right'});
+  doc.text('HIND', W-170, y+15, {align:'right'});
+  doc.text('KOKKU', W-60, y+15, {align:'right'});
   y += 30;
-  doc.setFont('helvetica','normal').setFontSize(10);
+  doc.setTextColor(ink[0],ink[1],ink[2]).setFont('helvetica','normal').setFontSize(10);
+
   (inv.items||[]).forEach(it=>{
-    if(y>720){doc.addPage();y=50}
+    if(y>720){doc.addPage();y=60}
     const descLines = doc.splitTextToSize(String(it.desc||''), W-340);
     doc.text(descLines, 60, y);
     doc.text(String(parseNum(it.qty)), W-260, y, {align:'right'});
     doc.text(eur(parseNum(it.price)), W-170, y, {align:'right'});
     doc.text(eur(parseNum(it.qty)*parseNum(it.price)), W-60, y, {align:'right'});
-    y += Math.max(descLines.length*14, 18);
+    const rowH = Math.max(descLines.length*14, 18);
+    y += rowH;
+    doc.setDrawColor(line[0],line[1],line[2]).setLineWidth(0.4).line(60,y-4,W-60,y-4);
   });
 
-  // Totals box
+  // ---- Totals card (right) ----
   y += 10;
-  doc.setDrawColor(220).line(W-260, y, W-50, y); y += 14;
-  const row = (label, val, bold) => {
-    doc.setFont('helvetica', bold?'bold':'normal').setFontSize(bold?12:10);
-    doc.text(label, W-260, y);
-    doc.text(val, W-50, y, {align:'right'});
-    y += bold ? 20 : 16;
+  const cardX = W-260, cardW = 210;
+  const cardH = 64 + (t.discountAmt?16:0) + (t.taxAmt?16:0);
+  if(y+cardH>770){doc.addPage();y=60}
+  doc.setFillColor(accentSoft[0],accentSoft[1],accentSoft[2])
+     .roundedRect(cardX,y,cardW,cardH,8,8,'F');
+  let ty = y + 18;
+  const drawTotalRow = (label, val) => {
+    doc.setFont('helvetica','normal').setFontSize(10).setTextColor(mute[0],mute[1],mute[2]);
+    doc.text(label, cardX+12, ty);
+    doc.setTextColor(ink[0],ink[1],ink[2]);
+    doc.text(val, cardX+cardW-12, ty, {align:'right'});
+    ty += 16;
   };
-  row('Vahesumma', eur(t.subtotal));
-  if(t.discountAmt)row('Allahindlus', '-'+eur(t.discountAmt));
-  if(t.taxAmt)row(`Käibemaks (${inv.taxRate}%)`, eur(t.taxAmt));
-  doc.setDrawColor(220).line(W-260, y-6, W-50, y-6);
-  row('TASUDA KOKKU', eur(t.total), true);
+  drawTotalRow('Vahesumma', eur(t.subtotal));
+  if(t.discountAmt) drawTotalRow('Allahindlus', '-'+eur(t.discountAmt));
+  if(t.taxAmt)      drawTotalRow('Käibemaks ('+inv.taxRate+'%)', eur(t.taxAmt));
+  doc.setDrawColor(line[0],line[1],line[2]).setLineWidth(0.5)
+     .line(cardX+12, ty-4, cardX+cardW-12, ty-4);
+  ty += 10;
+  doc.setFont('helvetica','bold').setFontSize(13).setTextColor(accent[0],accent[1],accent[2]);
+  doc.text('TASUDA KOKKU', cardX+12, ty);
+  doc.text(eur(t.total), cardX+cardW-12, ty, {align:'right'});
+  doc.setTextColor(0);
 
-  // Bank / IBAN / payment method
+  y = y + cardH + 26;
+
+  // ---- Payment info box ----
   const isCash = inv.paymentMethod==='cash';
   if(b.bank||b.iban||isCash){
-    y += 14;
-    doc.setFont('helvetica','bold').setFontSize(10).text('Maksja info', 50, y);
-    y += 14;
-    doc.setFont('helvetica','normal').setFontSize(9).setTextColor(80);
-    doc.text('Makseviis: '+(isCash?'Sularaha':'Pangaülekanne'), 50, y);y+=12;
-    if(b.bank){doc.text('Pank: '+b.bank, 50, y);y+=12}
-    if(b.iban){doc.text('IBAN: '+b.iban, 50, y);y+=12}
-    doc.text('Viitenumber / Selgitus: '+inv.number, 50, y);y+=12;
+    let lineCount = 2; // makseviis + viitenumber
+    if(b.bank)lineCount++;
+    if(b.iban)lineCount++;
+    const boxH = 26 + lineCount*14 + 10;
+    if(y+boxH>780){doc.addPage();y=60}
+    doc.setDrawColor(line[0],line[1],line[2]).setLineWidth(0.6)
+       .setFillColor(252,253,254)
+       .roundedRect(50,y,W-100,boxH,8,8,'FD');
+    doc.setFont('helvetica','bold').setFontSize(9).setTextColor(mute[0],mute[1],mute[2]);
+    doc.text('MAKSJA INFO', 64, y+18);
+    let py = y+34;
+    const kv = (k,v)=>{
+      doc.setFont('helvetica','normal').setFontSize(10).setTextColor(mute[0],mute[1],mute[2]);
+      doc.text(k, 64, py);
+      doc.setTextColor(ink[0],ink[1],ink[2]);
+      doc.text(String(v), 160, py);
+      py += 14;
+    };
+    kv('Makseviis:', isCash?'Sularaha':'Pangaülekanne');
+    if(b.bank)kv('Pank:', b.bank);
+    if(b.iban)kv('IBAN:', b.iban);
+    kv('Viitenumber:', inv.number);
     doc.setTextColor(0);
+    y += boxH + 16;
   }
 
-  // Notes
+  // ---- Notes ----
   if(inv.notes){
+    if(y>720){doc.addPage();y=60}
+    doc.setFont('helvetica','bold').setFontSize(9).setTextColor(mute[0],mute[1],mute[2]);
+    doc.text('MÄRKUSED', 50, y);
     y += 14;
-    doc.setFont('helvetica','bold').setFontSize(10).text('Märkused', 50, y);
-    doc.setFont('helvetica','normal').setFontSize(9).setTextColor(80);
+    doc.setFont('helvetica','normal').setFontSize(10).setTextColor(ink[0],ink[1],ink[2]);
     const nLines = doc.splitTextToSize(String(inv.notes), W-100);
-    doc.text(nLines, 50, y+14);
+    doc.text(nLines, 50, y);
     doc.setTextColor(0);
   }
 
-  // Arvik footer — free tier only. Pro removes branding.
-  if(!isPro()){
-    doc.setFont('helvetica','normal').setFontSize(8).setTextColor(160);
+  // ---- Footer (free tier only) ----
+  if(!pro){
+    doc.setFont('helvetica','normal').setFontSize(8).setTextColor(170,178,189);
     doc.text('Loodud Arvikuga · arvik.ee', W/2, H-30, {align:'center'});
   }
 
-  doc.save(`${inv.number||'arve'}.pdf`);
+  return doc;
+}
+
+function generatePDF(id){
+  const doc = buildInvoiceDoc(id);
+  if(!doc){toast('Arvet ei leitud');return;}
+  const inv = state.invoices.find(i=>i.id===id);
+  doc.save(((inv && inv.number) || 'arve') + '.pdf');
   toast('PDF alla laaditud');
+}
+
+/* Preview the invoice as a PDF in a new tab — review before downloading or sending. */
+function previewInvoice(id){
+  if(!window.jspdf || !window.jspdf.jsPDF){
+    toast('Eelvaade pole saadaval — kontrolli internetiühendust');
+    return;
+  }
+  const doc = buildInvoiceDoc(id);
+  if(!doc){toast('Arvet ei leitud');return;}
+  try{
+    const url = doc.output('bloburl');
+    const w = window.open(url, '_blank');
+    if(!w){ toast('Luba hüpikaknad, et eelvaadet näha'); }
+  }catch(e){
+    try{ doc.output('dataurlnewwindow'); }
+    catch(_){ toast('Eelvaade ei õnnestunud'); }
+  }
 }
 
 function legacyPrintInvoice(id){
