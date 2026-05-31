@@ -1431,11 +1431,22 @@ function buildInvoiceDoc(id){
 
   y += 100;
 
-  // ---- Two pastel cards: MAKSJA + Dates/Status ----
+  // ---- Two pastel cards: MAKSJA + Dates/Status. Height auto-fits whichever side is taller. ----
   const colGap = 14;
   const colW   = (W-100-colGap)/2;
-  const cardH  = 104;
   const radius = 16;
+  // Right card needs space for KUUPÄEV (y+22) + MAKSETÄHTAEG (y+50) + STAATUS label (y+80) + pill bottom (y+88) → ~96pt minimum.
+  const datesMin = 96;
+  // Left card grows with client content: label + name + N detail rows + paddings.
+  let maksjaNeed = 14 + 6 + 15;  // top pad + label baseline + name baseline
+  if(c){
+    if(c.regNumber) maksjaNeed += 12;
+    if(c.vatNumber) maksjaNeed += 12;
+    if(c.address)   maksjaNeed += (c.address.split('\n').filter(Boolean).length || 1) * 12;
+    if(c.email)     maksjaNeed += 12;
+  }
+  maksjaNeed += 14;             // bottom pad
+  const cardH = Math.max(datesMin, maksjaNeed, 90);
 
   // Left card: MAKSJA
   doc.setFillColor(card[0],card[1],card[2]).roundedRect(50, y, colW, cardH, radius, radius, 'F');
