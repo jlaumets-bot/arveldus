@@ -1565,12 +1565,10 @@ function buildInvoiceDoc(id){
     const fX = 50, fW = 178, fH = 42, fY = H - 70;
     doc.setFillColor(card[0],card[1],card[2]).roundedRect(fX, fY, fW, fH, 14, 14, 'F');
     try{ doc.addImage(ARVIK_LOGO_B64,'PNG', fX+9, fY+9, 24, 24); }catch(e){}
-    doc.setFont('helvetica','bold').setFontSize(10).setTextColor(ink[0],ink[1],ink[2]);
-    doc.text('Arvik', fX+40, fY+15);
-    doc.setFont('helvetica','normal').setFontSize(7).setTextColor(mute[0],mute[1],mute[2]);
-    doc.text('Maksimaalselt privaatne arveldus', fX+40, fY+25);
-    doc.setFont('helvetica','bold').setFontSize(7.5).setTextColor(accent[0],accent[1],accent[2]);
-    doc.text('arvik.ee', fX+40, fY+35);
+    doc.setFont('helvetica','bold').setFontSize(9.5).setTextColor(ink[0],ink[1],ink[2]);
+    doc.text('Saadetud kasutades Arvik', fX+40, fY+18);
+    doc.setFont('helvetica','bold').setFontSize(8).setTextColor(accent[0],accent[1],accent[2]);
+    doc.text('arvik.ee', fX+40, fY+32);
     doc.setTextColor(0);
   }
 
