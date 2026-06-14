@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tasuta arve — koosta ja saada 30 sekundiga | Arvik</title>
+<meta name="description" content="Loo tasuta arve oma kliendile 30 sekundiga. PDF kohe alla laadida ja e-postiga saata. Krüpteeritud, EU-s majutatud, ilma paroolita. Lihtsaim viis tasuta arve koostada Eesti FIE-le, vabakutselisele ja OÜ-le." />
+<meta name="keywords" content="tasuta arve, arve koostamine, lihtne arve, FIE arve, OÜ arve, arve PDF, e-arve, arveldus, arvelduse tööriist" />
+<link rel="canonical" href="https://arveldus.vercel.app/tasuta-arve" />
+<meta property="og:title" content="Tasuta arve — koosta ja saada 30 sekundiga" />
+<meta property="og:description" content="Lihtsaim tasuta arvelduse tööriist. PDF, IBAN, KMKR, ilma kontota." />
+<meta property="og:url" content="https://arveldus.vercel.app/tasuta-arve" />
+<meta property="og:locale" content="et_EE" />
+<meta property="og:type" content="website" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="manifest" href="/manifest.webmanifest" />
+<meta name="theme-color" content="#2563eb" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<style>
+  :root{--blue:#2563eb;--blue-dark:#1d4ed8;--blue-soft:#eff6ff;--ink:#0f172a;--slate:#334155;--mute:#64748b;--line:#e2e8f0;--bg:#f8fafc}
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.55;-webkit-font-smoothing:antialiased}
+  a{color:var(--blue);text-decoration:none}
+  .wrap{max-width:840px;margin:0 auto;padding:0 24px}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:18px 0;border-bottom:1px solid var(--line);margin-bottom:32px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--ink);font-size:17px}
+  .brand-mark{width:30px;height:30px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:600;padding:13px 22px;border-radius:14px;font-size:15px;border:none;cursor:pointer;transition:transform .08s ease, background .15s ease, box-shadow .15s ease}
+  .btn-primary{background:var(--blue);color:#fff;box-shadow:0 8px 20px -8px rgba(37,99,235,.45)}
+  .btn-primary:hover{background:var(--blue-dark);transform:translateY(-1px)}
+  .btn-ghost{background:#fff;color:var(--slate);border:1px solid var(--line)}
+  .btn-ghost:hover{background:var(--bg)}
+  h1{font-size:clamp(30px,5vw,46px);font-weight:800;letter-spacing:-.02em;margin:0 0 18px;line-height:1.12;color:var(--ink)}
+  h1 .accent{color:var(--blue)}
+  h2{font-size:clamp(22px,3vw,30px);font-weight:800;margin:52px 0 14px;letter-spacing:-.01em;color:var(--ink)}
+  h3{font-size:17px;font-weight:700;margin:14px 0 6px;color:var(--ink)}
+  p.lede{font-size:18px;color:var(--slate);margin:0 0 24px;max-width:600px;line-height:1.55}
+  .hero{padding:24px 0 32px}
+  .hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+  .trust{display:flex;gap:18px;flex-wrap:wrap;margin-top:22px;font-size:14px;color:var(--mute)}
+  .trust .check{color:#059669;margin-right:4px;font-weight:700}
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:18px}
+  .step{background:var(--blue-soft);border-radius:18px;padding:20px}
+  .step .n{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:10px;background:#fff;color:var(--blue);font-weight:800;margin-bottom:12px}
+  .step h3{margin:0 0 6px;color:var(--ink)}
+  .step p{margin:0;color:var(--slate);font-size:14px;line-height:1.5}
+  .who{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:18px}
+  .who-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px}
+  .who-card strong{display:block;color:var(--ink);margin-bottom:4px;font-size:15px}
+  .who-card span{font-size:14px;color:var(--mute);line-height:1.5}
+  .faq{margin-top:18px}
+  .faq details{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 20px;margin-bottom:10px}
+  .faq summary{font-weight:600;cursor:pointer;list-style:none;color:var(--ink);font-size:15px;display:flex;justify-content:space-between;gap:12px}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary::after{content:"+";color:var(--mute);font-weight:400;font-size:18px;line-height:1}
+  .faq details[open] summary::after{content:"–"}
+  .faq p{color:var(--slate);font-size:14.5px;margin:12px 0 0;line-height:1.6}
+  .cta-card{background:linear-gradient(135deg,#2563eb 0%, #1d4ed8 100%);color:#fff;border-radius:24px;padding:40px 32px;text-align:center;margin:56px 0 32px;position:relative;overflow:hidden}
+  .cta-card::before{content:"";position:absolute;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,.06);top:-150px;right:-80px}
+  .cta-card > *{position:relative;z-index:1}
+  .cta-card h2{color:#fff;margin:0 0 8px}
+  .cta-card p{color:rgba(255,255,255,.85);margin:0 0 18px;font-size:15px}
+  .cta-card .btn-primary{background:#fff;color:var(--blue)}
+  .cta-card .btn-primary:hover{background:#f1f5f9;transform:translateY(-1px)}
+  .ftr{padding:24px 0;border-top:1px solid var(--line);color:var(--mute);font-size:13px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:32px}
+  .ftr a{color:var(--mute)}
+  .ftr a:hover{color:var(--blue)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav">
+    <a href="/" class="brand" aria-label="Arvik avalehele">
+      <svg class="brand-mark" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#1d4ed8"/></linearGradient></defs>
+        <rect x="3" y="13" width="34" height="25" rx="7" fill="url(#g)"/>
+        <path d="M 12 17 L 12 11 Q 12 4 20 4 Q 28 4 28 11 L 28 17" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <text x="20" y="32" text-anchor="middle" font-size="14" font-weight="900" fill="#fff" font-family="-apple-system,BlinkMacSystemFont,sans-serif">€</text>
+      </svg>
+      Arvik
+    </a>
+    <a href="/app.html" class="btn btn-ghost">Ava äpp →</a>
+  </nav>
+
+  <section class="hero">
+    <h1>Tasuta arve — koosta ja saada <span class="accent">30 sekundiga</span></h1>
+    <p class="lede">Lihtsaim viis tasuta arvet koostada ja PDF-ina kliendile saata. Ilma kontota, ilma paroolita — ainult sinu e-post. Krüpteeritud ja EU-s majutatud.</p>
+    <div class="hero-cta">
+      <a href="/app.html" class="btn btn-primary">Loo tasuta arve →</a>
+      <a href="#kuidas" class="btn btn-ghost">Kuidas töötab?</a>
+    </div>
+    <div class="trust">
+      <span><span class="check">✓</span>Kuni 15 arve kuus tasuta</span>
+      <span><span class="check">✓</span>PDF kohe valmis</span>
+      <span><span class="check">✓</span>KMKR ja IBAN tugi</span>
+    </div>
+  </section>
+
+  <section id="kuidas">
+    <h2>Kuidas tasuta arve koostada?</h2>
+    <p style="color:var(--slate);margin:0">Kolm sammu kuni esimese arveni. Pole vaja õppida ühtegi raamatupidamissüsteemi.</p>
+    <div class="steps">
+      <div class="step">
+        <span class="n">1</span>
+        <h3>Lisa klient</h3>
+        <p>Nimi, e-post, vajadusel KMKR number. Ainult ühe korra — pärast vali rippmenüüst.</p>
+      </div>
+      <div class="step">
+        <span class="n">2</span>
+        <h3>Loo arve</h3>
+        <p>Vali klient, kirjuta read. Käibemaks ja kokkusumma arvutatakse automaatselt.</p>
+      </div>
+      <div class="step">
+        <span class="n">3</span>
+        <h3>Saada PDF</h3>
+        <p>Lae PDF alla ja saada e-postiga. Märgi tasutuks kui raha laekub.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Kellele Arvik sobib?</h2>
+    <p style="color:var(--slate);margin:0">Lihtne ja tasuta arvelduse tööriist väikeettevõtjale ja iseendale tööd loovale inimesele.</p>
+    <div class="who">
+      <div class="who-card"><strong>FIE</strong><span>Füüsilisest isikust ettevõtjale, kes vajab lihtsat arveldust ilma raamatupidamissüsteemita.</span></div>
+      <div class="who-card"><strong>Vabakutseline</strong><span>Disainerile, arendajale, konsultandile, fotograafile, copywriter'ile, tõlkijale.</span></div>
+      <div class="who-card"><strong>Väike OÜ</strong><span>Alustavale ettevõttele või väikse mahuga OÜ-le, kes ei vaja täismahulist süsteemi.</span></div>
+      <div class="who-card"><strong>Kõrvaltegevus</strong><span>Põhitöö kõrvalt teenust pakkujale, kel on paar arvet kuus.</span></div>
+    </div>
+  </section>
+
+  <section class="faq">
+    <h2>Korduma kippuvad küsimused</h2>
+    <details>
+      <summary>Kas Arvik on päriselt tasuta?</summary>
+      <p>Jah. Kuni 15 arve kuus on tasuta — alati. Pro-versioon (€3 kuus või €59 elueaks) lisab piiramatu arvete arvu, brändi värvi ja eemaldab Arviku jaluse, kuid tasuta versiooni põhifunktsionaalsus ei ole piiratud.</p>
+    </details>
+    <details>
+      <summary>Kas Arvik sobib FIE-le ja OÜ-le?</summary>
+      <p>Jah. Arvik töötab nii FIE-le, vabakutselisele kui ka OÜ-le. Toetab KMKR-i, registrikoodi, IBAN-i ja viitenumbrit — kõik vajalik Eesti arveldamiseks.</p>
+    </details>
+    <details>
+      <summary>Kus minu andmed asuvad?</summary>
+      <p>EU-s, krüpteeritult. Andmed on krüpteeritud puhkeolekus serveris. Sa saad need igal ajal eksportida (JSON-failina) või kustutada.</p>
+    </details>
+    <details>
+      <summary>Kas pean konto looma?</summary>
+      <p>Sisseloginguks vajame ainult sinu e-posti. Saadame sulle maagilise lingi — paroolist pole vaja. See tagab, et arved on sulle igal seadmel kättesaadavad.</p>
+    </details>
+    <details>
+      <summary>Kas saan oma arved alla laadida?</summary>
+      <p>Jah, igal ajal. Iga arve saab PDF-ina alla laadida. Kogu varundus saab eksportida ühe failina, kui soovid süsteemist lahkuda. Sa ei jää oma andmete kätte lukku.</p>
+    </details>
+    <details>
+      <summary>Mis siis, kui mul on kuus rohkem kui 15 arvet?</summary>
+      <p>15 arve ületamisel paludakse sind Pro-versioonile üle minna (€3 kuus või €59 elueaks). Tasuta versiooni piir on 15 arvet kuus — see katab enamiku FIE-de ja väikeettevõtete vajaduse.</p>
+    </details>
+  </section>
+
+  <div class="cta-card">
+    <h2>Loo oma esimene tasuta arve</h2>
+    <p>30 sekundit · Ilma kontota · PDF kohe valmis</p>
+    <a href="/app.html" class="btn btn-primary">Ava Arvik →</a>
+  </div>
+
+  <footer class="ftr">
+    <div>© Arvik · Maksimaalselt privaatne ja lihtne arveldus</div>
+    <div><a href="/">Avalehele</a> · <a href="/app.html">Ava äpp</a></div>
+  </footer>
+</div>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "Arvik",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web, iOS, Android",
+      "offers": {"@type":"Offer","price":"0","priceCurrency":"EUR"},
+      "url": "https://arveldus.vercel.app/",
+      "description": "Tasuta arvelduse tööriist Eesti FIE-le, vabakutselisele ja OÜ-le. PDF-i saab kohe alla laadida ja e-postiga saata. Krüpteeritud, EU-s majutatud."
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {"@type":"Question","name":"Kas Arvik on päriselt tasuta?","acceptedAnswer":{"@type":"Answer","text":"Jah. Kuni 15 arve kuus on tasuta — alati. Pro-versioon (€3 kuus või €59 elueaks) lisab piiramatu arvete arvu, brändi värvi ja eemaldab Arviku jaluse."}},
+        {"@type":"Question","name":"Kas Arvik sobib FIE-le ja OÜ-le?","acceptedAnswer":{"@type":"Answer","text":"Jah. Arvik töötab nii FIE-le, vabakutselisele kui ka OÜ-le. Toetab KMKR-i, registrikoodi, IBAN-i ja viitenumbrit."}},
+        {"@type":"Question","name":"Kus minu andmed asuvad?","acceptedAnswer":{"@type":"Answer","text":"EU-s, krüpteeritult. Andmed on krüpteeritud puhkeolekus serveris."}},
+        {"@type":"Question","name":"Kas pean konto looma?","acceptedAnswer":{"@type":"Answer","text":"Sisseloginguks vajame ainult sinu e-posti. Saadame maagilise lingi — paroolist pole vaja."}},
+        {"@type":"Question","name":"Kas saan oma arved alla laadida?","acceptedAnswer":{"@type":"Answer","text":"Jah, igal ajal. Kõik arved saab eksportida JSON-failina ja iga arve PDF-ina."}},
+        {"@type":"Question","name":"Mis siis, kui mul on kuus rohkem kui 15 arvet?","acceptedAnswer":{"@type":"Answer","text":"15 arve ületamisel paludakse sind Pro-versioonile üle minna (€3 kuus või €59 elueaks)."}}
+      ]
+    }
+  ]
+}
+</script>
+</body>
+</html>

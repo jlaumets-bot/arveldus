@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Arve ettevõtjale, FIE-le ja firmale — koosta tasuta | Arvik</title>
+<meta name="description" content="Arve koostamine ettevõtjale, eraettevõtjale, FIE-le ja firmale. Loo arve 30 sekundiga, lae PDF-ina alla ja saada kliendile. KMKR, IBAN, registrikood — kõik vajalik Eesti ettevõtja jaoks. Tasuta." />
+<meta name="keywords" content="arve ettevõtjale, arve firmale, arve eraettevõtjale, ettevõtja arve, FIE arve, OÜ arve, KMKR arve, ettevõtte arve" />
+<link rel="canonical" href="https://arveldus.vercel.app/arve-ettevotjale" />
+<meta property="og:title" content="Arve ettevõtjale ja firmale — koosta tasuta 30 sekundiga" />
+<meta property="og:description" content="Lihtsaim arvelduse tööriist Eesti ettevõtjale. KMKR, IBAN, registrikood — kõik vajalik." />
+<meta property="og:url" content="https://arveldus.vercel.app/arve-ettevotjale" />
+<meta property="og:locale" content="et_EE" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="manifest" href="/manifest.webmanifest" />
+<meta name="theme-color" content="#2563eb" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<style>
+  :root{--blue:#2563eb;--blue-dark:#1d4ed8;--blue-soft:#eff6ff;--ink:#0f172a;--slate:#334155;--mute:#64748b;--line:#e2e8f0;--bg:#f8fafc}
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.55;-webkit-font-smoothing:antialiased}
+  a{color:var(--blue);text-decoration:none}
+  .wrap{max-width:840px;margin:0 auto;padding:0 24px}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:18px 0;border-bottom:1px solid var(--line);margin-bottom:32px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--ink);font-size:17px}
+  .brand-mark{width:30px;height:30px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:600;padding:13px 22px;border-radius:14px;font-size:15px;border:none;cursor:pointer;transition:transform .08s ease, background .15s ease}
+  .btn-primary{background:var(--blue);color:#fff;box-shadow:0 8px 20px -8px rgba(37,99,235,.45)}
+  .btn-primary:hover{background:var(--blue-dark);transform:translateY(-1px)}
+  .btn-ghost{background:#fff;color:var(--slate);border:1px solid var(--line)}
+  .btn-ghost:hover{background:var(--bg)}
+  h1{font-size:clamp(30px,5vw,46px);font-weight:800;letter-spacing:-.02em;margin:0 0 18px;line-height:1.12;color:var(--ink)}
+  h1 .accent{color:var(--blue)}
+  h2{font-size:clamp(22px,3vw,30px);font-weight:800;margin:52px 0 14px;letter-spacing:-.01em;color:var(--ink)}
+  h3{font-size:17px;font-weight:700;margin:14px 0 6px;color:var(--ink)}
+  p.lede{font-size:18px;color:var(--slate);margin:0 0 24px;max-width:600px;line-height:1.55}
+  .hero{padding:24px 0 32px}
+  .hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+  .trust{display:flex;gap:18px;flex-wrap:wrap;margin-top:22px;font-size:14px;color:var(--mute)}
+  .trust .check{color:#059669;margin-right:4px;font-weight:700}
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:18px}
+  .step{background:var(--blue-soft);border-radius:18px;padding:20px}
+  .step .n{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:10px;background:#fff;color:var(--blue);font-weight:800;margin-bottom:12px}
+  .step h3{margin:0 0 6px;color:var(--ink)}
+  .step p{margin:0;color:var(--slate);font-size:14px;line-height:1.5}
+  .types{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:18px}
+  .type-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px}
+  .type-card h3{margin:0 0 8px;font-size:18px}
+  .type-card ul{margin:8px 0 0;padding-left:18px;color:var(--slate);font-size:14px;line-height:1.65}
+  .type-card li{margin-bottom:3px}
+  .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:18px}
+  .feat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px}
+  .feat strong{display:block;color:var(--ink);font-size:15px;margin-bottom:4px}
+  .feat span{font-size:13.5px;color:var(--mute);line-height:1.55}
+  .faq{margin-top:18px}
+  .faq details{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 20px;margin-bottom:10px}
+  .faq summary{font-weight:600;cursor:pointer;list-style:none;color:var(--ink);font-size:15px;display:flex;justify-content:space-between;gap:12px}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary::after{content:"+";color:var(--mute);font-weight:400;font-size:18px;line-height:1}
+  .faq details[open] summary::after{content:"–"}
+  .faq p{color:var(--slate);font-size:14.5px;margin:12px 0 0;line-height:1.6}
+  .cta-card{background:linear-gradient(135deg,#2563eb 0%, #1d4ed8 100%);color:#fff;border-radius:24px;padding:40px 32px;text-align:center;margin:56px 0 32px;position:relative;overflow:hidden}
+  .cta-card::before{content:"";position:absolute;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,.06);top:-150px;right:-80px}
+  .cta-card > *{position:relative;z-index:1}
+  .cta-card h2{color:#fff;margin:0 0 8px}
+  .cta-card p{color:rgba(255,255,255,.85);margin:0 0 18px;font-size:15px}
+  .cta-card .btn-primary{background:#fff;color:var(--blue)}
+  .ftr{padding:24px 0;border-top:1px solid var(--line);color:var(--mute);font-size:13px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:32px}
+  .ftr a{color:var(--mute)}
+  .ftr a:hover{color:var(--blue)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav">
+    <a href="/" class="brand" aria-label="Arvik avalehele">
+      <svg class="brand-mark" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#1d4ed8"/></linearGradient></defs>
+        <rect x="3" y="13" width="34" height="25" rx="7" fill="url(#g)"/>
+        <path d="M 12 17 L 12 11 Q 12 4 20 4 Q 28 4 28 11 L 28 17" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <text x="20" y="32" text-anchor="middle" font-size="14" font-weight="900" fill="#fff" font-family="-apple-system,BlinkMacSystemFont,sans-serif">€</text>
+      </svg>
+      Arvik
+    </a>
+    <a href="/app.html" class="btn btn-ghost">Ava äpp →</a>
+  </nav>
+
+  <section class="hero">
+    <h1>Arve <span class="accent">ettevõtjale, FIE-le ja firmale</span></h1>
+    <p class="lede">Lihtsaim viis arvet koostada Eesti ettevõtjana. FIE, OÜ või eraettevõtja — sama tööriist sobib kõigile. KMKR, registrikood, IBAN ja viitenumber — kõik vajalik on kohe peal. Tasuta kuni 15 arve kuus.</p>
+    <div class="hero-cta">
+      <a href="/app.html" class="btn btn-primary">Loo arve tasuta →</a>
+      <a href="#kellele" class="btn btn-ghost">Sobib minule?</a>
+    </div>
+    <div class="trust">
+      <span><span class="check">✓</span>FIE, OÜ ja eraettevõtja</span>
+      <span><span class="check">✓</span>KMKR ja registrikood</span>
+      <span><span class="check">✓</span>EU-s majutatud</span>
+    </div>
+  </section>
+
+  <section id="kellele">
+    <h2>Sobib igale Eesti ettevõtjale</h2>
+    <p style="color:var(--slate);margin:0">Üks tööriist, mis töötab sama hästi nii FIE-le, eraettevõtjale kui ka OÜ-le. Vali, mis sulle sobib — kogu Eesti äriregister on toetatud.</p>
+    <div class="types">
+      <div class="type-card">
+        <h3>FIE arve</h3>
+        <ul>
+          <li>Füüsilisest isikust ettevõtja</li>
+          <li>Isikukood arvel</li>
+          <li>KMKR (kui registreeritud)</li>
+          <li>Lihtne, ilma raamatupidamissüsteemita</li>
+        </ul>
+      </div>
+      <div class="type-card">
+        <h3>OÜ arve</h3>
+        <ul>
+          <li>Osaühingule</li>
+          <li>Registrikood ja KMKR nr</li>
+          <li>Pangakonto ja viitenumber</li>
+          <li>Logo ja firmaandmed</li>
+        </ul>
+      </div>
+      <div class="type-card">
+        <h3>Eraettevõtja arve</h3>
+        <ul>
+          <li>Eraisikule või firmale</li>
+          <li>Käibemaksu (24%) automaatne arvutus</li>
+          <li>Allahindluse tugi</li>
+          <li>PDF kohe valmis</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="kuidas">
+    <h2>Kuidas ettevõtja arve koostada?</h2>
+    <p style="color:var(--slate);margin:0">Kolm sammu kuni esimese arveni. Pole vaja ostada raamatupidamistarkvara.</p>
+    <div class="steps">
+      <div class="step">
+        <span class="n">1</span>
+        <h3>Sea üles ettevõte</h3>
+        <p>Ettevõtte nimi, KMKR, registrikood, IBAN. Üks kord — ja pärast on iga uue arve peal.</p>
+      </div>
+      <div class="step">
+        <span class="n">2</span>
+        <h3>Lisa klient</h3>
+        <p>Klient salvestub — järgmisel korral vali rippmenüüst. Sama klienti pole vaja teist korda sisestada.</p>
+      </div>
+      <div class="step">
+        <span class="n">3</span>
+        <h3>Saada PDF</h3>
+        <p>Lae PDF alla ja saada e-postiga. Süsteem genereerib automaatselt viitenumbri.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Funktsioonid Eesti ettevõtjale</h2>
+    <div class="features">
+      <div class="feat"><strong>KMKR tugi</strong><span>24% käibemaks arvutatakse automaatselt. KMKR-i numbri saab seadetes salvestada.</span></div>
+      <div class="feat"><strong>Registrikood</strong><span>Eesti äriregistri kood ilmub arve päises automaatselt.</span></div>
+      <div class="feat"><strong>IBAN ja viitenumber</strong><span>Automaatne viitenumbri genereerimine vastavalt Eesti pangastandardile.</span></div>
+      <div class="feat"><strong>Püsiarved</strong><span>Igakuised või kvartalipõhised arved tulevad mustanditena valmis.</span></div>
+      <div class="feat"><strong>Klientide ajalugu</strong><span>Salvesta kliendid üks kord. Vali rippmenüüst, kui järgmine arve teeb.</span></div>
+      <div class="feat"><strong>Sularaha või pangaülekanne</strong><span>Iga arve peal saab valida makseviisi — sularaha või pangaülekande.</span></div>
+    </div>
+  </section>
+
+  <section class="faq">
+    <h2>Korduma kippuvad küsimused</h2>
+    <details>
+      <summary>Kas Arvik sobib nii FIE-le kui ka OÜ-le?</summary>
+      <p>Jah. Sama tööriist sobib kõigile Eesti ettevõtjatele — FIE, OÜ, eraettevõtja. KMKR, registrikood, isikukood — kõik salvestub seadetes ja ilmub iga arve peal automaatselt.</p>
+    </details>
+    <details>
+      <summary>Kuidas KMKR arvele lisada?</summary>
+      <p>Seadetes salvesta oma KMKR nr ja vaikimisi käibemaksumäär (Eestis 24%). Iga uue arve peal arvutab süsteem käibemaksu automaatselt — sa lisad ainult artikli hinna, ülejäänu juhtub iseseisvalt.</p>
+    </details>
+    <details>
+      <summary>Kas Arvik vastab Eesti seadusele?</summary>
+      <p>Jah. Arve sisaldab kõiki seaduses nõutud elemente: müüja andmed (sh KMKR/registrikood), ostja andmed, arve number, kuupäev, maksetähtaeg, kogus, hind, käibemaks ja kokkusumma. PDF-arve on legaalselt kehtiv dokument.</p>
+    </details>
+    <details>
+      <summary>Kus minu ettevõtte andmed asuvad?</summary>
+      <p>EU-s, krüpteeritult. Server on majutatud Frankfurtis (Saksamaa). Andmed on krüpteeritud puhkeolekus ja saab igal ajal eksportida või kustutada.</p>
+    </details>
+    <details>
+      <summary>Mitu arvet saan tasuta saata?</summary>
+      <p>15 arvet kuus on tasuta — alati. Üle 15 arve kuus vajab Pro-versiooni (€3 kuus või €59 elueaks). Enamikule väikettevõtjatele piisab tasuta versioonist täielikult.</p>
+    </details>
+    <details>
+      <summary>Kas saan arveid eksportida?</summary>
+      <p>Jah. Kõik arved saab eksportida JSON-failina (kogu varundus) ja iga arve eraldi PDF-ina. Sa ei jää oma andmete kätte lukku — saad igal ajal lahkuda.</p>
+    </details>
+  </section>
+
+  <div class="cta-card">
+    <h2>Koosta esimene arve oma ettevõttele</h2>
+    <p>30 sekundit · Sobib FIE-le, OÜ-le ja eraettevõtjale · Tasuta</p>
+    <a href="/app.html" class="btn btn-primary">Ava Arvik →</a>
+  </div>
+
+  <footer class="ftr">
+    <div>© Arvik · Maksimaalselt privaatne ja lihtne arveldus</div>
+    <div><a href="/">Avalehele</a> · <a href="/tasuta-arve">Tasuta arve</a> · <a href="/app.html">Ava äpp</a></div>
+  </footer>
+</div>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "Arvik",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web, iOS, Android",
+      "offers": {"@type":"Offer","price":"0","priceCurrency":"EUR"},
+      "url": "https://arveldus.vercel.app/",
+      "description": "Lihtsaim arvelduse tööriist Eesti FIE-le, OÜ-le ja eraettevõtjale. KMKR, registrikood, IBAN ja viitenumber — kõik vajalik on kohe peal."
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {"@type":"Question","name":"Kas Arvik sobib nii FIE-le kui ka OÜ-le?","acceptedAnswer":{"@type":"Answer","text":"Jah. Sama tööriist sobib kõigile Eesti ettevõtjatele — FIE, OÜ, eraettevõtja. KMKR, registrikood, isikukood — kõik salvestub seadetes."}},
+        {"@type":"Question","name":"Kuidas KMKR arvele lisada?","acceptedAnswer":{"@type":"Answer","text":"Seadetes salvesta oma KMKR nr ja vaikimisi käibemaksumäär (Eestis 24%). Iga uue arve peal arvutab süsteem käibemaksu automaatselt."}},
+        {"@type":"Question","name":"Kas Arvik vastab Eesti seadusele?","acceptedAnswer":{"@type":"Answer","text":"Jah. Arve sisaldab kõiki seaduses nõutud elemente. PDF-arve on legaalselt kehtiv dokument."}},
+        {"@type":"Question","name":"Kus minu ettevõtte andmed asuvad?","acceptedAnswer":{"@type":"Answer","text":"EU-s, krüpteeritult. Server on majutatud Frankfurtis."}},
+        {"@type":"Question","name":"Mitu arvet saan tasuta saata?","acceptedAnswer":{"@type":"Answer","text":"15 arvet kuus on tasuta — alati. Üle 15 vajab Pro-versiooni (€3 kuus või €59 elueaks)."}},
+        {"@type":"Question","name":"Kas saan arveid eksportida?","acceptedAnswer":{"@type":"Answer","text":"Jah. Kõik arved saab eksportida JSON-failina ja iga arve PDF-ina."}}
+      ]
+    }
+  ]
+}
+</script>
+</body>
+</html>

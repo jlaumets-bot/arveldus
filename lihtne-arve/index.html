@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lihtne arve — koosta 30 sekundiga, ilma raamatupidamissüsteemita | Arvik</title>
+<meta name="description" content="Lihtsaim arvelduse tööriist. Loo arve 30 sekundiga, lae PDF alla ja saada kliendile. Ei mingit raamatupidamissüsteemi, ei mingit konto loomist — ainult sinu e-post. Tasuta Eesti ettevõtjale." />
+<meta name="keywords" content="lihtne arve, arve koostamine, arvelduse tööriist, kiire arve, mugav arve, ilma raamatupidamiseta" />
+<link rel="canonical" href="https://arveldus.vercel.app/lihtne-arve" />
+<meta property="og:title" content="Lihtne arve — koosta 30 sekundiga" />
+<meta property="og:description" content="Lihtsaim arvelduse tööriist. Ei mingit raamatupidamissüsteemi." />
+<meta property="og:url" content="https://arveldus.vercel.app/lihtne-arve" />
+<meta property="og:locale" content="et_EE" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="manifest" href="/manifest.webmanifest" />
+<meta name="theme-color" content="#2563eb" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<style>
+  :root{--blue:#2563eb;--blue-dark:#1d4ed8;--blue-soft:#eff6ff;--ink:#0f172a;--slate:#334155;--mute:#64748b;--line:#e2e8f0;--bg:#f8fafc}
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.55;-webkit-font-smoothing:antialiased}
+  a{color:var(--blue);text-decoration:none}
+  .wrap{max-width:840px;margin:0 auto;padding:0 24px}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:18px 0;border-bottom:1px solid var(--line);margin-bottom:32px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--ink);font-size:17px}
+  .brand-mark{width:30px;height:30px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:600;padding:13px 22px;border-radius:14px;font-size:15px;border:none;cursor:pointer;transition:transform .08s ease, background .15s ease}
+  .btn-primary{background:var(--blue);color:#fff;box-shadow:0 8px 20px -8px rgba(37,99,235,.45)}
+  .btn-primary:hover{background:var(--blue-dark);transform:translateY(-1px)}
+  .btn-ghost{background:#fff;color:var(--slate);border:1px solid var(--line)}
+  .btn-ghost:hover{background:var(--bg)}
+  h1{font-size:clamp(30px,5vw,46px);font-weight:800;letter-spacing:-.02em;margin:0 0 18px;line-height:1.12;color:var(--ink)}
+  h1 .accent{color:var(--blue)}
+  h2{font-size:clamp(22px,3vw,30px);font-weight:800;margin:52px 0 14px;letter-spacing:-.01em;color:var(--ink)}
+  h3{font-size:17px;font-weight:700;margin:14px 0 6px;color:var(--ink)}
+  p.lede{font-size:18px;color:var(--slate);margin:0 0 24px;max-width:600px;line-height:1.55}
+  .hero{padding:24px 0 32px}
+  .hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+  .trust{display:flex;gap:18px;flex-wrap:wrap;margin-top:22px;font-size:14px;color:var(--mute)}
+  .trust .check{color:#059669;margin-right:4px;font-weight:700}
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:18px}
+  .step{background:var(--blue-soft);border-radius:18px;padding:20px}
+  .step .n{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:10px;background:#fff;color:var(--blue);font-weight:800;margin-bottom:12px}
+  .step h3{margin:0 0 6px;color:var(--ink)}
+  .step p{margin:0;color:var(--slate);font-size:14px;line-height:1.5}
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
+  .compare-side{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px}
+  .compare-side h3{margin:0 0 12px;font-size:17px}
+  .compare-side ul{margin:0;padding-left:20px;color:var(--slate);font-size:14px;line-height:1.7}
+  .compare-side.bad ul li{list-style-type:"✕  "}
+  .compare-side.good ul li{list-style-type:"✓  ";color:#0f172a}
+  .compare-side.bad h3{color:#b91c1c}
+  .compare-side.good h3{color:#059669}
+  @media(max-width:560px){.compare{grid-template-columns:1fr}}
+  .faq{margin-top:18px}
+  .faq details{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 20px;margin-bottom:10px}
+  .faq summary{font-weight:600;cursor:pointer;list-style:none;color:var(--ink);font-size:15px;display:flex;justify-content:space-between;gap:12px}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary::after{content:"+";color:var(--mute);font-weight:400;font-size:18px;line-height:1}
+  .faq details[open] summary::after{content:"–"}
+  .faq p{color:var(--slate);font-size:14.5px;margin:12px 0 0;line-height:1.6}
+  .cta-card{background:linear-gradient(135deg,#2563eb 0%, #1d4ed8 100%);color:#fff;border-radius:24px;padding:40px 32px;text-align:center;margin:56px 0 32px;position:relative;overflow:hidden}
+  .cta-card::before{content:"";position:absolute;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,.06);top:-150px;right:-80px}
+  .cta-card > *{position:relative;z-index:1}
+  .cta-card h2{color:#fff;margin:0 0 8px}
+  .cta-card p{color:rgba(255,255,255,.85);margin:0 0 18px;font-size:15px}
+  .cta-card .btn-primary{background:#fff;color:var(--blue)}
+  .ftr{padding:24px 0;border-top:1px solid var(--line);color:var(--mute);font-size:13px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:32px}
+  .ftr a{color:var(--mute)}
+  .ftr a:hover{color:var(--blue)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav">
+    <a href="/" class="brand">
+      <svg class="brand-mark" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#1d4ed8"/></linearGradient></defs>
+        <rect x="3" y="13" width="34" height="25" rx="7" fill="url(#g)"/>
+        <path d="M 12 17 L 12 11 Q 12 4 20 4 Q 28 4 28 11 L 28 17" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <text x="20" y="32" text-anchor="middle" font-size="14" font-weight="900" fill="#fff" font-family="-apple-system,BlinkMacSystemFont,sans-serif">€</text>
+      </svg>
+      Arvik
+    </a>
+    <a href="/app.html" class="btn btn-ghost">Ava äpp →</a>
+  </nav>
+
+  <section class="hero">
+    <h1>Lihtne arve — ilma <span class="accent">raamatupidamissüsteemita</span></h1>
+    <p class="lede">Üks tööriist, üks tööülesanne — arvete koostamine. Pole vaja õppida ühtegi süsteemi. Vali klient, kirjuta read, lae PDF alla. 30 sekundit.</p>
+    <div class="hero-cta">
+      <a href="/app.html" class="btn btn-primary">Loo arve tasuta →</a>
+      <a href="#kuidas" class="btn btn-ghost">Vaata kuidas →</a>
+    </div>
+    <div class="trust">
+      <span><span class="check">✓</span>Ei mingit konto loomist</span>
+      <span><span class="check">✓</span>Ei mingit paroolit</span>
+      <span><span class="check">✓</span>30 sekundit kuni esimese arveni</span>
+    </div>
+  </section>
+
+  <section id="kuidas">
+    <h2>Kuidas lihtne see tegelikult on?</h2>
+    <p style="color:var(--slate);margin:0">Päriselt kolm sammu. Ei mingit menüüd, kus 50 nuppu, ei mingit "esimese seadistamise" protsessi.</p>
+    <div class="steps">
+      <div class="step">
+        <span class="n">1</span>
+        <h3>Sisene e-postiga</h3>
+        <p>Sisesta e-post, saame maagilise lingi. Vajutad postkastis lingile — sees oled. Pole paroolit.</p>
+      </div>
+      <div class="step">
+        <span class="n">2</span>
+        <h3>Loo arve</h3>
+        <p>Klient, read, hind. KMKR ja kokkusumma arvutuvad ise. Sa kirjutad ainult sõnu ja numbreid.</p>
+      </div>
+      <div class="step">
+        <span class="n">3</span>
+        <h3>Lae PDF</h3>
+        <p>Vajuta nuppu — PDF tuleb. Saada e-postiga kliendile. Märgi tasutuks, kui raha jõuab.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Lihtne vs raamatupidamissüsteem</h2>
+    <p style="color:var(--slate);margin:0">Erinevus selles, mida sa peed teadma enne, kui esimene arve välja jõuab.</p>
+    <div class="compare">
+      <div class="compare-side bad">
+        <h3>Tavaline raamatupidamissüsteem</h3>
+        <ul>
+          <li>Konto + parool + 2FA</li>
+          <li>Konto seadistamine 30 min</li>
+          <li>Kontode plaan tuleb ise valida</li>
+          <li>Klientide andmebaas tuleb importida</li>
+          <li>KMKR seadistamine läbi 5 menüü</li>
+          <li>Iga uue arve jaoks vaja "kanne luua"</li>
+          <li>Maksuhalduri liidesed ja deklaratsioonid</li>
+        </ul>
+      </div>
+      <div class="compare-side good">
+        <h3>Arvik</h3>
+        <ul>
+          <li>Sisene e-postiga · 10 sek</li>
+          <li>Ettevõtte info: 1 min</li>
+          <li>Klient: nimi + e-post · 15 sek</li>
+          <li>Arve: read + hind · 30 sek</li>
+          <li>PDF tuleb · 1 vajutus</li>
+          <li>Kogu sünk töötab automaatselt</li>
+          <li>Just see, mida on vaja — mitte rohkem</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="faq">
+    <h2>Kas tõesti nii lihtne?</h2>
+    <details>
+      <summary>Aga kui mul ei ole varem arvet teinud — kas ma saan hakkama?</summary>
+      <p>Jah. Selleks ongi Arvik mõeldud. Esimene arve võtab umbes 1 minuti — sest ettevõtte info sisestad ühe korra, klient salvestub teiseks korraks ja arve enda struktuur on ette antud.</p>
+    </details>
+    <details>
+      <summary>Kas Arvik teeb ka raamatupidamist?</summary>
+      <p>Ei. Tahtlikult. Arvik teeb ainult arveldust — koostab arve, väljastab PDF-i, jälgib makseseisu (tasutud / maksmata / tähtaeg ületatud). Kui sul on vaja täismahulist raamatupidamissüsteemi, vali muu tööriist. Kui aga sul on vaja lihtsalt arveid välja saata — Arvik on selleks tehtud.</p>
+    </details>
+    <details>
+      <summary>Kas saan käibemaksu deklaratsiooni teha?</summary>
+      <p>Ei. Käibemaksu deklaratsiooni jaoks vajad sa eraldi tööriista või raamatupidajat. Arvik salvestab kõik arved struktureeritult — sa saad need eksportida JSON- või PDF-failidena ja edastada oma raamatupidajale.</p>
+    </details>
+    <details>
+      <summary>Mis siis, kui hiljem vajan rohkem funktsioone?</summary>
+      <p>Pro-versioon (€3 kuus või €59 elueaks) lisab piiramatu arvete arvu, brändi värvi PDF-il ja eemaldab Arviku jaluse. See on kõik. Arvik ei lähe kunagi täismahuliseks raamatupidamissüsteemiks — see on tahtlik valik.</p>
+    </details>
+    <details>
+      <summary>Kas saan arvet hiljem muuta?</summary>
+      <p>Jah, kuni arve pole tasutud. Kõik arved on muudetavad, kuni märgid need tasutuks. Pärast tasutuks märkimist soovitame teha asendusarve.</p>
+    </details>
+  </section>
+
+  <div class="cta-card">
+    <h2>Loo oma esimene lihtne arve</h2>
+    <p>30 sekundit · Ilma kontota · PDF kohe valmis</p>
+    <a href="/app.html" class="btn btn-primary">Ava Arvik →</a>
+  </div>
+
+  <footer class="ftr">
+    <div>© Arvik · Maksimaalselt privaatne ja lihtne arveldus</div>
+    <div><a href="/">Avalehele</a> · <a href="/tasuta-arve">Tasuta arve</a> · <a href="/arve-ettevotjale">Ettevõtjale</a> · <a href="/app.html">Ava äpp</a></div>
+  </footer>
+</div>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Arvik",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web, iOS, Android",
+  "offers": {"@type":"Offer","price":"0","priceCurrency":"EUR"},
+  "url": "https://arveldus.vercel.app/",
+  "description": "Lihtsaim arvelduse tööriist Eesti ettevõtjale. Pole vaja raamatupidamissüsteemi — vali klient, kirjuta read, lae PDF alla."
+}
+</script>
+</body>
+</html>

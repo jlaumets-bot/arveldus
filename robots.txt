@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://arveldus.vercel.app/sitemap.xml
