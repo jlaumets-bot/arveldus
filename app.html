@@ -1166,7 +1166,7 @@ function renderSettings(){
           <strong style="font-size:14.5px">👤 Konto</strong>
           <span style="background:#d1fae5;color:#047857;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;letter-spacing:.04em">SISSE LOGITUD</span>
         </div>
-        <p style="font-size:12.5px;color:#64748b;margin:0 0 14px;line-height:1.55">Logitud sisse aadressiga <strong style="color:#0f172a">${esc(session?.user?.email||'')}</strong>. Andmed sünkroniseeruvad automaatselt iga muudatusega — ava arvik.ee ükskõik millises brauseris ja seadmes, kasutades sama e-posti, ning su andmed on seal.</p>
+        <p style="font-size:12.5px;color:#64748b;margin:0 0 14px;line-height:1.55">Logitud sisse aadressiga <strong style="color:#0f172a">${esc(session?.user?.email||'')}</strong>. Andmed sünkroniseeruvad automaatselt iga muudatusega — ava arvetegemine.ee ükskõik millises brauseris ja seadmes, kasutades sama e-posti, ning su andmed on seal.</p>
         <button onclick="signOut()" class="btn btn-secondary">Logi välja</button>
       </div>
 
@@ -1303,7 +1303,7 @@ async function submitProWaitlist(){
   }catch(e){
     console.error(e);
     st.style.color='#dc2626';
-    st.textContent='Midagi läks valesti. Proovi uuesti või kirjuta hello@arvik.ee';
+    st.textContent='Midagi läks valesti. Proovi uuesti või kirjuta hello@arvetegemine.ee';
     btn.disabled=false;btn.textContent='Saa esimesena teada →';
   }
 }
@@ -1611,9 +1611,9 @@ function buildInvoiceDoc(id){
     // Tagline
     doc.setFont('helvetica','normal').setFontSize(7).setTextColor(mute[0],mute[1],mute[2]);
     doc.text('Maksimaalselt privaatne ja lihtne arveldus', fX+48, fY+28);
-    // arvik.ee — small accent capsule
+    // arvetegemine.ee — small accent capsule
     doc.setFont('helvetica','bold').setFontSize(7.5);
-    const urlTxt = 'arvik.ee';
+    const urlTxt = 'arvetegemine.ee';
     const urlW = doc.getTextWidth(urlTxt) + 14;
     doc.setFillColor(cardHero[0],cardHero[1],cardHero[2])
        .roundedRect(fX+48, fY+35, urlW, 13, 6.5, 6.5, 'F');
