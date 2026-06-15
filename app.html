@@ -297,10 +297,10 @@
     .tbl th{padding:8px 10px;font-size:10.5px}
     .tbl td{padding:10px}
     .tbl .actions button{margin-left:4px;font-size:11px}
-    .tbl thead th:nth-child(3),
-    .tbl thead th:nth-child(4),
-    .tbl tbody td:nth-child(3),
-    .tbl tbody td:nth-child(4){display:none}
+    .tbl-invoices thead th:nth-child(3),
+    .tbl-invoices thead th:nth-child(4),
+    .tbl-invoices tbody td:nth-child(3),
+    .tbl-invoices tbody td:nth-child(4){display:none}
     .modal{border-radius:14px 14px 0 0;max-height:96vh;align-self:flex-end}
     .modal-bg{padding:0;align-items:flex-end}
     .modal-body{padding:18px}
@@ -508,7 +508,7 @@
   </main>
 </div>
 
-<div id="invoiceModal" class="modal-bg hidden">
+<div id="invoiceModal" class="modal-bg hidden" onclick="if(event.target===this)closeInvoiceEditor()">
   <div class="modal">
     <div class="modal-head">
       <h2 id="invoiceModalTitle" class="modal-title">Uus arve</h2>
@@ -518,7 +518,7 @@
   </div>
 </div>
 
-<div id="clientModal" class="modal-bg hidden">
+<div id="clientModal" class="modal-bg hidden" onclick="if(event.target===this)closeClientModal()">
   <div class="modal modal-small">
     <div class="modal-head">
       <h2 id="clientModalTitle" class="modal-title">Uus klient</h2>
@@ -719,11 +719,13 @@ function load(){
   }catch{return JSON.parse(JSON.stringify(defaultState));}
 }
 function save(){localStorage.setItem(DB_KEY,JSON.stringify(state));scheduleServerSave()}
-function uid(){return Math.random().toString(36).slice(2,10)}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
+function allocNumber(){let n=Number(state.business.nextNumber)||1001;state.invoices.forEach(i=>{const m=String(i.number||'').match(/(\d+)\s*$/);if(m)n=Math.max(n,parseInt(m[1],10)+1)});state.business.nextNumber=n+1;return (state.business.invoicePrefix||'')+n}
+function addInterval(dateStr,interval){const x=new Date(dateStr+'T00:00');if(interval==='weekly')x.setDate(x.getDate()+7);else if(interval==='quarterly')x.setMonth(x.getMonth()+3);else if(interval==='yearly')x.setFullYear(x.getFullYear()+1);else x.setMonth(x.getMonth()+1);return new Date(x.getTime()-x.getTimezoneOffset()*60000).toISOString().slice(0,10)}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function parseNum(v){if(v==null||v==='')return 0;const n=parseFloat(String(v).replace(',','.').replace(/\s/g,''));return isNaN(n)?0:n}
-function fmt(n){return (Number(n)||0).toFixed(2).replace('.',',')+' '+state.business.currencySymbol}
-function today(){return new Date().toISOString().slice(0,10)}
+function fmt(n){return (Number(n)||0).toFixed(2).replace('.',',')+' '+(state.business.currencySymbol||'€')}
+function today(){const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)}
 function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x.toISOString().slice(0,10)}
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.remove('hidden');setTimeout(()=>t.classList.add('hidden'),2000)}
 
@@ -738,7 +740,7 @@ function needsAttention(inv){
   if(inv.status==='paid')return false;
   if(inv.status==='draft')return false;
   if(!inv.dueDate)return false;
-  const days=Math.floor((new Date(inv.dueDate)-new Date())/86400000);
+  const days=Math.round((new Date(inv.dueDate+'T00:00')-new Date(today()+'T00:00'))/86400000);
   return days<=3; // due within 3 days OR past due
 }
 function badge(s){return `<span class="badge b-${s}">${STATUS_LABEL[s]}</span>`}
@@ -833,7 +835,7 @@ function renderInvoices(){
     <div class="card">${invs.length===0?emptyInvoices():invoiceTable(invs)}</div>`;
 }
 function invoiceTable(invs){
-  return `<table class="tbl"><thead><tr>
+  return `<table class="tbl tbl-invoices"><thead><tr>
     <th>Number</th><th>Klient</th><th>Kuupäev</th><th>Tähtaeg</th>
     <th class="right">Summa</th><th>Olek</th><th class="right">Tegevused</th>
   </tr></thead><tbody>${invs.map(inv=>{
@@ -856,7 +858,7 @@ function invoiceTable(invs){
     </tr>`;
   }).join('')}</tbody></table>`;
 }
-function markPaid(id){const i=state.invoices.find(x=>x.id===id);i.status='paid';i.paidDate=today();save();renderInvoices();toast('Märgitud tasutuks')}
+function markPaid(id){const i=state.invoices.find(x=>x.id===id);if(!i)return;i.status='paid';i.paidDate=today();save();renderInvoices();toast('Märgitud tasutuks')}
 function deleteInvoice(id){if(!confirm('Kas kustutada see arve?'))return;state.invoices=state.invoices.filter(i=>i.id!==id);save();renderInvoices()}
 
 function openInvoiceEditor(id){
@@ -867,7 +869,7 @@ function openInvoiceEditor(id){
   }
   editingInvoiceId=id||null;
   let inv;
-  if(id) inv=JSON.parse(JSON.stringify(state.invoices.find(i=>i.id===id)));
+  if(id){const _f=state.invoices.find(i=>i.id===id);if(!_f){toast('Arvet ei leitud');return;}inv=JSON.parse(JSON.stringify(_f));}
   else inv={
     id:uid(),number:state.business.invoicePrefix+state.business.nextNumber,
     clientId:state.clients[0]?.id||'',date:today(),dueDate:addDays(today(),14),
@@ -1028,10 +1030,15 @@ function recalc(){
 function saveInvoice(thenAction){
   syncForm();const inv=window._editingInv;
   if(!inv.clientId){toast('Vali esmalt klient');return;}
+  if(inv.date&&inv.dueDate&&inv.dueDate<inv.date){toast('Maksetähtaeg ei saa olla arve kuupäevast varasem');return;}
+  if(inv.status==='paid'){if(!inv.paidDate)inv.paidDate=today();}else{inv.paidDate=null;}
   const idx=state.invoices.findIndex(i=>i.id===inv.id);
   if(idx>=0)state.invoices[idx]=inv;
-  else{state.invoices.push(inv);state.business.nextNumber=(state.business.nextNumber||1001)+1;}
-  if(inv.status==='paid'&&!inv.paidDate)inv.paidDate=today();
+  else{
+    if(state.invoices.some(i=>i.number===inv.number))inv.number=allocNumber();
+    else{const m=String(inv.number||'').match(/(\d+)\s*$/);if(m)state.business.nextNumber=Math.max(Number(state.business.nextNumber)||1001,parseInt(m[1],10)+1);}
+    state.invoices.push(inv);
+  }
   save();closeInvoiceEditor();toast('Arve salvestatud');
   // Backwards-compat: saveInvoice(true) still triggers PDF download.
   if(thenAction==='pdf'||thenAction===true) setTimeout(()=>printInvoice(inv.id),200);
@@ -1059,7 +1066,9 @@ function renderClients(){
 }
 function openClientModal(id){
   editingClientId=id||null;
+  if(!document.getElementById('invoiceModal').classList.contains('hidden')&&window._editingInv)syncForm();
   const c=id?state.clients.find(x=>x.id===id):{id:uid(),name:'',email:'',phone:'',address:'',regNumber:'',vatNumber:''};
+  if(id&&!c){toast('Klienti ei leitud');return;}
   document.getElementById('clientModalTitle').textContent=id?'Muuda klienti':'Uus klient';
   document.getElementById('clientModalBody').innerHTML=`
     <div class="field"><label class="field-label">Nimi</label><input id="c-name" class="input" value="${esc(c.name)}"></div>
@@ -1104,7 +1113,7 @@ function renderSettings(){
       <div class="field">
         <label class="field-label">Logo</label>
         <div class="logo-wrap">
-          <div class="logo-box">${b.logo?`<img src="${b.logo}">`:`<span class="ph">Logo puudub</span>`}</div>
+          <div class="logo-box">${b.logo?`<img src="${esc(b.logo)}">`:`<span class="ph">Logo puudub</span>`}</div>
           <div>
             <input type="file" id="s-logo" accept="image/*">
             ${b.logo?`<div><button onclick="removeLogo()" class="btn-danger-link" style="margin-top:6px">Eemalda logo</button></div>`:''}
@@ -1669,7 +1678,7 @@ function legacyPrintInvoice(id){
   document.getElementById('print-area').innerHTML=`
     <div class="pa-head">
       <div class="pa-biz">
-        ${b.logo?`<img class="pa-logo" src="${b.logo}">`:''}
+        ${b.logo?`<img class="pa-logo" src="${esc(b.logo)}">`:''}
         <div>
           <div class="pa-biz-name">${esc(b.name)}</div>
           <div class="pa-biz-info">${bizLines.map(esc).join('\n')}</div>
@@ -1720,17 +1729,21 @@ function legacyPrintInvoice(id){
 }
 
 function processRecurring(){
-  const intervals={weekly:7,monthly:30,quarterly:90,yearly:365};
-  let changed=false;
-  state.invoices.forEach(inv=>{
-    if(!inv.recurring)return;
-    const n=addDays(inv.date,intervals[inv.recurringInterval]||30);
-    if(n<=today()&&!state.invoices.find(i=>i._parent===inv.id&&i.date===n)){
-      const copy=JSON.parse(JSON.stringify(inv));
-      copy.id=uid();copy.number=state.business.invoicePrefix+state.business.nextNumber++;
-      copy.date=n;copy.dueDate=addDays(n,14);copy.status='draft';copy.paidDate=null;
-      copy._parent=inv.id;copy.recurring=false;
-      state.invoices.push(copy);changed=true;
+  let changed=false;const tdy=today();
+  state.invoices.filter(inv=>inv.recurring).forEach(inv=>{
+    if(!inv.date)return;
+    let last=inv.date;
+    state.invoices.forEach(i=>{if(i._parent===inv.id&&i.date>last)last=i.date});
+    let next=addInterval(last,inv.recurringInterval);let guard=0;
+    while(next<=tdy&&guard++<500){
+      if(!state.invoices.some(i=>i._parent===inv.id&&i.date===next)){
+        const copy=JSON.parse(JSON.stringify(inv));
+        copy.id=uid();copy.number=allocNumber();
+        copy.date=next;copy.dueDate=addDays(next,14);copy.status='draft';copy.paidDate=null;
+        copy._parent=inv.id;copy.recurring=false;
+        state.invoices.push(copy);changed=true;
+      }
+      next=addInterval(next,inv.recurringInterval);
     }
   });
   if(changed)save();
@@ -1855,6 +1868,9 @@ function triggerInstall(){
     showBanner();
   }
 })();
+
+// Modal UX: Escape closes the open modal
+document.addEventListener('keydown',function(e){if(e.key!=='Escape')return;var im=document.getElementById('invoiceModal'),cm=document.getElementById('clientModal');if(im&&!im.classList.contains('hidden')){closeInvoiceEditor();}else if(cm&&!cm.classList.contains('hidden')){closeClientModal();}});
 </script>
 </body>
 </html>
