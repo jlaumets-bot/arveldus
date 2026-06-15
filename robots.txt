@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /app.html
 
-Sitemap: https://arveldus.vercel.app/sitemap.xml
+Sitemap: https://www.arvetegemine.ee/sitemap.xml
